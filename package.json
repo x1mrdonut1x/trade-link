@@ -2,6 +2,7 @@
   "name": "trade-link",
   "private": true,
   "scripts": {
+    "build:ui": "pnpm --filter web build",
     "start:ui": "pnpm --filter web dev",
     "start:api": "pnpm --filter api start:dev",
     "start": "pnpm run start:web & pnpm run start:api"
