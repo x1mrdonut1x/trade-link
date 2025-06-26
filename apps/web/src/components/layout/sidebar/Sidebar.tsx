@@ -1,4 +1,4 @@
-import { BedDouble, Calendar, LayoutDashboard, Store, Users } from 'lucide-react';
+import { BedDouble, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Store } from 'lucide-react';
 import * as React from 'react';
 
 import { TeamSwitcher } from '@/components/layout/sidebar/TeamSwitcher';
@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Link } from '@tanstack/react-router';
+import { Link, useMatchRoute } from '@tanstack/react-router';
 
 // This is sample data.
 const data = {
@@ -23,12 +23,7 @@ const data = {
   },
   teams: [
     {
-      name: 'White Sand Luxury Villas & SPA',
-      logo: BedDouble,
-      plan: '',
-    },
-    {
-      name: 'Zanzibar Kite Paradise',
+      name: 'Trade Link CRM',
       logo: BedDouble,
       plan: '',
     },
@@ -45,19 +40,31 @@ const data = {
       icon: Store,
     },
     {
-      name: 'Agents',
-      url: '/agents',
-      icon: Users,
+      name: 'Contacts',
+      url: '/contacts',
+      icon: Contact,
     },
     {
       name: 'Events',
       url: '/events',
       icon: Calendar,
     },
+    {
+      name: 'Import Data',
+      url: '/import',
+      icon: FileUp,
+    },
+    {
+      name: 'Tasks & Reminders',
+      url: '/tasks',
+      icon: CheckSquare,
+    },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const matchRoute = useMatchRoute();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -65,8 +72,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           {data.projects.map(item => (
             <SidebarMenuItem key={item.name}>
-              <SidebarMenuButton asChild>
-                <Link to={item.url}>
+              <SidebarMenuButton asChild isActive={Boolean(matchRoute({ to: item.url, fuzzy: true }))}>
+                <Link to={item.url} activeProps={{ style: { fontWeight: '600' } }}>
                   <item.icon />
                   <span>{item.name}</span>
                 </Link>

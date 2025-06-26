@@ -10,13 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppTasksIndexRouteImport } from './routes/_app/tasks/index'
+import { Route as AppImportIndexRouteImport } from './routes/_app/import/index'
 import { Route as AppEventsIndexRouteImport } from './routes/_app/events/index'
+import { Route as AppContactsIndexRouteImport } from './routes/_app/contacts/index'
 import { Route as AppCompaniesIndexRouteImport } from './routes/_app/companies/index'
-import { Route as AppAgentsIndexRouteImport } from './routes/_app/agents/index'
+import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app/events/$eventId/index'
+import { Route as AppContactsContactIdIndexRouteImport } from './routes/_app/contacts/$contactId/index'
+import { Route as AppCompaniesCompanyIdIndexRouteImport } from './routes/_app/companies/$companyId/index'
 
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/_app/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTasksIndexRoute = AppTasksIndexRouteImport.update({
+  id: '/_app/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppImportIndexRoute = AppImportIndexRouteImport.update({
+  id: '/_app/import/',
+  path: '/import/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
@@ -24,54 +39,114 @@ const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
   path: '/events/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppContactsIndexRoute = AppContactsIndexRouteImport.update({
+  id: '/_app/contacts/',
+  path: '/contacts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppCompaniesIndexRoute = AppCompaniesIndexRouteImport.update({
   id: '/_app/companies/',
   path: '/companies/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppAgentsIndexRoute = AppAgentsIndexRouteImport.update({
-  id: '/_app/agents/',
-  path: '/agents/',
+const AppEventsEventIdIndexRoute = AppEventsEventIdIndexRouteImport.update({
+  id: '/_app/events/$eventId/',
+  path: '/events/$eventId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppContactsContactIdIndexRoute =
+  AppContactsContactIdIndexRouteImport.update({
+    id: '/_app/contacts/$contactId/',
+    path: '/contacts/$contactId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppCompaniesCompanyIdIndexRoute =
+  AppCompaniesCompanyIdIndexRouteImport.update({
+    id: '/_app/companies/$companyId/',
+    path: '/companies/$companyId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/agents': typeof AppAgentsIndexRoute
   '/companies': typeof AppCompaniesIndexRoute
+  '/contacts': typeof AppContactsIndexRoute
   '/events': typeof AppEventsIndexRoute
+  '/import': typeof AppImportIndexRoute
+  '/tasks': typeof AppTasksIndexRoute
+  '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
+  '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
+  '/events/$eventId': typeof AppEventsEventIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
-  '/agents': typeof AppAgentsIndexRoute
   '/companies': typeof AppCompaniesIndexRoute
+  '/contacts': typeof AppContactsIndexRoute
   '/events': typeof AppEventsIndexRoute
+  '/import': typeof AppImportIndexRoute
+  '/tasks': typeof AppTasksIndexRoute
+  '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
+  '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
+  '/events/$eventId': typeof AppEventsEventIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app/': typeof AppIndexRoute
-  '/_app/agents/': typeof AppAgentsIndexRoute
   '/_app/companies/': typeof AppCompaniesIndexRoute
+  '/_app/contacts/': typeof AppContactsIndexRoute
   '/_app/events/': typeof AppEventsIndexRoute
+  '/_app/import/': typeof AppImportIndexRoute
+  '/_app/tasks/': typeof AppTasksIndexRoute
+  '/_app/companies/$companyId/': typeof AppCompaniesCompanyIdIndexRoute
+  '/_app/contacts/$contactId/': typeof AppContactsContactIdIndexRoute
+  '/_app/events/$eventId/': typeof AppEventsEventIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agents' | '/companies' | '/events'
+  fullPaths:
+    | '/'
+    | '/companies'
+    | '/contacts'
+    | '/events'
+    | '/import'
+    | '/tasks'
+    | '/companies/$companyId'
+    | '/contacts/$contactId'
+    | '/events/$eventId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agents' | '/companies' | '/events'
+  to:
+    | '/'
+    | '/companies'
+    | '/contacts'
+    | '/events'
+    | '/import'
+    | '/tasks'
+    | '/companies/$companyId'
+    | '/contacts/$contactId'
+    | '/events/$eventId'
   id:
     | '__root__'
     | '/_app/'
-    | '/_app/agents/'
     | '/_app/companies/'
+    | '/_app/contacts/'
     | '/_app/events/'
+    | '/_app/import/'
+    | '/_app/tasks/'
+    | '/_app/companies/$companyId/'
+    | '/_app/contacts/$contactId/'
+    | '/_app/events/$eventId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
-  AppAgentsIndexRoute: typeof AppAgentsIndexRoute
   AppCompaniesIndexRoute: typeof AppCompaniesIndexRoute
+  AppContactsIndexRoute: typeof AppContactsIndexRoute
   AppEventsIndexRoute: typeof AppEventsIndexRoute
+  AppImportIndexRoute: typeof AppImportIndexRoute
+  AppTasksIndexRoute: typeof AppTasksIndexRoute
+  AppCompaniesCompanyIdIndexRoute: typeof AppCompaniesCompanyIdIndexRoute
+  AppContactsContactIdIndexRoute: typeof AppContactsContactIdIndexRoute
+  AppEventsEventIdIndexRoute: typeof AppEventsEventIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -83,11 +158,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/tasks/': {
+      id: '/_app/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AppTasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/import/': {
+      id: '/_app/import/'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AppImportIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/events/': {
       id: '/_app/events/'
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof AppEventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/contacts/': {
+      id: '/_app/contacts/'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof AppContactsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/companies/': {
@@ -97,11 +193,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompaniesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/agents/': {
-      id: '/_app/agents/'
-      path: '/agents'
-      fullPath: '/agents'
-      preLoaderRoute: typeof AppAgentsIndexRouteImport
+    '/_app/events/$eventId/': {
+      id: '/_app/events/$eventId/'
+      path: '/events/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof AppEventsEventIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/contacts/$contactId/': {
+      id: '/_app/contacts/$contactId/'
+      path: '/contacts/$contactId'
+      fullPath: '/contacts/$contactId'
+      preLoaderRoute: typeof AppContactsContactIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/companies/$companyId/': {
+      id: '/_app/companies/$companyId/'
+      path: '/companies/$companyId'
+      fullPath: '/companies/$companyId'
+      preLoaderRoute: typeof AppCompaniesCompanyIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -109,9 +219,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   AppIndexRoute: AppIndexRoute,
-  AppAgentsIndexRoute: AppAgentsIndexRoute,
   AppCompaniesIndexRoute: AppCompaniesIndexRoute,
+  AppContactsIndexRoute: AppContactsIndexRoute,
   AppEventsIndexRoute: AppEventsIndexRoute,
+  AppImportIndexRoute: AppImportIndexRoute,
+  AppTasksIndexRoute: AppTasksIndexRoute,
+  AppCompaniesCompanyIdIndexRoute: AppCompaniesCompanyIdIndexRoute,
+  AppContactsContactIdIndexRoute: AppContactsContactIdIndexRoute,
+  AppEventsEventIdIndexRoute: AppEventsEventIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
