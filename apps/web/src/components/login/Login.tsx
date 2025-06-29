@@ -1,5 +1,5 @@
 import { GalleryVerticalEnd } from 'lucide-react';
-import { LoginForm } from '../login-form';
+import { LoginForm } from './LoginForm';
 
 export const Login = () => {
   return (

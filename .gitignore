@@ -10,14 +10,10 @@ lerna-debug.log*
 
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
 
 # Build outputs
 dist/
 build/
-.next/
-*.tsbuildinfo
 
 # Environment variables
 .env
@@ -28,10 +24,6 @@ build/
 
 # IDE
 .vscode/
-.idea/
-*.swp
-*.swo
-*~
 
 # OS
 .DS_Store
@@ -55,23 +47,6 @@ Thumbs.db
 # Output of 'npm pack'
 *.tgz
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
+generated
 
-# Temporary folders
-tmp/
-temp/
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Docker
-.dockerignore
+.tanstack

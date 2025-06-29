@@ -1,0 +1,21 @@
+{
+  "name": "shared",
+  "author": "Alex Niznik",
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "Shared types and DTOs for Trade Link application",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    "./*": {
+      "import": {
+        "@tradelink/shared": "./src/*/index.ts"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf lib node_modules"
+  }
+}
