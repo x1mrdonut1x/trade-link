@@ -16,7 +16,7 @@ import type {
   UpdateContactRequest,
   ContactWithCompanyDto,
   DeleteContactResponseDto,
-} from '@tradelink/shared/contact';
+} from '@tradelink/shared';
 
 @Controller('contacts')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

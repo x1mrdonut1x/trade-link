@@ -6,9 +6,12 @@
   "description": "Shared types and DTOs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "type": "commonjs",
+  "files": [
+    "./dist/**"
+  ],
   "scripts": {
-    "lint": "eslint . --max-warnings 0"
+    "dev": "pnpm build --watch",
+    "build": "tsc -b -v"
   },
   "dependencies": {
     "nestjs-zod": "^4.3.1",
@@ -18,7 +21,13 @@
     "@tradelink/typescript-config": "workspace:*"
   },
   "exports": {
-    "./contact": "./src/contact/*.ts",
-    "./user": "./src/user/*.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./*": {
+      "import": "./dist/*.js",
+      "require": "./dist/*.js"
+    }
   }
 }

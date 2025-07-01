@@ -4,7 +4,7 @@ import type {
   CreateUserRequest,
   GetUserResponse,
   UpdateUserRequest,
-} from '@tradelink/shared/user';
+} from '@tradelink/shared';
 
 @Injectable()
 export class UserService {

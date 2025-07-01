@@ -5,7 +5,7 @@ import type {
   UpdateContactRequest,
   ContactWithCompanyDto,
   DeleteContactResponseDto,
-} from '@tradelink/shared/contact';
+} from '@tradelink/shared';
 
 @Injectable()
 export class ContactService {

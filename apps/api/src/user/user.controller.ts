@@ -11,7 +11,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserRequest, UpdateUserRequest } from '@tradelink/shared/user';
+import { CreateUserRequest, UpdateUserRequest } from '@tradelink/shared';
 
 @Controller('users')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

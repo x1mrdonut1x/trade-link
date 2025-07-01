@@ -31,7 +31,4 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  css: {
-    postcss: path.resolve(__dirname, './postcss.config.mjs'),
-  },
 });

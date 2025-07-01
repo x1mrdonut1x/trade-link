@@ -14,7 +14,8 @@
     "removeComments": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "erasableSyntaxOnly": false,
+    "strictBindCallApply": false,
     "strictNullChecks": true,
-    "strictBindCallApply": true
   }
 }

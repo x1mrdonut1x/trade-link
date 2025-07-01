@@ -2,10 +2,7 @@
   "extends": "@tradelink/typescript-config/nestjs.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "@tradelink/shared/*": ["../../packages/shared/src/*"]
-    }
+    "baseUrl": "."
   },
   "exclude": ["dist"]
 }

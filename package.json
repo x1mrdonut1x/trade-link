@@ -5,10 +5,9 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "start:ui": "pnpm --filter web dev",
+    "dev:ui": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
     "start:api": "pnpm --filter api start",
-    "prisma:generate": "pnpm --filter api db:generate",
-    "generate": "turbo run generate",
     "ui": "pnpm --filter @tradelink/ui ui"
   },
   "devDependencies": {
