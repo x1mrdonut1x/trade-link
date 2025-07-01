@@ -17,9 +17,13 @@ export default [
         sourceType: 'module',
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
+    plugins: [
+      '@typescript-eslint/eslint-plugin',
+      {
+        '@typescript-eslint': tseslint,
+      },
+    ],
+    extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
     rules: {
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,

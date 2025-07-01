@@ -9,13 +9,14 @@ datasource db {
 }
 
 model contact {
-  id           Int      @id @unique @default(autoincrement())
-  first_name   String
-  last_name    String?
-  company      company? @relation(fields: [companyId], references: [id])
-  contact_data Json?
-  job_title    String?
-  companyId    Int?
+  id          Int      @id @unique @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String  @unique
+  company     company? @relation(fields: [companyId], references: [id])
+  contactData Json?
+  jobTitle    String?
+  companyId   Int?
 }
 
 model company {
@@ -23,7 +24,7 @@ model company {
   name             String
   email            String?
   phone            String?
-  contact_data     Json?
+  contactData      Json?
   company_type_tag company_type_tag[]
   contact          contact[]
 }
@@ -45,8 +46,8 @@ model note {
 model user {
   id         Int          @id @unique @default(autoincrement())
   email      String       @unique
-  first_name String
-  last_name  String
+  firstName  String
+  lastName   String
   note       note[]
   membership membership[]
 }

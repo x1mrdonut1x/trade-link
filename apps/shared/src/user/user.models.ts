@@ -1,11 +1,14 @@
-export type CreateUserRequest = {
-  first_name: string;
-  last_name: string;
-  email: string;
-};
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export type UpdateUserRequest = {
-  first_name: string;
-  last_name: string;
-  email: string;
-};
+const createUserSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+});
+
+export class CreateUserRequest extends createZodDto(createUserSchema) {}
+
+const UpdateUserSchema = createUserSchema.partial();
+
+export class UpdateUserRequest extends createZodDto(UpdateUserSchema) {}

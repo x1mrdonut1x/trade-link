@@ -7,6 +7,9 @@ export default [
   ...baseConfig,
   reactPlugin.configs.flat['jsx-runtime'],
   {
+    env: {
+      node: true,
+    },
     files: ['**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,

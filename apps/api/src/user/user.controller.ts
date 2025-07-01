@@ -1,17 +1,17 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
   ParseIntPipe,
   ValidationPipe,
-  UsePipes
+  UsePipes,
 } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from '@tradelink/shared';
 import { UserService } from './user.service';
+import { CreateUserRequest, UpdateUserRequest } from '@tradelink/shared';
 
 @Controller('users')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
@@ -29,14 +29,14 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserRequest) {
     return this.userService.createUser(createUserDto);
   }
 
   @Put(':id')
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto
+    @Body() updateUserDto: UpdateUserRequest,
   ) {
     return this.userService.updateUser(id, updateUserDto);
   }

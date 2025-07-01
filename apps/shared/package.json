@@ -1,21 +1,18 @@
 {
-  "name": "shared",
+  "name": "@tradelink/shared",
   "author": "Alex Niznik",
   "license": "MIT",
   "version": "1.0.0",
-  "description": "Shared types and DTOs for Trade Link application",
-  "type": "module",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "exports": {
-    "./*": {
-      "import": {
-        "@tradelink/shared": "./src/*/index.ts"
-      }
-    }
-  },
+  "description": "Shared types and DTOs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf lib node_modules"
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "nestjs-zod": "^4.3.1",
+    "zod": "^3.25.67"
   }
 }

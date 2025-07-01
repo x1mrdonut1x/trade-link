@@ -10,8 +10,8 @@ export function UserForm() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateUserRequest>({
     email: '',
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,7 @@ export function UserForm() {
     try {
       const newUser = await createUser(formData);
       setUser(newUser);
-      setFormData({ email: '', first_name: '', last_name: '' });
+      setFormData({ email: '', firstName: '', lastName: '' });
     } catch (error) {
       console.error('Failed to create user:', error);
     } finally {
@@ -50,17 +50,17 @@ export function UserForm() {
             </div>
 
             <div>
-              <label htmlFor="first_name" className="block text-sm font-medium mb-1">
+              <label htmlFor="firstName" className="block text-sm font-medium mb-1">
                 First Name
               </label>
-              <Input id="first_name" name="first_name" value={formData.first_name} onChange={handleChange} required />
+              <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
             </div>
 
             <div>
-              <label htmlFor="last_name" className="block text-sm font-medium mb-1">
+              <label htmlFor="lastName" className="block text-sm font-medium mb-1">
                 Last Name
               </label>
-              <Input id="last_name" name="last_name" value={formData.last_name} onChange={handleChange} required />
+              <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
             </div>
 
             <Button type="submit" disabled={loading}>
@@ -84,7 +84,7 @@ export function UserForm() {
                 <strong>Email:</strong> {user.email}
               </p>
               <p>
-                <strong>Name:</strong> {user.first_name} {user.last_name}
+                <strong>Name:</strong> {user.firstName} {user.lastName}
               </p>
             </div>
           </CardContent>

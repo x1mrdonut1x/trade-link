@@ -50,3 +50,6 @@ Thumbs.db
 generated
 
 .tanstack
+
+lib
+dist
