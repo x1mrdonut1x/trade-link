@@ -1,9 +1,9 @@
+import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useContacts, useDeleteContact } from '../../api/contact/hooks';
 import { ContactForm } from './ContactForm';
-import type { ContactWithCompanyDto } from 'shared/contact';
 
 export function ContactList() {
   const { data: contacts, isLoading, error } = useContacts();
@@ -43,21 +43,15 @@ export function ContactList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Contacts</h1>
-        <Button onClick={() => setShowCreateForm(true)}>
-          Add New Contact
-        </Button>
+        <Button onClick={() => setShowCreateForm(true)}>Add New Contact</Button>
       </div>
 
       {(showCreateForm || editingContact) && (
-        <ContactForm
-          contact={editingContact || undefined}
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
+        <ContactForm contact={editingContact || undefined} onSuccess={handleSuccess} onCancel={handleCancel} />
       )}
 
       <div className="grid gap-4">
-        {contacts?.map((contact) => (
+        {contacts?.map(contact => (
           <Card key={contact.id}>
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
@@ -65,19 +59,10 @@ export function ContactList() {
                   {contact.firstName} {contact.lastName}
                 </span>
                 <div className="space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(contact)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(contact)}>
                     Edit
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(contact.id)}
-                    disabled={deleteContact.isPending}
-                  >
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(contact.id)} disabled={deleteContact.isPending}>
                     Delete
                   </Button>
                 </div>
@@ -90,10 +75,10 @@ export function ContactList() {
                     <span className="font-medium">Email:</span> {contact.email}
                   </div>
                 )}
-                {contact.phone_number && (
+                {(contact.contactData as any)?.phoneNumber && (
                   <div>
-                    <span className="font-medium">Phone:</span>{' '}
-                    {contact.phone_prefix} {contact.phone_number}
+                    <span className="font-medium">Phone:</span> {(contact.contactData as any)?.phonePrefix}{' '}
+                    {(contact.contactData as any)?.phoneNumber}
                   </div>
                 )}
                 {contact.company?.name && (
@@ -101,22 +86,21 @@ export function ContactList() {
                     <span className="font-medium">Company:</span> {contact.company.name}
                   </div>
                 )}
-                {contact.job_title && (
+                {contact.jobTitle && (
                   <div>
-                    <span className="font-medium">Job Title:</span> {contact.job_title}
+                    <span className="font-medium">Job Title:</span> {contact.jobTitle}
                   </div>
                 )}
-                {contact.city && contact.country && (
+                {(contact.contactData as any)?.city && (contact.contactData as any)?.country && (
                   <div>
-                    <span className="font-medium">Location:</span>{' '}
-                    {contact.city}, {contact.country}
+                    <span className="font-medium">Location:</span> {(contact.contactData as any)?.city},{' '}
+                    {(contact.contactData as any)?.country}
                   </div>
                 )}
-                {contact.address && (
+                {(contact.contactData as any)?.address && (
                   <div className="md:col-span-2">
-                    <span className="font-medium">Address:</span>{' '}
-                    {contact.address}
-                    {contact.post_code && `, ${contact.post_code}`}
+                    <span className="font-medium">Address:</span> {(contact.contactData as any)?.address}
+                    {(contact.contactData as any)?.postCode && `, ${(contact.contactData as any)?.postCode}`}
                   </div>
                 )}
               </div>

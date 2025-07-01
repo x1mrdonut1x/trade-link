@@ -1,7 +1,7 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
 import { Building2, Calendar, Edit, Mail, MapPin, MoreHorizontal, Phone, Trash2, Users } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 

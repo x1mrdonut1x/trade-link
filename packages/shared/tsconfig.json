@@ -1,0 +1,6 @@
+{
+  "extends": "@tradelink/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}

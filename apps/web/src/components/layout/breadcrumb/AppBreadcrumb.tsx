@@ -1,6 +1,13 @@
 import { Link, useLocation } from '@tanstack/react-router';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@tradelink/ui/components/breadcrumb';
 import { Fragment } from 'react/jsx-runtime';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../ui/breadcrumb';
 
 // Mock data imports to get real names
 const mockCompanies = [

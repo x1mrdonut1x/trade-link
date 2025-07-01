@@ -1,26 +1,29 @@
 {
   "name": "tradelink",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build:ui": "pnpm --filter web build",
+    "build": "turbo build",
+    "dev": "turbo dev",
     "start:ui": "pnpm --filter web dev",
     "start:api": "pnpm --filter api start",
-    "start": "pnpm run start:web & pnpm run start:api",
-    "build": "pnpm run build:shared && pnpm --filter api build && pnpm --filter web build",
-    "prisma:generate": "pnpm --filter api db:generate"
+    "prisma:generate": "pnpm --filter api db:generate",
+    "generate": "turbo run generate",
+    "ui": "pnpm --filter @tradelink/ui ui"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@types/node": "^24.0.7",
-    "@typescript-eslint/eslint-plugin": "^8.35.0",
-    "@typescript-eslint/parser": "^8.35.0",
+    "@types/node": "^24.0.8",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
     "eslint": "^9.30.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "tsx": "^4.20.3",
+    "turbo": "^2.5.4",
     "typescript": "^5.8.3"
   },
   "workspaces": [

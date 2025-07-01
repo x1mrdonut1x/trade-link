@@ -11,11 +11,12 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
-import { CreateContactRequest, UpdateContactRequest } from '@tradelink/shared';
 import type {
+  CreateContactRequest,
+  UpdateContactRequest,
   ContactWithCompanyDto,
   DeleteContactResponseDto,
-} from '@tradelink/shared';
+} from '@tradelink/shared/contact';
 
 @Controller('contacts')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

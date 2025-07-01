@@ -1,0 +1,24 @@
+{
+  "name": "@tradelink/shared",
+  "author": "Alex Niznik",
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "Shared types and DTOs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "commonjs",
+  "scripts": {
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "nestjs-zod": "^4.3.1",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@tradelink/typescript-config": "workspace:*"
+  },
+  "exports": {
+    "./contact": "./src/contact/*.ts",
+    "./user": "./src/user/*.ts"
+  }
+}

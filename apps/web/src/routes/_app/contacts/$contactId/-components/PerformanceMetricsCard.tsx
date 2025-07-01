@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { TrendingUp } from 'lucide-react';
 import type { ContactMetrics } from './types';
 

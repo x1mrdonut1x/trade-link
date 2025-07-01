@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Users, UserPlus } from 'lucide-react';
 import type { Agent } from './types';
 

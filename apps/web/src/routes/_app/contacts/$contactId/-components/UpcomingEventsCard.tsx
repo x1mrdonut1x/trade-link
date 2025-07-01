@@ -1,6 +1,6 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar, CalendarPlus, MapPin } from 'lucide-react';
 import type { Event } from './types';
 

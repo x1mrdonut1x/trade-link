@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { Button } from '@tradelink/ui/components/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import { Input } from '@tradelink/ui/components/input';
 import { Filter, Search } from 'lucide-react';
 
 interface TaskFiltersProps {

@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { contactSchema, type ContactWithCompanyDto, type CreateContactType } from '@tradelink/shared';
+import { contactSchema, type ContactWithCompanyDto, type CreateContactType } from '@tradelink/shared/contact';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Input } from '@tradelink/ui/components/input';
+import { Label } from '@tradelink/ui/components/label';
 import { useForm } from 'react-hook-form';
 import { useCreateContact, useUpdateContact } from '../../api/contact/hooks';
 

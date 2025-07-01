@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@tradelink/ui/components/button';
+import { Input } from '@tradelink/ui/components/input';
 import { ArrowLeft, Search } from 'lucide-react';
 import React from 'react';
 import { Link } from '@tanstack/react-router';

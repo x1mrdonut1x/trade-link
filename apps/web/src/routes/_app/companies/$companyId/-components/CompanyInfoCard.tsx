@@ -1,5 +1,5 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Users, MapPin, Phone, Mail, Globe } from 'lucide-react';
 import type { Company } from './types';
 

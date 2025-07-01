@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Button } from '@tradelink/ui/components/button';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@tradelink/ui/components/avatar';
 import { 
   Building2, 
   MapPin, 

@@ -1,7 +1,7 @@
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Checkbox } from '@tradelink/ui/components/checkbox';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import { Button } from '@tradelink/ui/components/button';
 import {
   AlertCircle,
   Bell,

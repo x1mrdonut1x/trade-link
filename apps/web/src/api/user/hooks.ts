@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { CreateUserRequest, UpdateUserRequest } from 'shared/user';
+import type { CreateUserRequest, UpdateUserRequest } from '@tradelink/shared/user';
 import { createUser, deleteUser, getAllUsers, getUser, updateUser } from './api';
 
 const userKey = 'users';

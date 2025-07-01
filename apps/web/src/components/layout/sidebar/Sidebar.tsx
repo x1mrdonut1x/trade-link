@@ -1,8 +1,8 @@
 import { BedDouble, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Store } from 'lucide-react';
 import * as React from 'react';
 
-import { TeamSwitcher } from '@/components/layout/sidebar/TeamSwitcher';
-import { NavUser } from '@/components/layout/sidebar/User';
+import { TeamSwitcher } from '../../../components/layout/sidebar/TeamSwitcher';
+import { NavUser } from '../../../components/layout/sidebar/User';
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@tradelink/ui/components/sidebar';
 import { Link, useMatchRoute } from '@tanstack/react-router';
 
 // This is sample data.

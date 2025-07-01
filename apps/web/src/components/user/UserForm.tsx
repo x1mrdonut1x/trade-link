@@ -1,9 +1,9 @@
-import { createUser } from '../../api/user/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import type { CreateUserRequest, GetUserResponse } from '@tradelink/shared/user';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Input } from '@tradelink/ui/components/input';
 import React, { useState } from 'react';
-import type { CreateUserRequest, GetUserResponse } from 'shared/user';
+import { createUser } from '../../api/user/api';
 
 export function UserForm() {
   const [user, setUser] = useState<GetUserResponse | null>(null);

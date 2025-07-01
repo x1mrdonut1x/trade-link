@@ -1,20 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/page-header/PageHeader';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { 
-  ArrowLeft, 
-  User, 
-  Edit, 
-  MessageSquare,
-  Phone,
-  Calendar
-} from 'lucide-react';
-import { ContactInfoCard } from './-components/ContactInfoCard';
+import { Button } from '@tradelink/ui/components/button';
+import { PageHeader } from 'components/page-header/PageHeader';
+import { ArrowLeft, Calendar, Edit, MessageSquare, Phone, User } from 'lucide-react';
 import { AdditionalDetailsCard } from './-components/AdditionalDetailsCard';
-import { RecentActivitiesCard } from './-components/RecentActivitiesCard';
-import { UpcomingEventsCard } from './-components/UpcomingEventsCard';
+import { ContactInfoCard } from './-components/ContactInfoCard';
 import { PerformanceMetricsCard } from './-components/PerformanceMetricsCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
+import { RecentActivitiesCard } from './-components/RecentActivitiesCard';
+import { UpcomingEventsCard } from './-components/UpcomingEventsCard';
 import { mockContacts } from './-components/mockData';
 
 export const Route = createFileRoute('/_app/contacts/$contactId/')({
@@ -50,25 +43,25 @@ function ContactDetail() {
         backTo="/contacts"
         actions={[
           {
-            label: "Send Message",
+            label: 'Send Message',
             icon: MessageSquare,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Schedule Call",
+            label: 'Schedule Call',
             icon: Phone,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Schedule Meeting",
+            label: 'Schedule Meeting',
             icon: Calendar,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Edit Contact",
+            label: 'Edit Contact',
             icon: Edit,
-            variant: "default"
-          }
+            variant: 'default',
+          },
         ]}
       />
 

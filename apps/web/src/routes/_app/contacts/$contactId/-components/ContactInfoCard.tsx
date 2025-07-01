@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@tradelink/ui/components/avatar';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { User, Mail, Phone, MapPin, Building2 } from 'lucide-react';
 import type { Contact } from './types';
 

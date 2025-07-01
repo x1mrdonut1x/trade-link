@@ -5,7 +5,7 @@ import type {
   UpdateContactRequest,
   ContactWithCompanyDto,
   DeleteContactResponseDto,
-} from '@tradelink/shared';
+} from '@tradelink/shared/contact';
 
 @Injectable()
 export class ContactService {
@@ -29,7 +29,8 @@ export class ContactService {
   async createContact(
     data: CreateContactRequest,
   ): Promise<ContactWithCompanyDto> {
-    const { email, companyId, contactData, firstName, lastName, jobTitle } = data;
+    const { email, companyId, contactData, firstName, lastName, jobTitle } =
+      data;
 
     const contact = await this.prisma.contact.create({
       data: {

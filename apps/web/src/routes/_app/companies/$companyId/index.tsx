@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/page-header/PageHeader';
+import { Button } from '@tradelink/ui/components/button';
+import { PageHeader } from 'components/page-header/PageHeader';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { 
   ArrowLeft, 

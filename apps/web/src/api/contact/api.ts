@@ -1,4 +1,4 @@
-import type { ContactWithCompanyDto, CreateContactType, DeleteContactResponseDto, UpdateContactType } from '@tradelink/shared';
+import type { ContactWithCompanyDto, CreateContactType, DeleteContactResponseDto, UpdateContactType } from '@tradelink/shared/contact';
 import { myFetch } from '../client';
 
 export const contactApi = {
