@@ -3,7 +3,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Card, CardContent } from '@tradelink/ui/components/card';
 import { DataTable, type Column } from '@tradelink/ui/components/data-table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
@@ -164,9 +164,6 @@ export function Contacts() {
       />
 
       <Card>
-        <CardHeader>
-          <CardTitle>{name ? `Search Results` : 'All Contacts'}</CardTitle>
-        </CardHeader>
         <CardContent>
           <DataTable
             data={contacts || []}

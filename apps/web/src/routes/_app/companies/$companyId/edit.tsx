@@ -62,17 +62,7 @@ function EditCompany() {
 
   return (
     <>
-      <PageHeader
-        title={`Edit ${company.name}`}
-        actions={[
-          {
-            label: 'Back to Companies',
-            icon: ArrowLeft,
-            link: { to: '/companies' },
-            variant: 'outline',
-          },
-        ]}
-      />
+      <PageHeader title={`Edit ${company.name}`} backTo={`/companies/${companyId}`} />
 
       <div className="max-w-2xl mx-auto">
         <Card>

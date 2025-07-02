@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { useGetCompany } from 'api/company';
+import { useGetCompany } from 'api/company/hooks';
+import { AssignContactDialog } from 'components/contact/AssignContactDialog';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare, UserPlus } from 'lucide-react';
+import { useState } from 'react';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
 
@@ -14,6 +16,7 @@ export const Route = createFileRoute('/_app/companies/$companyId/')({
 function CompanyDetail() {
   const params = Route.useParams();
   const companyId = params.companyId;
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
   // Try to get company from API first, fallback to mock data
   const { data: company, isLoading } = useGetCompany(companyId);
@@ -59,9 +62,10 @@ function CompanyDetail() {
         backTo="/companies"
         actions={[
           {
-            label: 'Add Agent',
+            label: 'Add Contact',
             icon: UserPlus,
             variant: 'outline',
+            onClick: () => setIsAssignDialogOpen(true),
           },
           {
             label: 'Schedule Event',
@@ -80,6 +84,17 @@ function CompanyDetail() {
             variant: 'default',
           },
         ]}
+      />
+
+      <AssignContactDialog 
+        companyId={Number(companyId)} 
+        onContactAssigned={() => {
+          // Optionally refresh company data or show success message
+          console.log('Contact assigned successfully');
+          setIsAssignDialogOpen(false);
+        }} 
+        open={isAssignDialogOpen}
+        onOpenChange={setIsAssignDialogOpen}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

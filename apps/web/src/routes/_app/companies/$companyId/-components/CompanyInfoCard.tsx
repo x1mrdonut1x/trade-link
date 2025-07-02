@@ -16,7 +16,7 @@ export function CompanyInfoCard({ company }: CompanyInfoCardProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-muted-foreground">{company.description}</p>
+        <p className="text-muted-foreground pb-2">{company.description}</p>
 
         {/* <div className="flex flex-wrap gap-1">
           {company.tags?.map(tag => (

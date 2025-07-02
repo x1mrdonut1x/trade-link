@@ -4,13 +4,20 @@ import { ArrowLeft } from '@tradelink/ui/icons';
 import { ContactForm } from 'components/contact/ContactForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
+import { z } from 'zod';
+
+const addContactSearchSchema = z.object({
+  companyId: z.number().optional(),
+});
 
 export const Route = createFileRoute('/_app/contacts/add/')({
   component: AddContact,
+  validateSearch: addContactSearchSchema,
 });
 
 export function AddContact() {
   const router = useRouter();
+  const { companyId } = Route.useSearch();
 
   useBreadcrumbSetup([
     { title: 'Contacts', href: '/contacts', isActive: false },
@@ -41,7 +48,11 @@ export function AddContact() {
 
       <Card>
         <CardContent className="pt-6">
-          <ContactForm onSuccess={handleSuccess} onCancel={handleCancel} />
+          <ContactForm 
+            defaultCompanyId={companyId}
+            onSuccess={handleSuccess} 
+            onCancel={handleCancel} 
+          />
         </CardContent>
       </Card>
     </>

@@ -11,7 +11,7 @@ import { myFetch } from '../client';
 
 export const companyApi = {
   getAll: (search?: string) => {
-    return myFetch<GetAllCompaniesResponse[]>('companies', { query: search ? { search } : undefined });
+    return myFetch<GetAllCompaniesResponse>('companies', { query: search ? { search } : undefined });
   },
 
   getById: (id: number) => {

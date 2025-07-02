@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/componen
 import { CompanyForm } from 'components/company/CompanyForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
-import { ArrowLeft } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/companies/add/')({
   component: AddCompany,
@@ -28,17 +27,7 @@ function AddCompany() {
 
   return (
     <>
-      <PageHeader
-        title="Add New Company"
-        actions={[
-          {
-            label: 'Back to Companies',
-            icon: ArrowLeft,
-            variant: 'outline',
-            link: { to: '/companies' },
-          },
-        ]}
-      />
+      <PageHeader title="Add New Company" backTo="/companies" />
 
       <div className="max-w-2xl mx-auto">
         <Card>
