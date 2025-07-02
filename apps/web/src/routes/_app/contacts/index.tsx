@@ -90,10 +90,9 @@ export function Contacts() {
     {
       title: 'Phone',
       render: contact => {
-        const phoneData = contact.contactData as any;
-        return phoneData?.phoneNumber ? (
-          <a href={`tel:${phoneData?.phonePrefix}${phoneData?.phoneNumber}`} className="text-blue-600 hover:underline">
-            {phoneData?.phonePrefix} {phoneData?.phoneNumber}
+        return contact?.phoneNumber ? (
+          <a href={`tel:${contact?.phonePrefix}${contact?.phoneNumber}`} className="text-blue-600 hover:underline">
+            {contact?.phonePrefix} {contact?.phoneNumber}
           </a>
         ) : (
           <span className="text-muted-foreground">-</span>
@@ -103,10 +102,9 @@ export function Contacts() {
     {
       title: 'Location',
       render: contact => {
-        const locationData = contact.contactData as any;
-        return locationData?.city && locationData?.country ? (
+        return contact?.city && contact?.country ? (
           <div className="text-sm">
-            {locationData?.city}, {locationData?.country}
+            {contact?.city}, {contact?.country}
           </div>
         ) : (
           <span className="text-muted-foreground">-</span>

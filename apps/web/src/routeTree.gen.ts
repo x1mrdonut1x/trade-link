@@ -18,7 +18,9 @@ import { Route as AppCompaniesIndexRouteImport } from './routes/_app/companies/i
 import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app/events/$eventId/index'
 import { Route as AppContactsAddIndexRouteImport } from './routes/_app/contacts/add/index'
 import { Route as AppContactsContactIdIndexRouteImport } from './routes/_app/contacts/$contactId/index'
+import { Route as AppCompaniesAddIndexRouteImport } from './routes/_app/companies/add/index'
 import { Route as AppCompaniesCompanyIdIndexRouteImport } from './routes/_app/companies/$companyId/index'
+import { Route as AppCompaniesCompanyIdEditRouteImport } from './routes/_app/companies/$companyId/edit'
 import { Route as AppContactsContactIdEditIndexRouteImport } from './routes/_app/contacts/$contactId/edit/index'
 
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -67,10 +69,21 @@ const AppContactsContactIdIndexRoute =
     path: '/contacts/$contactId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppCompaniesAddIndexRoute = AppCompaniesAddIndexRouteImport.update({
+  id: '/_app/companies/add/',
+  path: '/companies/add/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppCompaniesCompanyIdIndexRoute =
   AppCompaniesCompanyIdIndexRouteImport.update({
     id: '/_app/companies/$companyId/',
     path: '/companies/$companyId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppCompaniesCompanyIdEditRoute =
+  AppCompaniesCompanyIdEditRouteImport.update({
+    id: '/_app/companies/$companyId/edit',
+    path: '/companies/$companyId/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AppContactsContactIdEditIndexRoute =
@@ -87,7 +100,9 @@ export interface FileRoutesByFullPath {
   '/events': typeof AppEventsIndexRoute
   '/import': typeof AppImportIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/companies/$companyId/edit': typeof AppCompaniesCompanyIdEditRoute
   '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
+  '/companies/add': typeof AppCompaniesAddIndexRoute
   '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
   '/contacts/add': typeof AppContactsAddIndexRoute
   '/events/$eventId': typeof AppEventsEventIdIndexRoute
@@ -100,7 +115,9 @@ export interface FileRoutesByTo {
   '/events': typeof AppEventsIndexRoute
   '/import': typeof AppImportIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/companies/$companyId/edit': typeof AppCompaniesCompanyIdEditRoute
   '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
+  '/companies/add': typeof AppCompaniesAddIndexRoute
   '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
   '/contacts/add': typeof AppContactsAddIndexRoute
   '/events/$eventId': typeof AppEventsEventIdIndexRoute
@@ -114,7 +131,9 @@ export interface FileRoutesById {
   '/_app/events/': typeof AppEventsIndexRoute
   '/_app/import/': typeof AppImportIndexRoute
   '/_app/tasks/': typeof AppTasksIndexRoute
+  '/_app/companies/$companyId/edit': typeof AppCompaniesCompanyIdEditRoute
   '/_app/companies/$companyId/': typeof AppCompaniesCompanyIdIndexRoute
+  '/_app/companies/add/': typeof AppCompaniesAddIndexRoute
   '/_app/contacts/$contactId/': typeof AppContactsContactIdIndexRoute
   '/_app/contacts/add/': typeof AppContactsAddIndexRoute
   '/_app/events/$eventId/': typeof AppEventsEventIdIndexRoute
@@ -129,7 +148,9 @@ export interface FileRouteTypes {
     | '/events'
     | '/import'
     | '/tasks'
+    | '/companies/$companyId/edit'
     | '/companies/$companyId'
+    | '/companies/add'
     | '/contacts/$contactId'
     | '/contacts/add'
     | '/events/$eventId'
@@ -142,7 +163,9 @@ export interface FileRouteTypes {
     | '/events'
     | '/import'
     | '/tasks'
+    | '/companies/$companyId/edit'
     | '/companies/$companyId'
+    | '/companies/add'
     | '/contacts/$contactId'
     | '/contacts/add'
     | '/events/$eventId'
@@ -155,7 +178,9 @@ export interface FileRouteTypes {
     | '/_app/events/'
     | '/_app/import/'
     | '/_app/tasks/'
+    | '/_app/companies/$companyId/edit'
     | '/_app/companies/$companyId/'
+    | '/_app/companies/add/'
     | '/_app/contacts/$contactId/'
     | '/_app/contacts/add/'
     | '/_app/events/$eventId/'
@@ -169,7 +194,9 @@ export interface RootRouteChildren {
   AppEventsIndexRoute: typeof AppEventsIndexRoute
   AppImportIndexRoute: typeof AppImportIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
+  AppCompaniesCompanyIdEditRoute: typeof AppCompaniesCompanyIdEditRoute
   AppCompaniesCompanyIdIndexRoute: typeof AppCompaniesCompanyIdIndexRoute
+  AppCompaniesAddIndexRoute: typeof AppCompaniesAddIndexRoute
   AppContactsContactIdIndexRoute: typeof AppContactsContactIdIndexRoute
   AppContactsAddIndexRoute: typeof AppContactsAddIndexRoute
   AppEventsEventIdIndexRoute: typeof AppEventsEventIdIndexRoute
@@ -241,11 +268,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContactsContactIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/companies/add/': {
+      id: '/_app/companies/add/'
+      path: '/companies/add'
+      fullPath: '/companies/add'
+      preLoaderRoute: typeof AppCompaniesAddIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/companies/$companyId/': {
       id: '/_app/companies/$companyId/'
       path: '/companies/$companyId'
       fullPath: '/companies/$companyId'
       preLoaderRoute: typeof AppCompaniesCompanyIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/companies/$companyId/edit': {
+      id: '/_app/companies/$companyId/edit'
+      path: '/companies/$companyId/edit'
+      fullPath: '/companies/$companyId/edit'
+      preLoaderRoute: typeof AppCompaniesCompanyIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/contacts/$contactId/edit/': {
@@ -265,7 +306,9 @@ const rootRouteChildren: RootRouteChildren = {
   AppEventsIndexRoute: AppEventsIndexRoute,
   AppImportIndexRoute: AppImportIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
+  AppCompaniesCompanyIdEditRoute: AppCompaniesCompanyIdEditRoute,
   AppCompaniesCompanyIdIndexRoute: AppCompaniesCompanyIdIndexRoute,
+  AppCompaniesAddIndexRoute: AppCompaniesAddIndexRoute,
   AppContactsContactIdIndexRoute: AppContactsContactIdIndexRoute,
   AppContactsAddIndexRoute: AppContactsAddIndexRoute,
   AppEventsEventIdIndexRoute: AppEventsEventIdIndexRoute,

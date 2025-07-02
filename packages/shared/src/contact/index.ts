@@ -1,2 +1,2 @@
-export * from './contact.dto';
-export * from './contact.models';
+export * from './contact.response';
+export * from './contact.request';

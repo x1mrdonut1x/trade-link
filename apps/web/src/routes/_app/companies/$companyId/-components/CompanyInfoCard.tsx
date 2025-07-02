@@ -1,10 +1,9 @@
-import { Badge } from '@tradelink/ui/components/badge';
+import type { GetCompanyResponse } from '@tradelink/shared/company';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Users, MapPin, Phone, Mail, Globe } from 'lucide-react';
-import type { Company } from './types';
+import { Building2, Globe, Mail, MapPin, Phone, Users } from 'lucide-react';
 
 interface CompanyInfoCardProps {
-  company: Company;
+  company: GetCompanyResponse;
 }
 
 export function CompanyInfoCard({ company }: CompanyInfoCardProps) {
@@ -18,22 +17,17 @@ export function CompanyInfoCard({ company }: CompanyInfoCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-muted-foreground">{company.description}</p>
-        
-        <div className="flex flex-wrap gap-1">
-          {company.tags.map(tag => (
+
+        {/* <div className="flex flex-wrap gap-1">
+          {company.tags?.map(tag => (
             <Badge key={tag} variant="secondary" className="text-xs">
               {tag}
             </Badge>
           ))}
-        </div>
+        </div> */}
 
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">Industry:</span>
-              <span>{company.industry}</span>
-            </div>
             <div className="flex items-center gap-2 text-sm">
               <Users className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Size:</span>
@@ -42,15 +36,15 @@ export function CompanyInfoCard({ company }: CompanyInfoCardProps) {
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Location:</span>
-              <span>{company.location}</span>
+              <span>{company.country}</span>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <Phone className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Phone:</span>
-              <span>{company.phone}</span>
+              <span>{company.phoneNumber}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Mail className="h-4 w-4 text-muted-foreground" />

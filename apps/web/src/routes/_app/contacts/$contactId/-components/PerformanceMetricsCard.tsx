@@ -1,9 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { TrendingUp } from 'lucide-react';
-import type { ContactMetrics } from './types';
 
 interface PerformanceMetricsCardProps {
-  metrics: ContactMetrics;
+  metrics: any; // TODO replace
 }
 
 export function PerformanceMetricsCard({ metrics }: PerformanceMetricsCardProps) {

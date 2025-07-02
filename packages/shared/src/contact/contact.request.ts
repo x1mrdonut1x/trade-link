@@ -5,16 +5,15 @@ const createContactSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
-  jobTitle: z.string().optional(),
-  contactData: z.object({
-    country: z.string().optional(),
-    city: z.string().optional(),
-    address: z.string().optional(),
-    postCode: z.string().optional(),
-    phonePrefix: z.string().optional(),
-    phoneNumber: z.string().optional(),
-  }),
-  companyId: z.number().optional(),
+  jobTitle: z.string().optional().nullable(),
+  phonePrefix: z.string().optional().nullable(),
+  phoneNumber: z.string().optional().nullable(),
+  companyId: z.number().optional().nullable(),
+  // location
+  country: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  postCode: z.string().optional().nullable(),
 });
 
 const updateContactSchema = createContactSchema.partial();
@@ -26,6 +25,3 @@ export const contactSchema = {
 
 export class CreateContactRequest extends createZodDto(createContactSchema) {}
 export class UpdateContactRequest extends createZodDto(updateContactSchema) {}
-
-export type CreateContactType = z.infer<typeof createContactSchema>;
-export type UpdateContactType = z.infer<typeof updateContactSchema>;

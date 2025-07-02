@@ -1,92 +1,41 @@
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { zodValidator } from '@tanstack/zod-adapter';
 import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent } from '@tradelink/ui/components/card';
+import { useGetAllCompanies } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
-import { createFileRoute } from '@tanstack/react-router';
 import { Building2, Filter, PlusCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import z from 'zod';
 import { CompanyCard } from './-components/CompanyCard';
 
+const companiesSearchSchema = z.object({
+  search: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_app/companies/')({
+  validateSearch: zodValidator(companiesSearchSchema),
   component: Companies,
 });
 
-// Mock data - would come from API
-const mockCompanies = [
-  {
-    id: 1,
-    name: 'Grand Hotels Corporation',
-    industry: 'Luxury Hotels',
-    size: 'Large (1000+ employees)',
-    location: 'New York, NY',
-    phone: '+1 (555) 123-4567',
-    email: 'contact@grandhotels.com',
-    website: 'www.grandhotels.com',
-    agentsCount: 5,
-    eventsCount: 3,
-    lastContact: '2025-06-20',
-    tags: ['Luxury', 'Chain Hotels', 'Premium Client'],
-    customFields: [
-      { name: 'Annual Revenue', value: '$500M+' },
-      { name: 'Primary Contact', value: 'John Smith (VP Sales)' },
-      { name: 'Hotel Count', value: '250+ properties' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Boutique Hospitality Group',
-    industry: 'Boutique Hotels',
-    size: 'Medium (100-1000 employees)',
-    location: 'San Francisco, CA',
-    phone: '+1 (555) 987-6543',
-    email: 'contact@boutiquegroup.com',
-    website: 'www.boutiquegroup.com',
-    agentsCount: 8,
-    eventsCount: 2,
-    lastContact: '2025-06-18',
-    tags: ['Boutique', 'Design Hotels', 'Growing Client'],
-    customFields: [
-      { name: 'Specialization', value: 'Design & Lifestyle Hotels' },
-      { name: 'Target Market', value: 'Millennials & Gen Z' },
-      { name: 'Properties', value: '45 hotels' },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Resort & Spa International',
-    industry: 'Resort Hotels',
-    size: 'Large (1000+ employees)',
-    location: 'Miami, FL',
-    phone: '+1 (555) 456-7890',
-    email: 'sales@resortandspa.com',
-    website: 'www.resortandspa.com',
-    agentsCount: 3,
-    eventsCount: 1,
-    lastContact: '2025-06-15',
-    tags: ['Resort', 'Spa', 'Vacation'],
-    customFields: [
-      { name: 'Resort Type', value: 'All-Inclusive & Luxury Spa' },
-      { name: 'Locations', value: 'Caribbean, Mexico, Hawaii' },
-      { name: 'Average Room Rate', value: '$400+/night' },
-    ],
-  },
-];
-
 function Companies() {
-  const [companies] = useState(mockCompanies);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIndustry, setSelectedIndustry] = useState('all');
+  const { search } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const [searchQuery, setSearchQuery] = useState(search || '');
 
-  const filteredCompanies = companies.filter(company => {
-    const matchesSearch =
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.location.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate({ search: { search: searchQuery || undefined } });
+    }, 300);
 
-    const matchesIndustry = selectedIndustry === 'all' || company.industry === selectedIndustry;
+    return () => clearTimeout(timer);
+  }, [searchQuery, navigate]);
 
-    return matchesSearch && matchesIndustry;
-  });
+  const { data: companies, isLoading } = useGetAllCompanies(search);
 
-  const industries = [...new Set(companies.map(c => c.industry))];
+  const handleCompanyClick = (companyId: number) => {
+    navigate({ to: '/companies/$companyId', params: { companyId: companyId.toString() } });
+  };
 
   return (
     <>
@@ -94,51 +43,82 @@ function Companies() {
         title="Companies"
         actions={[
           {
-            label: "Filter",
+            label: 'Filter',
             icon: Filter,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Add Company",
+            label: 'Add Company',
             icon: PlusCircle,
-            variant: "default"
-          }
+            variant: 'default',
+            link: { to: '/companies/add' },
+          },
         ]}
         showSearch={true}
         searchPlaceholder="Search companies..."
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        filters={[
-          {
-            value: selectedIndustry,
-            onChange: setSelectedIndustry,
-            placeholder: "All Industries",
-            options: industries.map(industry => ({
-              value: industry,
-              label: industry
-            }))
-          }
-        ]}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredCompanies.map(company => (
-          <CompanyCard key={company.id} company={company} />
-        ))}
+      <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
+        <div>
+          {search
+            ? `${companies?.length || 0} compan${companies?.length === 1 ? 'y' : 'ies'} found`
+            : `${companies?.length || 0} total compan${(companies?.length || 0) === 1 ? 'y' : 'ies'}`}
+        </div>
+        <div className="text-xs">Click on any card to view company details</div>
       </div>
 
-      {filteredCompanies.length === 0 && (
-        <div className="text-center py-12">
-          <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">No companies found</h3>
-          <p className="text-muted-foreground mb-4">
-            {searchTerm ? 'Try adjusting your search criteria.' : 'Get started by adding your first company.'}
-          </p>
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Add Company
-          </Button>
+      {isLoading ? (
+        <div className="text-center py-8">Loading companies...</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {companies?.map((company: any) => (
+            <div key={company.id} onClick={() => handleCompanyClick(company.id)} className="cursor-pointer">
+              <CompanyCard
+                company={{
+                  id: company.id,
+                  name: company.name,
+                  industry: (company.contactData as any)?.industry || 'Not specified',
+                  size: (company.contactData as any)?.size || 'Not specified',
+                  location: (company.contactData as any)?.location || 'Not specified',
+                  phone: company.phone || 'Not provided',
+                  email: company.email || 'Not provided',
+                  website: (company.contactData as any)?.website || 'Not provided',
+                  agentsCount: company.contact?.length || 0,
+                  eventsCount: 0, // TODO: Add events relationship
+                  lastContact: 'Not recorded', // TODO: Add last contact tracking
+                  tags: company.company_type_tag?.map((tag: any) => tag.name) || [],
+                  customFields: [], // TODO: Add custom fields support
+                }}
+              />
+            </div>
+          ))}
         </div>
+      )}
+
+      {companies?.length === 0 && !isLoading && (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">{search ? 'No companies found' : 'No companies yet'}</h3>
+            <p className="text-muted-foreground mb-4">
+              {search ? `No companies match your search for "${search}".` : 'Get started by adding your first company.'}
+            </p>
+            {search ? (
+              <Button variant="outline" onClick={() => setSearchQuery('')}>
+                Clear Search
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link to="/companies/add">
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add Company
+                </Link>
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       )}
     </>
   );

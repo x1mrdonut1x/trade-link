@@ -2,10 +2,9 @@ import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar, CalendarPlus } from 'lucide-react';
-import type { Event } from './types';
 
 interface RecentEventsCardProps {
-  events: Event[];
+  events: any[];
 }
 
 export function RecentEventsCard({ events }: RecentEventsCardProps) {
@@ -29,14 +28,10 @@ export function RecentEventsCard({ events }: RecentEventsCardProps) {
                 <p className="font-medium">{event.name}</p>
                 <p className="text-sm text-muted-foreground">{event.date}</p>
               </div>
-              <Badge variant={event.status === 'Completed' ? 'default' : 'secondary'}>
-                {event.status}
-              </Badge>
+              <Badge variant={event.status === 'Completed' ? 'default' : 'secondary'}>{event.status}</Badge>
             </div>
           ))}
-          {events.length === 0 && (
-            <p className="text-muted-foreground text-center py-6">No recent events for this company.</p>
-          )}
+          {events.length === 0 && <p className="text-muted-foreground text-center py-6">No recent events for this company.</p>}
         </div>
       </CardContent>
     </Card>

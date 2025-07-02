@@ -14,7 +14,7 @@ import type {
   CreateContactRequest,
   UpdateContactRequest,
   ContactWithCompanyDto,
-  DeleteContactResponseDto,
+  DeleteContactResponse,
 } from '@tradelink/shared';
 
 @Controller('contacts')
@@ -53,7 +53,7 @@ export class ContactController {
   @Delete(':id')
   async deleteContact(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<DeleteContactResponseDto> {
+  ): Promise<DeleteContactResponse> {
     return this.contactService.deleteContact(id);
   }
 }

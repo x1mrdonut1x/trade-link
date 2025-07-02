@@ -4,9 +4,10 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { APP_PIPE } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { ContactModule } from './contact/contact.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, ContactModule],
+  imports: [ConfigModule.forRoot(), UserModule, ContactModule, CompanyModule],
   providers: [
     {
       provide: APP_PIPE,

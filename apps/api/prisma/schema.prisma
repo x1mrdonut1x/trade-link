@@ -12,10 +12,15 @@ model contact {
   id          Int      @id @unique @default(autoincrement())
   firstName   String
   lastName    String
-  email       String  @unique
-  company     company? @relation(fields: [companyId], references: [id])
-  contactData Json?
   jobTitle    String?
+  phonePrefix String?
+  phoneNumber String?
+  email       String   @unique
+  address     String?
+  city        String?
+  country     String?
+  postCode    String?
+  company     company? @relation(fields: [companyId], references: [id])
   companyId   Int?
 }
 
@@ -23,8 +28,16 @@ model company {
   id               Int                @id @unique @default(autoincrement())
   name             String
   email            String?
-  phone            String?
-  contactData      Json?
+  description      String?
+  phonePrefix      String?
+  phoneNumber      String?
+  address          String?
+  city             String?
+  country          String?
+  postCode         String?
+  size             String?
+  website          String?
+  extraInfo        Json?
   company_type_tag company_type_tag[]
   contact          contact[]
 }

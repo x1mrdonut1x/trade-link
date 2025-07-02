@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
+      "dependsOn": ["@tradelink/api#db:generate", "^build"],
       "outputs": ["dist/**"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "env": ["DATABASE_URL"]
@@ -15,12 +15,13 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build"],
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "interruptible": true
     },
     "db:generate": {
-      "cache": false
+      "cache": true
     },
     "db:migrate": {
       "cache": false,
@@ -31,6 +32,10 @@
     },
     "db:studio": {
       "cache": false
+    },
+    "build:watch": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

@@ -1,15 +1,14 @@
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Activity, Calendar, Mail, Phone, Users, Plus } from 'lucide-react';
-import type { Activity as ActivityType } from './types';
+import { Activity, Calendar, Mail, Phone, Plus, Users } from 'lucide-react';
 
 interface RecentActivitiesCardProps {
-  activities: ActivityType[];
+  activities: any[]; // TODO replace
 }
 
 export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) {
-  const getActivityIcon = (type: ActivityType['type']) => {
+  const getActivityIcon = (type: any) => {
     switch (type) {
       case 'call':
         return Phone;
@@ -24,7 +23,7 @@ export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) 
     }
   };
 
-  const getActivityColor = (type: ActivityType['type']) => {
+  const getActivityColor = (type: any) => {
     switch (type) {
       case 'call':
         return 'bg-blue-100 text-blue-800';
@@ -63,11 +62,7 @@ export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) 
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm">{activity.description}</p>
                   <p className="text-xs text-muted-foreground mt-1">{activity.date}</p>
-                  {activity.outcome && (
-                    <p className="text-xs text-green-600 mt-1 font-medium">
-                      Outcome: {activity.outcome}
-                    </p>
-                  )}
+                  {activity.outcome && <p className="text-xs text-green-600 mt-1 font-medium">Outcome: {activity.outcome}</p>}
                 </div>
                 <Badge variant="outline" className="text-xs capitalize">
                   {activity.type}
@@ -75,9 +70,7 @@ export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) 
               </div>
             );
           })}
-          {activities.length === 0 && (
-            <p className="text-muted-foreground text-center py-6">No recent activities recorded.</p>
-          )}
+          {activities.length === 0 && <p className="text-muted-foreground text-center py-6">No recent activities recorded.</p>}
         </div>
       </CardContent>
     </Card>

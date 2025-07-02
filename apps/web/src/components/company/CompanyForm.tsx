@@ -1,0 +1,86 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { companySchema, type CreateCompanyRequest, type GetCompanyResponse } from '@tradelink/shared/company';
+import { Button } from '@tradelink/ui/components/button';
+import { FormInput } from '@tradelink/ui/components/form-input';
+import { Save } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { useCreateCompany, useUpdateCompany } from '../../api/company/hooks';
+
+interface CompanyFormProps {
+  company?: GetCompanyResponse;
+  onSuccess?: (companyId: number) => void;
+  onCancel?: () => void;
+}
+
+export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) {
+  const isEdit = company?.id != null;
+
+  const createCompany = useCreateCompany({
+    onSuccess: data => onSuccess?.(data.id),
+  });
+
+  const updateCompany = useUpdateCompany({
+    onSuccess: data => onSuccess?.(data.id),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<CreateCompanyRequest>({
+    resolver: zodResolver(companySchema.create),
+    values: company,
+  });
+
+  const onSubmit = (data: CreateCompanyRequest) => {
+    if (isEdit) {
+      updateCompany.mutate({ id: company.id, data });
+    } else {
+      createCompany.mutate(data);
+      reset();
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormInput label="Email" type="email" {...register('email')} error={errors.email?.message} />
+        <FormInput label="PhoneNumber" {...register('phoneNumber')} error={errors.phoneNumber?.message} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormInput label="Website" {...register('website')} error={errors.website?.message} placeholder="https://example.com" />
+        <FormInput label="Company Size" {...register('size')} error={errors.size?.message} placeholder="e.g., 50-100 employees" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormInput label="City" {...register('city')} error={errors.city?.message} />
+        <FormInput label="Country" {...register('country')} error={errors.country?.message} />
+      </div>
+
+      <div>
+        <FormInput label="Description" {...register('description')} error={errors.description?.message}>
+          <textarea
+            className="w-full p-3 border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            rows={3}
+            placeholder="Brief description of the company..."
+            {...register('description')}
+          />
+        </FormInput>
+      </div>
+
+      <div className="flex gap-2">
+        <Button type="submit" disabled={isSubmitting || createCompany.isPending || updateCompany.isPending} className="flex-1">
+          <Save className="h-4 w-4 mr-2" />
+          {isSubmitting || createCompany.isPending || updateCompany.isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Save Company'}
+        </Button>
+        {onCancel && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+      </div>
+    </form>
+  );
+}

@@ -1,23 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, MapPin, Mail, Phone } from 'lucide-react';
 import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Building2, Mail, MapPin, Phone } from 'lucide-react';
 
 interface ContactDetailsCardProps {
   contact: ContactWithCompanyDto;
 }
 
 export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
-  // Extract contact data safely
-  const contactData = contact.contactData as {
-    country?: string;
-    city?: string;
-    address?: string;
-    postCode?: string;
-    phonePrefix?: string;
-    phoneNumber?: string;
-  } | null;
-
-  const hasAddressData = contactData?.address || contactData?.city || contactData?.country || contactData?.postCode;
+  const hasAddressData = contact?.address || contact?.city || contact?.country || contact?.postCode;
   const hasCompanyData = contact.company;
 
   if (!hasAddressData && !hasCompanyData) {
@@ -40,11 +30,9 @@ export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
               Address
             </h4>
             <div className="text-sm text-muted-foreground space-y-1">
-              {contactData?.address && <div>{contactData.address}</div>}
-              <div>
-                {[contactData?.city, contactData?.postCode].filter(Boolean).join(' ')}
-              </div>
-              {contactData?.country && <div>{contactData.country}</div>}
+              {contact?.address && <div>{contact.address}</div>}
+              <div>{[contact?.city, contact?.postCode].filter(Boolean).join(' ')}</div>
+              {contact?.country && <div>{contact.country}</div>}
             </div>
           </div>
         )}
@@ -65,10 +53,10 @@ export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
                   <span className="font-medium">Email:</span> {contact.company.email}
                 </div>
               )}
-              {contact.company.phone && (
+              {contact.company.phoneNumber && (
                 <div className="text-sm flex items-center gap-2">
                   <Phone className="h-3 w-3" />
-                  <span className="font-medium">Phone:</span> {contact.company.phone}
+                  <span className="font-medium">Phone:</span> {contact.company.phonePrefix}&nbsp;{contact.company.phoneNumber}
                 </div>
               )}
             </div>

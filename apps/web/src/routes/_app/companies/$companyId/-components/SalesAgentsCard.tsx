@@ -1,10 +1,9 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Users, UserPlus } from 'lucide-react';
-import type { Agent } from './types';
+import { UserPlus, Users } from 'lucide-react';
 
 interface SalesAgentsCardProps {
-  agents: Agent[];
+  agents: any[];
 }
 
 export function SalesAgentsCard({ agents }: SalesAgentsCardProps) {
@@ -34,9 +33,7 @@ export function SalesAgentsCard({ agents }: SalesAgentsCardProps) {
               </div>
             </div>
           ))}
-          {agents.length === 0 && (
-            <p className="text-muted-foreground text-center py-6">No sales agents assigned to this company.</p>
-          )}
+          {agents.length === 0 && <p className="text-muted-foreground text-center py-6">No sales agents assigned to this company.</p>}
         </div>
       </CardContent>
     </Card>

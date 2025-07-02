@@ -1,7 +1,7 @@
+import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Avatar, AvatarFallback } from '@tradelink/ui/components/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { User, Mail, Phone, MapPin, Building2 } from 'lucide-react';
-import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { Building2, Mail, MapPin, Phone, User } from 'lucide-react';
 
 interface ContactInfoCardProps {
   contact: ContactWithCompanyDto;
@@ -12,21 +12,10 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
 
-  // Extract contact data safely
-  const contactData = contact.contactData as {
-    country?: string;
-    city?: string;
-    address?: string;
-    postCode?: string;
-    phonePrefix?: string;
-    phoneNumber?: string;
-  } | null;
+  const fullPhone =
+    contact?.phonePrefix && contact?.phoneNumber ? `${contact.phonePrefix} ${contact.phoneNumber}` : contact?.phoneNumber || 'Not provided';
 
-  const fullPhone = contactData?.phonePrefix && contactData?.phoneNumber 
-    ? `${contactData.phonePrefix} ${contactData.phoneNumber}`
-    : contactData?.phoneNumber || 'Not provided';
-
-  const location = [contactData?.city, contactData?.country].filter(Boolean).join(', ') || 'Not provided';
+  const location = [contact?.city, contact?.country].filter(Boolean).join(', ') || 'Not provided';
   const companyName = contact.company?.name || 'No company';
 
   return (
@@ -40,12 +29,12 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
       <CardContent className="space-y-4">
         <div className="flex items-start gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarFallback className="text-lg">
-              {getInitials(contact.firstName, contact.lastName)}
-            </AvatarFallback>
+            <AvatarFallback className="text-lg">{getInitials(contact.firstName, contact.lastName)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h3 className="text-xl font-semibold">{contact.firstName} {contact.lastName}</h3>
+            <h3 className="text-xl font-semibold">
+              {contact.firstName} {contact.lastName}
+            </h3>
             {contact.jobTitle && <p className="text-muted-foreground">{contact.jobTitle}</p>}
             <p className="text-sm text-muted-foreground mt-1">{companyName}</p>
           </div>
@@ -64,7 +53,7 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
               <span>{fullPhone}</span>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-muted-foreground" />

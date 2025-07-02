@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "pnpm build --watch",
-    "build": "tsc -b -v"
+    "build": "tsc -b"
   },
   "dependencies": {
     "nestjs-zod": "^4.3.1",

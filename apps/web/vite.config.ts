@@ -13,11 +13,11 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    tsconfigPaths(),
-    tailwindcss(),
     checker({
       typescript: true,
     }),
+    tsconfigPaths(),
+    tailwindcss(),
   ],
   resolve: {
     alias: {

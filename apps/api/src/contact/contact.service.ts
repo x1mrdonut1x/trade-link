@@ -1,78 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import type { Prisma } from 'generated/prisma';
 import type {
   CreateContactRequest,
+  CreateContactResponse,
+  DeleteContactResponse,
+  GetAllContactsResponse,
+  GetContactResponse,
   UpdateContactRequest,
-  ContactWithCompanyDto,
-  DeleteContactResponseDto,
+  UpdateContactResponse,
 } from '@tradelink/shared';
-import type { Prisma } from 'generated/prisma';
 
 @Injectable()
 export class ContactService {
   constructor(private prisma: PrismaService) {}
 
-  async getContact(id: number): Promise<ContactWithCompanyDto> {
-    const contact = await this.prisma.contact.findUnique({
+  async getContact(id: number): Promise<GetContactResponse> {
+    const contact = await this.prisma.contact.findUniqueOrThrow({
       where: { id },
       include: {
         company: true,
       },
     });
-
-    if (!contact) {
-      throw new NotFoundException(`Contact with ID ${id} not found`);
-    }
 
     return contact;
   }
 
   async createContact(
     data: CreateContactRequest,
-  ): Promise<ContactWithCompanyDto> {
-    const { email, companyId, contactData, firstName, lastName, jobTitle } =
-      data;
-
+  ): Promise<CreateContactResponse> {
     const contact = await this.prisma.contact.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        jobTitle: jobTitle || null,
-        company: companyId ? { connect: { id: companyId } } : undefined,
-        contactData:
-          Object.keys(contactData).length > 0 ? contactData : undefined,
-      },
-      include: {
-        company: true,
-      },
-    });
-
-    return contact as ContactWithCompanyDto;
-  }
-
-  async updateContact(
-    id: number,
-    data: UpdateContactRequest,
-  ): Promise<ContactWithCompanyDto> {
-    const { contactData, companyId, ...rest } = data;
-
-    // Get existing contact to merge contactData
-    const existingContact = await this.prisma.contact.findUnique({
-      where: { id },
-    });
-
-    if (!existingContact) {
-      throw new NotFoundException(`Contact with ID ${id} not found`);
-    }
-
-    const contact = await this.prisma.contact.update({
-      where: { id },
-      data: {
-        ...rest,
-        ...(companyId !== undefined && { companyId: companyId }),
-        contactData: Object.assign(existingContact, contactData),
-      },
+      data,
       include: {
         company: true,
       },
@@ -81,15 +39,22 @@ export class ContactService {
     return contact;
   }
 
-  async deleteContact(id: number): Promise<DeleteContactResponseDto> {
-    const contact = await this.prisma.contact.findUnique({
+  async updateContact(
+    id: number,
+    data: UpdateContactRequest,
+  ): Promise<UpdateContactResponse> {
+    const contact = await this.prisma.contact.update({
       where: { id },
+      data,
+      include: {
+        company: true,
+      },
     });
 
-    if (!contact) {
-      throw new NotFoundException(`Contact with ID ${id} not found`);
-    }
+    return contact;
+  }
 
+  async deleteContact(id: number): Promise<DeleteContactResponse> {
     await this.prisma.contact.delete({
       where: { id },
     });
@@ -97,12 +62,13 @@ export class ContactService {
     return { success: true, message: 'Contact deleted successfully' };
   }
 
-  async getAllContacts(search?: string): Promise<ContactWithCompanyDto[]> {
+  async getAllContacts(search?: string): Promise<GetAllContactsResponse> {
     const whereClause: Prisma.contactWhereInput = search
       ? {
           OR: [
             { firstName: { contains: search, mode: 'insensitive' } },
             { lastName: { contains: search, mode: 'insensitive' } },
+            { phoneNumber: { contains: search, mode: 'insensitive' } },
             { email: { contains: search, mode: 'insensitive' } },
             { jobTitle: { contains: search, mode: 'insensitive' } },
             { company: { name: { contains: search, mode: 'insensitive' } } },
@@ -113,13 +79,20 @@ export class ContactService {
     const contacts = await this.prisma.contact.findMany({
       where: whereClause,
       include: {
-        company: true,
+        company: {
+          select: {
+            id: true,
+            name: true,
+            phoneNumber: true,
+            phonePrefix: true,
+            email: true,
+          },
+        },
       },
       orderBy: {
         firstName: 'asc',
       },
     });
-    console.log(' contacts:', contacts);
 
     return contacts;
   }

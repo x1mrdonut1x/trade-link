@@ -1,5 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Card, CardContent } from '@tradelink/ui/components/card';
+import { ArrowLeft } from '@tradelink/ui/icons';
 import { ContactForm } from 'components/contact/ContactForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 
@@ -20,7 +21,17 @@ export function AddContact() {
 
   return (
     <>
-      <PageHeader title="Add Contact" />
+      <PageHeader
+        title="Add Contact"
+        actions={[
+          {
+            label: 'Back to Contacts',
+            icon: ArrowLeft,
+            variant: 'outline',
+            link: { to: '/contacts' },
+          },
+        ]}
+      />
 
       <Card>
         <CardContent className="pt-6">
