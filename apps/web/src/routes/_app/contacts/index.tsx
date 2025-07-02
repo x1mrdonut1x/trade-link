@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteContact, useGetAllContacts } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
 import z from 'zod';
 
@@ -27,6 +28,8 @@ export const Route = createFileRoute('/_app/contacts/')({
 export function Contacts() {
   const { name } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
+
+  useBreadcrumbSetup([{ title: 'Contacts', href: '/contacts', isActive: true }]);
 
   const [searchQuery, setSearchQuery] = useState(name);
 
@@ -59,12 +62,12 @@ export function Contacts() {
     {
       title: 'Name',
       render: contact => (
-        <div>
+        <>
           <div className="font-medium">
             {contact.firstName} {contact.lastName}
           </div>
           {contact.jobTitle && <div className="text-sm text-muted-foreground">{contact.jobTitle}</div>}
-        </div>
+        </>
       ),
     },
     {

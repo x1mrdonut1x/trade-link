@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/componen
 import { useGetCompany } from 'api/company';
 import { CompanyForm } from 'components/company/CompanyForm';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { ArrowLeft, Building2, Link } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/companies/$companyId/edit')({
@@ -15,6 +16,21 @@ function EditCompany() {
   const router = useRouter();
 
   const { data: company, isLoading } = useGetCompany(companyId);
+
+  // Set up breadcrumbs
+  useBreadcrumbSetup(
+    [
+      { title: 'Companies', href: '/companies', isActive: false },
+      {
+        title: company?.name || '',
+        href: `/companies/${companyId}`,
+        isActive: false,
+        isLoading: isLoading && !company,
+      },
+      { title: 'Edit', href: `/companies/${companyId}/edit`, isActive: true },
+    ],
+    isLoading && !company
+  );
 
   const handleSuccess = (companyId: number) => {
     router.navigate({ to: '/companies/$companyId', params: { companyId: companyId.toString() } }); // Will navigate to company detail once route is available

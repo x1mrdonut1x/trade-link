@@ -4,6 +4,7 @@ import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
 import { useGetAllCompanies } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { Building2, Filter, PlusCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import z from 'zod';
@@ -22,6 +23,9 @@ function Companies() {
   const { search } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [searchQuery, setSearchQuery] = useState(search || '');
+
+  // Set up breadcrumbs
+  useBreadcrumbSetup([{ title: 'Companies', href: '/companies', isActive: true }]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

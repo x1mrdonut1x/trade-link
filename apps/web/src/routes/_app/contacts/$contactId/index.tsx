@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { useGetContact } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { ArrowLeft, Edit, Loader2, User } from 'lucide-react';
 import { ContactDetailsCard } from './-components/ContactDetailsCard';
 import { ContactInfoCard } from './-components/ContactInfoCard';
@@ -15,6 +16,21 @@ function ContactDetail() {
   const params = Route.useParams();
   const contactId = params.contactId;
   const { data: contact, isLoading, error } = useGetContact(contactId);
+
+  // Set up breadcrumbs
+  const contactName = contact ? `${contact.firstName} ${contact.lastName}` : '';
+  useBreadcrumbSetup(
+    [
+      { title: 'Contacts', href: '/contacts', isActive: false },
+      {
+        title: contactName,
+        href: `/contacts/${contactId}`,
+        isActive: true,
+        isLoading: isLoading && !contact,
+      },
+    ],
+    isLoading && !contact
+  );
 
   if (isLoading) {
     return (

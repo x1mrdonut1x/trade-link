@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { useGetCompany } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare, UserPlus } from 'lucide-react';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
@@ -16,6 +17,20 @@ function CompanyDetail() {
 
   // Try to get company from API first, fallback to mock data
   const { data: company, isLoading } = useGetCompany(companyId);
+
+  // Set up breadcrumbs
+  useBreadcrumbSetup(
+    [
+      { title: 'Companies', href: '/companies', isActive: false },
+      {
+        title: company?.name || '',
+        href: `/companies/${companyId}`,
+        isActive: true,
+        isLoading: isLoading && !company,
+      },
+    ],
+    isLoading && !company
+  );
 
   if (isLoading) {
     return <div className="text-center py-8">Loading company...</div>;

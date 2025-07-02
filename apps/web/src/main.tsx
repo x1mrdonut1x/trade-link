@@ -4,6 +4,7 @@ import 'index.css';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { AuthProvider, useAuth } from './context/auth-context';
+import { BreadcrumbProvider } from './context/breadcrumb-context';
 import { queryClient } from './lib/query-client';
 import { router } from './lib/router';
 
@@ -18,7 +19,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <InnerApp />
+        <BreadcrumbProvider>
+          <InnerApp />
+        </BreadcrumbProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
