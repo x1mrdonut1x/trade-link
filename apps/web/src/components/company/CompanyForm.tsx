@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { companySchema, type CreateCompanyRequest, type GetCompanyResponse } from '@tradelink/shared/company';
 import { Button } from '@tradelink/ui/components/button';
 import { FormInput } from '@tradelink/ui/components/form-input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useCreateCompany, useUpdateCompany } from '../../api/company/hooks';
@@ -28,6 +29,8 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
+    setValue,
   } = useForm<CreateCompanyRequest>({
     resolver: zodResolver(companySchema.create),
     values: company,
@@ -44,6 +47,10 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+        <FormInput label="Name" {...register('name')} error={errors.name?.message} />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormInput label="Email" type="email" {...register('email')} error={errors.email?.message} />
         <FormInput label="PhoneNumber" {...register('phoneNumber')} error={errors.phoneNumber?.message} />
@@ -51,7 +58,20 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormInput label="Website" {...register('website')} error={errors.website?.message} placeholder="https://example.com" />
-        <FormInput label="Company Size" {...register('size')} error={errors.size?.message} placeholder="e.g., 50-100 employees" />
+        <FormInput label="Company Size" error={errors.size?.message}>
+          <Select value={watch('size') || ''} onValueChange={value => setValue('size', value)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select company size" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1 employee</SelectItem>
+              <SelectItem value="1-5">1 - 5 employees</SelectItem>
+              <SelectItem value="5-10">5 - 10 employees</SelectItem>
+              <SelectItem value="10-100">10 - 100 employees</SelectItem>
+              <SelectItem value="100+">100+ employees</SelectItem>
+            </SelectContent>
+          </Select>
+        </FormInput>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

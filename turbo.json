@@ -36,6 +36,12 @@
     "build:watch": {
       "cache": false,
       "persistent": true
+    },
+    "build:api": {
+      "cache": false
+    },
+    "build:web": {
+      "cache": false
     }
   }
 }

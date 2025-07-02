@@ -7,7 +7,9 @@
     "dev": "turbo dev",
     "dev:ui": "pnpm --filter web dev",
     "dev:api": "pnpm --filter api dev",
-    "start:api": "pnpm --filter api start",
+    "build:web": "pnpm --filter web build",
+    "build:api": "pnpm --filter api build",
+    "db:migrate": "pnpm --filter api db:migrate",
     "ui": "pnpm --filter @tradelink/ui ui"
   },
   "devDependencies": {

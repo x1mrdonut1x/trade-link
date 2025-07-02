@@ -1,24 +1,32 @@
-import type { ContactWithCompanyDto, CreateContactType, DeleteContactResponseDto, UpdateContactType } from '@tradelink/shared/contact';
+import type {
+  CreateContactRequest,
+  CreateContactResponse,
+  DeleteContactResponse,
+  GetAllContactsResponse,
+  GetContactResponse,
+  UpdateContactRequest,
+  UpdateContactResponse,
+} from '@tradelink/shared';
 import { myFetch } from '../client';
 
 export const contactApi = {
-  getAllContacts: (search?: string): Promise<ContactWithCompanyDto[]> => {
-    return myFetch<ContactWithCompanyDto[]>('contacts', { query: { search } });
+  getAllContacts: (search?: string) => {
+    return myFetch<GetAllContactsResponse>('contacts', { query: { search } });
   },
 
   getContact: (id: number | string) => {
-    return myFetch<ContactWithCompanyDto>(`contacts/${id}`);
+    return myFetch<GetContactResponse>(`contacts/${id}`);
   },
 
-  createContact: (data: CreateContactType) => {
-    return myFetch<ContactWithCompanyDto>('contacts', { method: 'POST', body: data });
+  createContact: (data: CreateContactRequest) => {
+    return myFetch<CreateContactResponse>('contacts', { method: 'POST', body: data });
   },
 
-  updateContact: (id: number | string, data: UpdateContactType) => {
-    return myFetch<ContactWithCompanyDto>(`contacts/${id}`, { method: 'PUT', body: data });
+  updateContact: (id: number | string, data: UpdateContactRequest) => {
+    return myFetch<UpdateContactResponse>(`contacts/${id}`, { method: 'PUT', body: data });
   },
 
   deleteContact: (id: number | string) => {
-    return myFetch<DeleteContactResponseDto>(`contacts/${id}`, { method: 'DELETE' });
+    return myFetch<DeleteContactResponse>(`contacts/${id}`, { method: 'DELETE' });
   },
 };

@@ -6,8 +6,8 @@ import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { DataTable, type Column } from '@tradelink/ui/components/data-table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
-import { Ellipsis } from '@tradelink/ui/icons';
-import { useDeleteContact, useGetAllContacts } from 'api/contact';
+import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
+import { useDeleteContact, useGetAllContacts } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useEffect, useState } from 'react';
 import z from 'zod';
@@ -154,19 +154,11 @@ export function Contacts() {
         actions={[
           {
             label: 'Add New Contact',
+            icon: PlusCircle,
             link: { to: '/contacts/add' },
           },
         ]}
       />
-
-      <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
-        <div>
-          {name
-            ? `${contacts?.length || 0} contact${contacts?.length === 1 ? '' : 's'} found`
-            : `${contacts?.length || 0} total contact${(contacts?.length || 0) === 1 ? '' : 's'}`}
-        </div>
-        <div className="text-xs">Click on any row to view contact details</div>
-      </div>
 
       <Card>
         <CardHeader>

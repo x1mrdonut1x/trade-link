@@ -61,6 +61,7 @@ function CompanyDetail() {
           {
             label: 'Edit Company',
             icon: Edit,
+            link: { to: '/companies/$companyId/edit', params: { companyId } },
             variant: 'default',
           },
         ]}

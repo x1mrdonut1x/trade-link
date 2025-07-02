@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Card, CardContent } from '@tradelink/ui/components/card';
-import { useGetContact } from 'api/contact';
+import { useGetContact } from 'api/contact/hooks';
 import { ContactForm } from 'components/contact/ContactForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 

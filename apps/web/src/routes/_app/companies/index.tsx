@@ -60,15 +60,6 @@ function Companies() {
         onSearchChange={setSearchQuery}
       />
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
-        <div>
-          {search
-            ? `${companies?.length || 0} compan${companies?.length === 1 ? 'y' : 'ies'} found`
-            : `${companies?.length || 0} total compan${(companies?.length || 0) === 1 ? 'y' : 'ies'}`}
-        </div>
-        <div className="text-xs">Click on any card to view company details</div>
-      </div>
-
       {isLoading ? (
         <div className="text-center py-8">Loading companies...</div>
       ) : (
