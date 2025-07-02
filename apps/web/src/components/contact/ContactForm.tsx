@@ -9,7 +9,7 @@ import { useCreateContact, useUpdateContact } from '../../api/contact/hooks';
 
 interface ContactFormProps {
   contact?: ContactWithCompanyDto;
-  onSuccess?: () => void;
+  onSuccess?: (contactId: number) => void;
   onCancel?: () => void;
 }
 
@@ -20,8 +20,16 @@ function ErrorMessage({ message }: { message?: string }) {
 
 export function ContactForm({ contact, onSuccess, onCancel }: ContactFormProps) {
   const isEdit = !!contact;
-  const createContact = useCreateContact();
-  const updateContact = useUpdateContact();
+  const createContact = useCreateContact({
+    onSuccess: data => {
+      onSuccess?.(data.id);
+    },
+  });
+  const updateContact = useUpdateContact({
+    onSuccess: data => {
+      onSuccess?.(data.id);
+    },
+  });
 
   const {
     register,
@@ -60,17 +68,12 @@ export function ContactForm({ contact, onSuccess, onCancel }: ContactFormProps) 
     }
   }, [contact]);
 
-  const onSubmit = async (data: CreateContactType) => {
-    try {
-      if (isEdit) {
-        await updateContact.mutateAsync({ id: contact.id, data });
-      } else {
-        await createContact.mutateAsync(data);
-        reset();
-      }
-      onSuccess?.();
-    } catch (error) {
-      console.error('Failed to save contact:', error);
+  const onSubmit = (data: CreateContactType) => {
+    if (isEdit) {
+      updateContact.mutate({ id: contact.id, data });
+    } else {
+      createContact.mutate(data);
+      reset();
     }
   };
 

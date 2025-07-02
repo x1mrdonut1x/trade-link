@@ -6,14 +6,19 @@ export const contactApi = {
     return myFetch<ContactWithCompanyDto[]>('contacts', { query: { search } });
   },
 
-  getContact: (id: number | string): Promise<ContactWithCompanyDto> => myFetch<ContactWithCompanyDto>(`contacts/${id}`),
+  getContact: (id: number | string) => {
+    return myFetch<ContactWithCompanyDto>(`contacts/${id}`);
+  },
 
-  createContact: (data: CreateContactType): Promise<ContactWithCompanyDto> =>
-    myFetch<ContactWithCompanyDto>('contacts', { method: 'POST', body: data }),
+  createContact: (data: CreateContactType) => {
+    return myFetch<ContactWithCompanyDto>('contacts', { method: 'POST', body: data });
+  },
 
-  updateContact: (id: number | string, data: UpdateContactType): Promise<ContactWithCompanyDto> =>
-    myFetch<ContactWithCompanyDto>(`contacts/${id}`, { method: 'PUT', body: data }),
+  updateContact: (id: number | string, data: UpdateContactType) => {
+    return myFetch<ContactWithCompanyDto>(`contacts/${id}`, { method: 'PUT', body: data });
+  },
 
-  deleteContact: (id: number | string): Promise<DeleteContactResponseDto> =>
-    myFetch<DeleteContactResponseDto>(`contacts/${id}`, { method: 'DELETE' }),
+  deleteContact: (id: number | string) => {
+    return myFetch<DeleteContactResponseDto>(`contacts/${id}`, { method: 'DELETE' });
+  },
 };

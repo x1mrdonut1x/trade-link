@@ -41,6 +41,10 @@ export function Contacts() {
   const { data: contacts, isLoading } = useGetAllContacts(name);
   const deleteContact = useDeleteContact();
 
+  const handleRowClick = (contact: ContactWithCompanyDto) => {
+    navigate({ to: '/contacts/$contactId', params: { contactId: contact.id.toString() } });
+  };
+
   const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this contact?')) {
       try {
@@ -121,11 +125,18 @@ export function Contacts() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link to="/contacts/$contactId/edit" params={{ contactId: contact.id.toString() }}>
+              <Link onClick={e => e.stopPropagation()} to="/contacts/$contactId/edit" params={{ contactId: contact.id.toString() }}>
                 Edit Contact
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDelete(contact.id)} className="text-destructive" disabled={deleteContact.isPending}>
+            <DropdownMenuItem
+              onClick={e => {
+                e.stopPropagation();
+                handleDelete(contact.id);
+              }}
+              className="text-destructive"
+              disabled={deleteContact.isPending}
+            >
               Delete Contact
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -145,15 +156,18 @@ export function Contacts() {
         actions={[
           {
             label: 'Add New Contact',
-            to: '/contacts/add',
+            link: { to: '/contacts/add' },
           },
         ]}
       />
 
-      <div className="text-sm text-muted-foreground">
-        {name
-          ? `${contacts?.length || 0} contact${contacts?.length === 1 ? '' : 's'} found`
-          : `${contacts?.length || 0} total contact${(contacts?.length || 0) === 1 ? '' : 's'}`}
+      <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
+        <div>
+          {name
+            ? `${contacts?.length || 0} contact${contacts?.length === 1 ? '' : 's'} found`
+            : `${contacts?.length || 0} total contact${(contacts?.length || 0) === 1 ? '' : 's'}`}
+        </div>
+        <div className="text-xs">Click on any row to view contact details</div>
       </div>
 
       <Card>
@@ -166,6 +180,7 @@ export function Contacts() {
             columns={columns}
             loading={isLoading}
             skeletonRows={5}
+            onRowClick={handleRowClick}
             emptyMessage={name ? 'No contacts found' : 'No contacts yet'}
             emptyDescription={name ? `No contacts match your search for "${name}".` : 'Get started by adding your first contact.'}
             emptyAction={

@@ -1,18 +1,13 @@
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { PageHeader } from 'components/page-header/PageHeader';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Edit, 
-  UserPlus
-} from 'lucide-react';
-import { mockEvents } from './-components/mockData';
-import { EventInfoCard } from './-components/EventInfoCard';
-import { ParticipatingCompaniesCard } from './-components/ParticipatingCompaniesCard';
-import { EventSalesAgentsCard } from './-components/EventSalesAgentsCard';
-import { EventQuickStatsCard } from './-components/EventQuickStatsCard';
+import { ArrowLeft, Calendar, Edit, UserPlus } from 'lucide-react';
 import { EventAdditionalDetailsCard } from './-components/EventAdditionalDetailsCard';
+import { EventInfoCard } from './-components/EventInfoCard';
+import { EventQuickStatsCard } from './-components/EventQuickStatsCard';
+import { EventSalesAgentsCard } from './-components/EventSalesAgentsCard';
+import { mockEvents } from './-components/mockData';
+import { ParticipatingCompaniesCard } from './-components/ParticipatingCompaniesCard';
 
 export const Route = createFileRoute('/_app/events/$eventId/')({
   component: EventDetail,
@@ -43,19 +38,18 @@ function EventDetail() {
     <>
       <PageHeader
         title={event.name}
-        showBackButton={true}
         backTo="/events"
         actions={[
           {
-            label: "Add Participant",
+            label: 'Add Participant',
             icon: UserPlus,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Edit Event",
+            label: 'Edit Event',
             icon: Edit,
-            variant: "default"
-          }
+            variant: 'default',
+          },
         ]}
       />
 
@@ -69,11 +63,7 @@ function EventDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <EventQuickStatsCard
-            companiesCount={event.companiesCount}
-            agentsCount={event.agentsCount}
-            status={event.status}
-          />
+          <EventQuickStatsCard companiesCount={event.companiesCount} agentsCount={event.agentsCount} status={event.status} />
           <EventAdditionalDetailsCard customFields={event.customFields} />
         </div>
       </div>

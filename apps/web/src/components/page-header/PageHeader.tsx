@@ -1,13 +1,12 @@
-import { Link } from '@tanstack/react-router';
+import { Link, type LinkProps } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Input } from '@tradelink/ui/components/input';
 import { ArrowLeft, Search } from 'lucide-react';
 import React from 'react';
-import { type FileRoutesByTo } from 'routeTree.gen';
 
 interface HeaderAction {
   label: string;
-  to?: keyof FileRoutesByTo;
+  link?: LinkProps;
   icon?: React.ComponentType<{ className?: string }>;
   variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary';
   onClick?: () => void;
@@ -25,9 +24,7 @@ interface PageHeaderProps {
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
-  showBackButton?: boolean;
   backTo?: string;
-  backLabel?: string;
   filters?: {
     value: string;
     onChange: (value: string) => void;
@@ -43,34 +40,30 @@ export function PageHeader({
   searchPlaceholder = 'Search...',
   searchValue = '',
   onSearchChange,
-  showBackButton = false,
-  backTo = '/',
-  backLabel = 'Back',
+  backTo,
   filters = [],
 }: PageHeaderProps) {
   return (
     <>
-      {/* Back Button */}
-      {showBackButton && (
-        <div className="mb-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to={backTo}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {backLabel}
-            </Link>
-          </Button>
-        </div>
-      )}
-
       {/* Title and Actions */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight mb-3">{title}</h1>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-end justify-between gap-2 mb-3 ">
+          {backTo && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link to={backTo}>
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+            </Button>
+          )}
+          <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+        </div>
+
         {actions.length > 0 && (
           <div className="flex gap-2">
             {actions.map((action, index) => (
-              <Button key={index} variant={action.variant || 'default'} onClick={action.onClick} asChild={Boolean(action.to)}>
-                {action.to ? (
-                  <Link to={action.to}>
+              <Button key={index} variant={action.variant || 'default'} onClick={action.onClick} asChild={Boolean(action.link)}>
+                {action.link ? (
+                  <Link {...action.link}>
                     {action.icon && <action.icon className="h-4 w-4 mr-2" />}
                     {action.label}
                   </Link>

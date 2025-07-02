@@ -46,7 +46,6 @@ function CompanyDetail() {
     <>
       <PageHeader
         title={company.name}
-        showBackButton={true}
         backTo="/companies"
         actions={[
           {

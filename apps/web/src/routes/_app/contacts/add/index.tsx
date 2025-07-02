@@ -1,23 +1,21 @@
-import { createFileRoute } from '@tanstack/react-router';
-import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Card, CardContent } from '@tradelink/ui/components/card';
 import { ContactForm } from 'components/contact/ContactForm';
 import { PageHeader } from 'components/page-header/PageHeader';
-import { useState } from 'react';
 
 export const Route = createFileRoute('/_app/contacts/add/')({
   component: AddContact,
 });
 
 export function AddContact() {
-  const [editingContact, setEditingContact] = useState<ContactWithCompanyDto>();
+  const router = useRouter();
 
-  const handleSuccess = () => {
-    setEditingContact(undefined);
+  const handleSuccess = (contactId: number) => {
+    router.navigate({ to: '/contacts/$contactId', params: { contactId: contactId.toString() } });
   };
 
   const handleCancel = () => {
-    setEditingContact(undefined);
+    router.history.back();
   };
 
   return (
@@ -26,7 +24,7 @@ export function AddContact() {
 
       <Card>
         <CardContent className="pt-6">
-          <ContactForm contact={editingContact || undefined} onSuccess={handleSuccess} onCancel={handleCancel} />
+          <ContactForm onSuccess={handleSuccess} onCancel={handleCancel} />
         </CardContent>
       </Card>
     </>

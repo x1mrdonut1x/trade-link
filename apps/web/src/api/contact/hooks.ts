@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { UpdateContactType } from '@tradelink/shared/contact';
+import { useMutation, useQuery, useQueryClient, type MutationOptions } from '@tanstack/react-query';
+import type { ContactWithCompanyDto, CreateContactType, UpdateContactType } from '@tradelink/shared/contact';
 import { contactApi } from './api';
 
 const CONTACTS_QUERY_KEY = 'contacts';
@@ -19,23 +19,27 @@ export function useGetContact(id: number | string) {
   });
 }
 
-export function useCreateContact() {
+export function useCreateContact(options?: MutationOptions<ContactWithCompanyDto, Error, CreateContactType>) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: contactApi.createContact,
-    onSuccess: () => {
+    ...options,
+    onSuccess: (...args) => {
+      options?.onSuccess?.(...args);
       queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY] });
     },
   });
 }
 
-export function useUpdateContact() {
+export function useUpdateContact(options?: MutationOptions<ContactWithCompanyDto, Error, { id: number; data: UpdateContactType }>) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateContactType }) => contactApi.updateContact(id, data),
-    onSuccess: (_, variables) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
+      options?.onSuccess?.(data, variables, context);
       queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY, variables.id] });
     },
