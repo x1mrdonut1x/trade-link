@@ -4,14 +4,14 @@ import { contactApi } from './api';
 
 const CONTACTS_QUERY_KEY = 'contacts';
 
-export function useContacts() {
+export function useGetAllContacts(search?: string) {
   return useQuery({
-    queryKey: [CONTACTS_QUERY_KEY],
-    queryFn: contactApi.getAllContacts,
+    queryKey: [CONTACTS_QUERY_KEY, search],
+    queryFn: () => contactApi.getAllContacts(search),
   });
 }
 
-export function useContact(id: number) {
+export function useGetContact(id: number | string) {
   return useQuery({
     queryKey: [CONTACTS_QUERY_KEY, id],
     queryFn: () => contactApi.getContact(id),

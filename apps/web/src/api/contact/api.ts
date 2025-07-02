@@ -2,16 +2,18 @@ import type { ContactWithCompanyDto, CreateContactType, DeleteContactResponseDto
 import { myFetch } from '../client';
 
 export const contactApi = {
-  getAllContacts: (): Promise<ContactWithCompanyDto[]> => myFetch<ContactWithCompanyDto[]>('contacts'),
+  getAllContacts: (search?: string): Promise<ContactWithCompanyDto[]> => {
+    return myFetch<ContactWithCompanyDto[]>('contacts', { query: { search } });
+  },
 
-  getContact: (id: number): Promise<ContactWithCompanyDto> => myFetch<ContactWithCompanyDto>(`contacts/${id}`),
+  getContact: (id: number | string): Promise<ContactWithCompanyDto> => myFetch<ContactWithCompanyDto>(`contacts/${id}`),
 
   createContact: (data: CreateContactType): Promise<ContactWithCompanyDto> =>
     myFetch<ContactWithCompanyDto>('contacts', { method: 'POST', body: data }),
 
-  updateContact: (id: number, data: UpdateContactType): Promise<ContactWithCompanyDto> =>
+  updateContact: (id: number | string, data: UpdateContactType): Promise<ContactWithCompanyDto> =>
     myFetch<ContactWithCompanyDto>(`contacts/${id}`, { method: 'PUT', body: data }),
 
-  deleteContact: (id: number): Promise<DeleteContactResponseDto> =>
+  deleteContact: (id: number | string): Promise<DeleteContactResponseDto> =>
     myFetch<DeleteContactResponseDto>(`contacts/${id}`, { method: 'DELETE' }),
 };

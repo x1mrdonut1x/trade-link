@@ -16,8 +16,10 @@ import { Route as AppEventsIndexRouteImport } from './routes/_app/events/index'
 import { Route as AppContactsIndexRouteImport } from './routes/_app/contacts/index'
 import { Route as AppCompaniesIndexRouteImport } from './routes/_app/companies/index'
 import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app/events/$eventId/index'
+import { Route as AppContactsAddIndexRouteImport } from './routes/_app/contacts/add/index'
 import { Route as AppContactsContactIdIndexRouteImport } from './routes/_app/contacts/$contactId/index'
 import { Route as AppCompaniesCompanyIdIndexRouteImport } from './routes/_app/companies/$companyId/index'
+import { Route as AppContactsContactIdEditIndexRouteImport } from './routes/_app/contacts/$contactId/edit/index'
 
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/_app/',
@@ -54,6 +56,11 @@ const AppEventsEventIdIndexRoute = AppEventsEventIdIndexRouteImport.update({
   path: '/events/$eventId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppContactsAddIndexRoute = AppContactsAddIndexRouteImport.update({
+  id: '/_app/contacts/add/',
+  path: '/contacts/add/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppContactsContactIdIndexRoute =
   AppContactsContactIdIndexRouteImport.update({
     id: '/_app/contacts/$contactId/',
@@ -66,6 +73,12 @@ const AppCompaniesCompanyIdIndexRoute =
     path: '/companies/$companyId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppContactsContactIdEditIndexRoute =
+  AppContactsContactIdEditIndexRouteImport.update({
+    id: '/_app/contacts/$contactId/edit/',
+    path: '/contacts/$contactId/edit/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -76,7 +89,9 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AppTasksIndexRoute
   '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
   '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
+  '/contacts/add': typeof AppContactsAddIndexRoute
   '/events/$eventId': typeof AppEventsEventIdIndexRoute
+  '/contacts/$contactId/edit': typeof AppContactsContactIdEditIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
@@ -87,7 +102,9 @@ export interface FileRoutesByTo {
   '/tasks': typeof AppTasksIndexRoute
   '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
   '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
+  '/contacts/add': typeof AppContactsAddIndexRoute
   '/events/$eventId': typeof AppEventsEventIdIndexRoute
+  '/contacts/$contactId/edit': typeof AppContactsContactIdEditIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,7 +116,9 @@ export interface FileRoutesById {
   '/_app/tasks/': typeof AppTasksIndexRoute
   '/_app/companies/$companyId/': typeof AppCompaniesCompanyIdIndexRoute
   '/_app/contacts/$contactId/': typeof AppContactsContactIdIndexRoute
+  '/_app/contacts/add/': typeof AppContactsAddIndexRoute
   '/_app/events/$eventId/': typeof AppEventsEventIdIndexRoute
+  '/_app/contacts/$contactId/edit/': typeof AppContactsContactIdEditIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,7 +131,9 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/companies/$companyId'
     | '/contacts/$contactId'
+    | '/contacts/add'
     | '/events/$eventId'
+    | '/contacts/$contactId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -123,7 +144,9 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/companies/$companyId'
     | '/contacts/$contactId'
+    | '/contacts/add'
     | '/events/$eventId'
+    | '/contacts/$contactId/edit'
   id:
     | '__root__'
     | '/_app/'
@@ -134,7 +157,9 @@ export interface FileRouteTypes {
     | '/_app/tasks/'
     | '/_app/companies/$companyId/'
     | '/_app/contacts/$contactId/'
+    | '/_app/contacts/add/'
     | '/_app/events/$eventId/'
+    | '/_app/contacts/$contactId/edit/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -146,7 +171,9 @@ export interface RootRouteChildren {
   AppTasksIndexRoute: typeof AppTasksIndexRoute
   AppCompaniesCompanyIdIndexRoute: typeof AppCompaniesCompanyIdIndexRoute
   AppContactsContactIdIndexRoute: typeof AppContactsContactIdIndexRoute
+  AppContactsAddIndexRoute: typeof AppContactsAddIndexRoute
   AppEventsEventIdIndexRoute: typeof AppEventsEventIdIndexRoute
+  AppContactsContactIdEditIndexRoute: typeof AppContactsContactIdEditIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -200,6 +227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEventsEventIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/contacts/add/': {
+      id: '/_app/contacts/add/'
+      path: '/contacts/add'
+      fullPath: '/contacts/add'
+      preLoaderRoute: typeof AppContactsAddIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/contacts/$contactId/': {
       id: '/_app/contacts/$contactId/'
       path: '/contacts/$contactId'
@@ -214,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompaniesCompanyIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/contacts/$contactId/edit/': {
+      id: '/_app/contacts/$contactId/edit/'
+      path: '/contacts/$contactId/edit'
+      fullPath: '/contacts/$contactId/edit'
+      preLoaderRoute: typeof AppContactsContactIdEditIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -226,7 +267,9 @@ const rootRouteChildren: RootRouteChildren = {
   AppTasksIndexRoute: AppTasksIndexRoute,
   AppCompaniesCompanyIdIndexRoute: AppCompaniesCompanyIdIndexRoute,
   AppContactsContactIdIndexRoute: AppContactsContactIdIndexRoute,
+  AppContactsAddIndexRoute: AppContactsAddIndexRoute,
   AppEventsEventIdIndexRoute: AppEventsEventIdIndexRoute,
+  AppContactsContactIdEditIndexRoute: AppContactsContactIdEditIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,11 +1,13 @@
+import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Input } from '@tradelink/ui/components/input';
 import { ArrowLeft, Search } from 'lucide-react';
 import React from 'react';
-import { Link } from '@tanstack/react-router';
+import { type FileRoutesByTo } from 'routeTree.gen';
 
 interface HeaderAction {
   label: string;
+  to?: keyof FileRoutesByTo;
   icon?: React.ComponentType<{ className?: string }>;
   variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary';
   onClick?: () => void;
@@ -66,9 +68,18 @@ export function PageHeader({
         {actions.length > 0 && (
           <div className="flex gap-2">
             {actions.map((action, index) => (
-              <Button key={index} variant={action.variant || 'default'} onClick={action.onClick}>
-                {action.icon && <action.icon className="h-4 w-4 mr-2" />}
-                {action.label}
+              <Button key={index} variant={action.variant || 'default'} onClick={action.onClick} asChild={Boolean(action.to)}>
+                {action.to ? (
+                  <Link to={action.to}>
+                    {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+                    {action.label}
+                  </Link>
+                ) : (
+                  <>
+                    {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+                    {action.label}
+                  </>
+                )}
               </Button>
             ))}
           </div>

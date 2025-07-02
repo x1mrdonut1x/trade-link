@@ -7,8 +7,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
-  ValidationPipe,
-  UsePipes,
+  Query,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import type {
@@ -19,13 +18,14 @@ import type {
 } from '@tradelink/shared';
 
 @Controller('contacts')
-@UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Get()
-  async getAllContacts(): Promise<ContactWithCompanyDto[]> {
-    return this.contactService.getAllContacts();
+  async getAllContacts(
+    @Query('search') search?: string,
+  ): Promise<ContactWithCompanyDto[]> {
+    return this.contactService.getAllContacts(search);
   }
 
   @Get(':id')

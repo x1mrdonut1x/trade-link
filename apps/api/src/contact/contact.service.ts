@@ -6,6 +6,7 @@ import type {
   ContactWithCompanyDto,
   DeleteContactResponseDto,
 } from '@tradelink/shared';
+import type { Prisma } from 'generated/prisma';
 
 @Injectable()
 export class ContactService {
@@ -96,8 +97,21 @@ export class ContactService {
     return { success: true, message: 'Contact deleted successfully' };
   }
 
-  async getAllContacts(): Promise<ContactWithCompanyDto[]> {
+  async getAllContacts(search?: string): Promise<ContactWithCompanyDto[]> {
+    const whereClause: Prisma.contactWhereInput = search
+      ? {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' } },
+            { lastName: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+            { jobTitle: { contains: search, mode: 'insensitive' } },
+            { company: { name: { contains: search, mode: 'insensitive' } } },
+          ],
+        }
+      : {};
+
     const contacts = await this.prisma.contact.findMany({
+      where: whereClause,
       include: {
         company: true,
       },
@@ -105,6 +119,7 @@ export class ContactService {
         firstName: 'asc',
       },
     });
+    console.log(' contacts:', contacts);
 
     return contacts;
   }

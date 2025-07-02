@@ -1,10 +1,183 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { ContactList } from 'components/contact/ContactList';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { zodValidator } from '@tanstack/zod-adapter';
+import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { DataTable, type Column } from '@tradelink/ui/components/data-table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import { Ellipsis } from '@tradelink/ui/icons';
+import { useDeleteContact, useGetAllContacts } from 'api/contact';
+import { PageHeader } from 'components/page-header/PageHeader';
+import { useEffect, useState } from 'react';
+import z from 'zod';
+
+const contactsSearchSchema = z.object({
+  page: z.number().optional(),
+  name: z.string().optional(),
+  sort: z.enum(['name', 'createdAt']).default('createdAt'),
+  order: z.enum(['desc', 'asc']).default('desc'),
+});
 
 export const Route = createFileRoute('/_app/contacts/')({
+  validateSearch: zodValidator(contactsSearchSchema),
   component: Contacts,
 });
 
-function Contacts() {
-  return <ContactList />;
+export function Contacts() {
+  const { name } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const [searchQuery, setSearchQuery] = useState(name);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate({ search: { name: searchQuery } });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const { data: contacts, isLoading } = useGetAllContacts(name);
+  const deleteContact = useDeleteContact();
+
+  const handleDelete = async (id: number) => {
+    if (confirm('Are you sure you want to delete this contact?')) {
+      try {
+        await deleteContact.mutateAsync(id);
+      } catch (error) {
+        console.error('Failed to delete contact:', error);
+      }
+    }
+  };
+
+  const columns: Column<ContactWithCompanyDto>[] = [
+    {
+      title: 'Name',
+      render: contact => (
+        <div>
+          <div className="font-medium">
+            {contact.firstName} {contact.lastName}
+          </div>
+          {contact.jobTitle && <div className="text-sm text-muted-foreground">{contact.jobTitle}</div>}
+        </div>
+      ),
+    },
+    {
+      title: 'Email',
+      render: contact =>
+        contact.email ? (
+          <a href={`mailto:${contact.email}`} className="text-blue-600 hover:underline">
+            {contact.email}
+          </a>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        ),
+    },
+    {
+      title: 'Company',
+      render: contact =>
+        contact.company?.name ? (
+          <Badge variant="secondary">{contact.company.name}</Badge>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        ),
+    },
+    {
+      title: 'Phone',
+      render: contact => {
+        const phoneData = contact.contactData as any;
+        return phoneData?.phoneNumber ? (
+          <a href={`tel:${phoneData?.phonePrefix}${phoneData?.phoneNumber}`} className="text-blue-600 hover:underline">
+            {phoneData?.phonePrefix} {phoneData?.phoneNumber}
+          </a>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+    },
+    {
+      title: 'Location',
+      render: contact => {
+        const locationData = contact.contactData as any;
+        return locationData?.city && locationData?.country ? (
+          <div className="text-sm">
+            {locationData?.city}, {locationData?.country}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+    },
+    {
+      title: 'Actions',
+      align: 'right',
+      render: contact => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link to="/contacts/$contactId/edit" params={{ contactId: contact.id.toString() }}>
+                Edit Contact
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDelete(contact.id)} className="text-destructive" disabled={deleteContact.isPending}>
+              Delete Contact
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <PageHeader
+        title="Contacts"
+        showSearch
+        searchPlaceholder="Search by name, email, company, or job title..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        actions={[
+          {
+            label: 'Add New Contact',
+            to: '/contacts/add',
+          },
+        ]}
+      />
+
+      <div className="text-sm text-muted-foreground">
+        {name
+          ? `${contacts?.length || 0} contact${contacts?.length === 1 ? '' : 's'} found`
+          : `${contacts?.length || 0} total contact${(contacts?.length || 0) === 1 ? '' : 's'}`}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{name ? `Search Results` : 'All Contacts'}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            data={contacts || []}
+            columns={columns}
+            loading={isLoading}
+            skeletonRows={5}
+            emptyMessage={name ? 'No contacts found' : 'No contacts yet'}
+            emptyDescription={name ? `No contacts match your search for "${name}".` : 'Get started by adding your first contact.'}
+            emptyAction={
+              name ? (
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              ) : undefined
+            }
+          />
+        </CardContent>
+      </Card>
+    </>
+  );
 }
