@@ -6,7 +6,7 @@
       "dependsOn": ["@tradelink/api#db:generate", "^build"],
       "outputs": ["dist/**"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "env": ["DATABASE_URL"]
+      "env": ["DATABASE_URL", "ALLOWED_ORIGINS"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -35,8 +35,9 @@
       "cache": false
     },
     "build:api": {
-      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/api#db:deploy", "@tradelink/shared#build", "@tradelink/api#build"],
-      "cache": false
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build", "@tradelink/api#build"],
+      "cache": false,
+      "env": ["DATABASE_URL", "ALLOWED_ORIGINS"]
     },
     "start:api": {
       "cache": false
