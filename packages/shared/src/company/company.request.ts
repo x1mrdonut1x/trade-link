@@ -1,7 +1,8 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { paginationSchema } from '../common';
 
-const createCompanySchema = z.object({
+const createCompanyRequestSchema = z.object({
   name: z.string().min(1, 'Company name is required'),
   email: z.string().email('Please enter a valid email').optional().nullable(),
   phonePrefix: z.string().optional().nullable(),
@@ -16,24 +17,20 @@ const createCompanySchema = z.object({
   postCode: z.string().optional().nullable(),
   //extra
   tags: z.array(z.string()).optional().nullable(),
-  // extraInfo: z
-  //   .object({
-  //     website: z.string().url('Please enter a valid URL').optional().nullable(),
-  //     industry: z.string().optional().nullable(),
-  //     size: z.string().optional().nullable(),
-  //     foundedYear: z.number().optional().nullable(),
-  //     revenue: z.string().optional().nullable(),
-  //   })
-  //   .optional()
-  //   .nullable(),
 });
 
-const updateCompanySchema = createCompanySchema.partial();
+const updateCompanySchema = createCompanyRequestSchema.partial();
 
 export const companySchema = {
-  create: createCompanySchema,
+  create: createCompanyRequestSchema,
   update: updateCompanySchema,
 };
 
-export class CreateCompanyRequest extends createZodDto(createCompanySchema) {}
+export class CreateCompanyRequest extends createZodDto(createCompanyRequestSchema) {}
 export class UpdateCompanyRequest extends createZodDto(updateCompanySchema) {}
+
+export const getAllCompaniesQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+});
+
+export class GetAllCompaniesQuery extends createZodDto(getAllCompaniesQuerySchema) {}

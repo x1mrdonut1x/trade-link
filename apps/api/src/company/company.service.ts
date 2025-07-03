@@ -5,6 +5,7 @@ import type {
   CreateCompanyRequest,
   CreateCompanyResponse,
   DeleteCompanyResponse,
+  GetAllCompaniesQuery,
   GetAllCompaniesResponse,
   GetCompanyResponse,
   UpdateCompanyRequest,
@@ -69,7 +70,10 @@ export class CompanyService {
     return { success: true, message: 'Company deleted successfully' };
   }
 
-  async getAllCompanies(search?: string): Promise<GetAllCompaniesResponse> {
+  async getAllCompanies(
+    query: GetAllCompaniesQuery,
+  ): Promise<GetAllCompaniesResponse> {
+    const { search, page, size } = query;
     const whereClause: Prisma.companyWhereInput = search
       ? {
           OR: [
@@ -83,6 +87,8 @@ export class CompanyService {
     const companies = await this.prisma.company.findMany({
       where: whereClause,
       include: { contact: { select: { id: true } } },
+      take: size,
+      skip: (page - 1) * size,
     });
 
     return companies.map((company) => ({

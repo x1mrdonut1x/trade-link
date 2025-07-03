@@ -16,6 +16,7 @@ import type {
   ContactWithCompanyDto,
   DeleteContactResponse,
 } from '@tradelink/shared';
+import { GetAllContactsQuery } from '@tradelink/shared';
 
 @Controller('contacts')
 export class ContactController {
@@ -23,9 +24,9 @@ export class ContactController {
 
   @Get()
   async getAllContacts(
-    @Query('search') search?: string,
+    @Query() query: GetAllContactsQuery,
   ): Promise<ContactWithCompanyDto[]> {
-    return this.contactService.getAllContacts(search);
+    return this.contactService.getAllContacts(query);
   }
 
   @Get(':id')

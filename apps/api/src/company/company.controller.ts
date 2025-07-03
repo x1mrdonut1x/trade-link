@@ -18,6 +18,7 @@ import type {
   GetCompanyResponse,
   DeleteCompanyResponse,
 } from '@tradelink/shared';
+import { GetAllCompaniesQuery } from '@tradelink/shared';
 
 @Controller('companies')
 export class CompanyController {
@@ -25,9 +26,9 @@ export class CompanyController {
 
   @Get()
   async getAllCompanies(
-    @Query('search') search?: string,
+    @Query() query: GetAllCompaniesQuery,
   ): Promise<GetAllCompaniesResponse> {
-    return this.companyService.getAllCompanies(search);
+    return this.companyService.getAllCompanies(query);
   }
 
   @Get(':id')

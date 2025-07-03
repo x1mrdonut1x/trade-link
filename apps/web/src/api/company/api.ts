@@ -2,6 +2,7 @@ import type {
   CreateCompanyRequest,
   CreateCompanyResponse,
   DeleteCompanyResponse,
+  GetAllCompaniesQuery,
   GetAllCompaniesResponse,
   GetCompanyResponse,
   UpdateCompanyRequest,
@@ -10,8 +11,8 @@ import type {
 import { myFetch } from '../client';
 
 export const companyApi = {
-  getAll: (search?: string) => {
-    return myFetch<GetAllCompaniesResponse>('companies', { query: search ? { search } : undefined });
+  getAll: (query: Partial<GetAllCompaniesQuery>) => {
+    return myFetch<GetAllCompaniesResponse>('companies', { query });
   },
 
   getById: (id: number) => {

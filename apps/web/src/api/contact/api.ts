@@ -2,6 +2,7 @@ import type {
   CreateContactRequest,
   CreateContactResponse,
   DeleteContactResponse,
+  GetAllContactsQuery,
   GetAllContactsResponse,
   GetContactResponse,
   UpdateContactRequest,
@@ -10,8 +11,8 @@ import type {
 import { myFetch } from '../client';
 
 export const contactApi = {
-  getAllContacts: (search?: string) => {
-    return myFetch<GetAllContactsResponse>('contacts', { query: { search } });
+  getAllContacts: (query: Partial<GetAllContactsQuery>) => {
+    return myFetch<GetAllContactsResponse>('contacts', { query });
   },
 
   getContact: (id: number | string) => {

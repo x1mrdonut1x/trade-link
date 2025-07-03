@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { paginationSchema } from '../common';
 
 const createContactSchema = z.object({
   firstName: z.string(),
@@ -25,3 +26,9 @@ export const contactSchema = {
 
 export class CreateContactRequest extends createZodDto(createContactSchema) {}
 export class UpdateContactRequest extends createZodDto(updateContactSchema) {}
+
+export const getAllContactsQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+});
+
+export class GetAllContactsQuery extends createZodDto(getAllContactsQuerySchema) {}

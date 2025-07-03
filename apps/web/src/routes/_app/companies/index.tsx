@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
+import { getAllCompaniesQuerySchema } from '@tradelink/shared/company';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
 import { useGetAllCompanies } from 'api/company';
@@ -7,39 +8,29 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { Building2, Filter, PlusCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import z from 'zod';
 import { CompanyCard } from './-components/CompanyCard';
 
-const companiesSearchSchema = z.object({
-  search: z.string().optional(),
-});
-
 export const Route = createFileRoute('/_app/companies/')({
-  validateSearch: zodValidator(companiesSearchSchema),
+  validateSearch: zodValidator(getAllCompaniesQuerySchema),
   component: Companies,
 });
 
 function Companies() {
-  const { search } = Route.useSearch();
+  const { search, page, size } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [searchQuery, setSearchQuery] = useState(search || '');
 
-  // Set up breadcrumbs
   useBreadcrumbSetup([{ title: 'Companies', href: '/companies', isActive: true }]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate({ search: { search: searchQuery || undefined } });
+      navigate({ search: { search: searchQuery, page, size } });
     }, 300);
 
     return () => clearTimeout(timer);
   }, [searchQuery, navigate]);
 
-  const { data: companies, isLoading } = useGetAllCompanies(search);
-
-  const handleCompanyClick = (companyId: number) => {
-    navigate({ to: '/companies/$companyId', params: { companyId: companyId.toString() } });
-  };
+  const { data: companies, isLoading } = useGetAllCompanies({ search, page, size });
 
   return (
     <>
@@ -69,14 +60,13 @@ function Companies() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {companies?.map(company => (
-            <div key={company.id} onClick={() => handleCompanyClick(company.id)} className="cursor-pointer">
-              <CompanyCard
-                company={{
-                  ...company,
-                  contactsCount: company.contacts || 0,
-                }}
-              />
-            </div>
+            <CompanyCard
+              key={company.id}
+              company={{
+                ...company,
+                contactsCount: company.contacts || 0,
+              }}
+            />
           ))}
         </div>
       )}

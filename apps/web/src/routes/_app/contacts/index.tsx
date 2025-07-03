@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
-import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { getAllContactsQuerySchema, type ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
@@ -11,37 +11,29 @@ import { useDeleteContact, useGetAllContacts } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
-import z from 'zod';
-
-const contactsSearchSchema = z.object({
-  page: z.number().optional(),
-  name: z.string().optional(),
-  sort: z.enum(['name', 'createdAt']).default('createdAt'),
-  order: z.enum(['desc', 'asc']).default('desc'),
-});
 
 export const Route = createFileRoute('/_app/contacts/')({
-  validateSearch: zodValidator(contactsSearchSchema),
+  validateSearch: zodValidator(getAllContactsQuerySchema),
   component: Contacts,
 });
 
 export function Contacts() {
-  const { name } = Route.useSearch();
+  const { search, page, size } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
   useBreadcrumbSetup([{ title: 'Contacts', href: '/contacts', isActive: true }]);
 
-  const [searchQuery, setSearchQuery] = useState(name);
+  const [searchQuery, setSearchQuery] = useState(search);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate({ search: { name: searchQuery } });
+      navigate({ search: { search: searchQuery, page, size } });
     }, 300);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: contacts, isLoading } = useGetAllContacts(name);
+  const { data: contacts, isLoading } = useGetAllContacts({ search, page, size });
   const deleteContact = useDeleteContact();
 
   const handleRowClick = (contact: ContactWithCompanyDto) => {
@@ -172,10 +164,10 @@ export function Contacts() {
             loading={isLoading}
             skeletonRows={5}
             onRowClick={handleRowClick}
-            emptyMessage={name ? 'No contacts found' : 'No contacts yet'}
-            emptyDescription={name ? `No contacts match your search for "${name}".` : 'Get started by adding your first contact.'}
+            emptyMessage={search ? 'No contacts found' : 'No contacts yet'}
+            emptyDescription={search ? `No contacts match your search for "${search}".` : 'Get started by adding your first contact.'}
             emptyAction={
-              name ? (
+              search ? (
                 <Button variant="outline" onClick={() => setSearchQuery('')}>
                   Clear Search
                 </Button>

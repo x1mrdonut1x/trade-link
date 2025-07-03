@@ -1,4 +1,3 @@
-import type { CompanyDto } from '@tradelink/shared';
 import { Combobox, type ComboboxOption } from '@tradelink/ui/components/combobox';
 import { useEffect, useMemo, useState } from 'react';
 import { useGetAllCompanies } from '../../api/company/hooks';
@@ -27,11 +26,9 @@ export function CompanySelector({
   triggerClassName,
   contentClassName,
 }: CompanySelectorProps) {
-  // State for search input with debouncing
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-  // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -40,16 +37,16 @@ export function CompanySelector({
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Fetch all companies from API with search
-  const { data: companies = [], isLoading } = useGetAllCompanies(debouncedSearchTerm);
+  const { data: companies = [], isLoading } = useGetAllCompanies({ search: debouncedSearchTerm });
 
-  // Convert companies to combobox options
-  const companyOptions: ComboboxOption[] = useMemo(() => {
-    return companies.map((company: CompanyDto) => ({
-      value: company.id.toString(),
-      label: `${company.name}${company.city ? ` - ${company.city}` : ''}${company.country ? `, ${company.country}` : ''}`,
-    }));
-  }, [companies]);
+  const companyOptions: ComboboxOption[] = useMemo(
+    () =>
+      companies.map(company => ({
+        value: company.id.toString(),
+        label: `${company.name}${company.city ? ` - ${company.city}` : ''}${company.country ? `, ${company.country}` : ''}`,
+      })),
+    [companies]
+  );
 
   const handleChange = (selectedValue: string) => {
     setSearchTerm('');

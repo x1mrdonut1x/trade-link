@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { Prisma } from 'generated/prisma';
 import type {
   CreateContactRequest,
   CreateContactResponse,
   DeleteContactResponse,
+  GetAllContactsQuery,
   GetAllContactsResponse,
   GetContactResponse,
   UpdateContactRequest,
@@ -62,8 +63,12 @@ export class ContactService {
     return { success: true, message: 'Contact deleted successfully' };
   }
 
-  async getAllContacts(search?: string): Promise<GetAllContactsResponse> {
-    const whereClause: Prisma.contactWhereInput = search
+  async getAllContacts(
+    query: GetAllContactsQuery,
+  ): Promise<GetAllContactsResponse> {
+    const { search, page, size } = query;
+
+    const whereClause: Prisma.contactWhereInput = query?.search
       ? {
           OR: [
             { firstName: { contains: search, mode: 'insensitive' } },
@@ -89,6 +94,8 @@ export class ContactService {
           },
         },
       },
+      take: size,
+      skip: (page - 1) * size,
       orderBy: {
         firstName: 'asc',
       },

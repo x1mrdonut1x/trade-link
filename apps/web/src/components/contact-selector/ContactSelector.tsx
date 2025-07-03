@@ -1,4 +1,3 @@
-import type { ContactWithCompanyDto } from '@tradelink/shared';
 import { Combobox, type ComboboxOption } from '@tradelink/ui/components/combobox';
 import { useEffect, useMemo, useState } from 'react';
 import { useGetAllContacts } from '../../api/contact/hooks';
@@ -28,12 +27,9 @@ export function ContactSelector({
   contentClassName,
   excludeCompanyId,
 }: ContactSelectorProps) {
-  // State for search input with debouncing
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  console.log(' debouncedSearchTerm:', debouncedSearchTerm);
+  const [searchTerm, setSearchTerm] = useState<string>();
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>();
 
-  // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -42,10 +38,8 @@ export function ContactSelector({
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Fetch all contacts from API with search
-  const { data: contacts = [], isLoading } = useGetAllContacts(debouncedSearchTerm);
+  const { data: contacts = [], isLoading } = useGetAllContacts({ search: debouncedSearchTerm });
 
-  // Filter contacts based on props
   const filteredContacts = useMemo(() => {
     let filtered = contacts;
 
@@ -57,13 +51,14 @@ export function ContactSelector({
     return filtered;
   }, [contacts, excludeCompanyId]);
 
-  // Convert contacts to combobox options
-  const contactOptions: ComboboxOption[] = useMemo(() => {
-    return filteredContacts.map((contact: ContactWithCompanyDto) => ({
-      value: contact.id.toString(),
-      label: `${contact.firstName} ${contact.lastName}${contact.email ? ` (${contact.email})` : ''}${contact.company ? ` - ${contact.company.name}` : ''}`,
-    }));
-  }, [filteredContacts]);
+  const contactOptions: ComboboxOption[] = useMemo(
+    () =>
+      filteredContacts.map(contact => ({
+        value: contact.id.toString(),
+        label: `${contact.firstName} ${contact.lastName}${contact.email ? ` (${contact.email})` : ''}${contact.company ? ` - ${contact.company.name}` : ''}`,
+      })),
+    [filteredContacts]
+  );
 
   const handleChange = (selectedValue: string) => {
     setSearchTerm('');
