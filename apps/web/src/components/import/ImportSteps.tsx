@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { CheckCircle } from '@tradelink/ui/icons';
+
 import type { ImportStep } from './types';
 
 interface ImportStepsProps {
@@ -20,14 +21,14 @@ export function ImportSteps({ steps }: ImportStepsProps) {
               className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${
                 step.active
                   ? 'bg-blue-50 border border-blue-200'
-                  : step.completed
+                  : (step.completed
                     ? 'bg-green-50 border border-green-200'
-                    : 'bg-gray-50 border border-gray-200'
+                    : 'bg-gray-50 border border-gray-200')
               }`}
             >
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                  step.completed ? 'bg-green-500 text-white' : step.active ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'
+                  step.completed ? 'bg-green-500 text-white' : (step.active ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600')
                 }`}
               >
                 {step.completed ? <CheckCircle className="h-4 w-4" /> : step.id}

@@ -11,8 +11,9 @@ import {
   UsePipes,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from './user.service';
 import { CreateUserRequest, UpdateUserRequest } from '@tradelink/shared';
+
+import { UserService } from './user.service';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('users')

@@ -35,47 +35,102 @@ function ImportDataPage() {
   const [importStats, setImportStats] = useState<any>(null);
 
   const importSteps: ImportStep[] = [
-    { id: 1, title: 'Upload File', description: 'Select your CSV file', completed: currentStep > 1, active: currentStep === 1 },
-    { id: 2, title: 'Map Fields', description: 'Match your columns to our fields', completed: currentStep > 2, active: currentStep === 2 },
-    { id: 3, title: 'Review Data', description: 'Preview and validate your data', completed: currentStep > 3, active: currentStep === 3 },
-    { id: 4, title: 'Import', description: 'Import your data into the system', completed: importComplete, active: currentStep === 4 },
+    {
+      id: 1,
+      title: 'Upload File',
+      description: 'Select your CSV file',
+      completed: currentStep > 1,
+      active: currentStep === 1,
+    },
+    {
+      id: 2,
+      title: 'Map Fields',
+      description: 'Match your columns to our fields',
+      completed: currentStep > 2,
+      active: currentStep === 2,
+    },
+    {
+      id: 3,
+      title: 'Review Data',
+      description: 'Preview and validate your data',
+      completed: currentStep > 3,
+      active: currentStep === 3,
+    },
+    {
+      id: 4,
+      title: 'Import',
+      description: 'Import your data into the system',
+      completed: importComplete,
+      active: currentStep === 4,
+    },
   ];
+
+  const createAutoMappings = (columns: CsvColumn[], importType: ImportType): FieldMapping[] => {
+    const autoMappings: FieldMapping[] = [];
+
+    for (const column of columns) {
+      const columnName = column.name.toLowerCase().trim();
+
+      // Auto-map common field names
+      if (columnName.includes('first') && columnName.includes('name')) {
+        autoMappings.push({ csvColumn: column.name, targetField: 'firstName' });
+      } else if (columnName.includes('last') && columnName.includes('name')) {
+        autoMappings.push({ csvColumn: column.name, targetField: 'lastName' });
+      } else
+        switch (columnName) {
+          case 'email': {
+            autoMappings.push({ csvColumn: column.name, targetField: 'email' });
+
+            break;
+          }
+          case 'company':
+          case 'company name': {
+            autoMappings.push({
+              csvColumn: column.name,
+              targetField: importType === 'contacts' ? 'companyName' : 'name',
+            });
+
+            break;
+          }
+          case 'phone': {
+            autoMappings.push({ csvColumn: column.name, targetField: 'phoneNumber' });
+
+            break;
+          }
+          case 'city': {
+            autoMappings.push({ csvColumn: column.name, targetField: 'city' });
+
+            break;
+          }
+          case 'country': {
+            autoMappings.push({ csvColumn: column.name, targetField: 'country' });
+
+            break;
+          }
+          // No default
+        }
+    }
+
+    return autoMappings;
+  };
 
   const handleFileSelect = async (file: File) => {
     setSelectedFile(file);
     setError(null);
 
+    let columns: any[] = [];
+
     try {
-      const columns = await parseCSV(file);
-      setCsvColumns(columns);
-
-      // Auto-map some common fields
-      const autoMappings: FieldMapping[] = [];
-      columns.forEach(column => {
-        const columnName = column.name.toLowerCase().trim();
-
-        // Auto-map common field names
-        if (columnName.includes('first') && columnName.includes('name')) {
-          autoMappings.push({ csvColumn: column.name, targetField: 'firstName' });
-        } else if (columnName.includes('last') && columnName.includes('name')) {
-          autoMappings.push({ csvColumn: column.name, targetField: 'lastName' });
-        } else if (columnName === 'email') {
-          autoMappings.push({ csvColumn: column.name, targetField: 'email' });
-        } else if (columnName === 'company' || columnName === 'company name') {
-          autoMappings.push({ csvColumn: column.name, targetField: importType === 'contacts' ? 'companyName' : 'name' });
-        } else if (columnName === 'phone') {
-          autoMappings.push({ csvColumn: column.name, targetField: 'phoneNumber' });
-        } else if (columnName === 'city') {
-          autoMappings.push({ csvColumn: column.name, targetField: 'city' });
-        } else if (columnName === 'country') {
-          autoMappings.push({ csvColumn: column.name, targetField: 'country' });
-        }
-      });
-
-      setFieldMappings(autoMappings);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to parse CSV file');
+      columns = await parseCSV(file);
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to parse CSV file');
     }
+
+    setCsvColumns(columns);
+
+    // Auto-map some common fields
+    const autoMappings = createAutoMappings(columns, importType);
+    setFieldMappings(autoMappings);
   };
 
   const handleNext = () => {
@@ -87,7 +142,7 @@ function ImportDataPage() {
   };
 
   const handleProcessData = async () => {
-    if (!csvColumns.length || !fieldMappings.length) return;
+    if (csvColumns.length === 0 || fieldMappings.length === 0) return;
 
     setIsProcessing(true);
     setError(null);
@@ -104,8 +159,8 @@ function ImportDataPage() {
 
       setPreviewData(processResponse);
       setCurrentStep(3);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to process data');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to process data');
     } finally {
       setIsProcessing(false);
     }
@@ -127,11 +182,9 @@ function ImportDataPage() {
     if (!previewData) return;
 
     const updatedData = { ...previewData };
-    if (companyId) {
-      updatedData.contacts[contactIndex].matchedCompany = { id: companyId, name: 'Selected Company' };
-    } else {
-      updatedData.contacts[contactIndex].matchedCompany = undefined;
-    }
+    updatedData.contacts[contactIndex].matchedCompany = companyId
+      ? { id: companyId, name: 'Selected Company' }
+      : undefined;
     setPreviewData(updatedData);
   };
 
@@ -162,8 +215,8 @@ function ImportDataPage() {
       setImportStats(executeResponse.stats);
       setImportComplete(true);
       setCurrentStep(4);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to import data');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to import data');
     } finally {
       setIsImporting(false);
     }
@@ -183,8 +236,8 @@ function ImportDataPage() {
   const handleDownloadTemplate = async (type: string) => {
     try {
       await ImportAPI.downloadTemplate(type);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to download template');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to download template');
     }
   };
 
@@ -205,7 +258,11 @@ function ImportDataPage() {
                   <div className="flex flex-col items-center min-w-0">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                        step.completed ? 'bg-green-500 text-white' : step.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+                        step.completed
+                          ? 'bg-green-500 text-white'
+                          : step.active
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-200 text-gray-600'
                       }`}
                     >
                       {step.completed ? '✓' : step.id}

@@ -1,12 +1,12 @@
 'use client';
 
-import { ChevronsUpDown } from 'lucide-react';
-import * as React from 'react';
 
 import { Button } from '@tradelink/ui/components/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@tradelink/ui/components/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@tradelink/ui/components/popover';
 import { cn } from '@tradelink/ui/lib/utils';
+import { ChevronsUpDown } from 'lucide-react';
+import * as React from 'react';
 
 export interface ComboboxOption {
   value: string;

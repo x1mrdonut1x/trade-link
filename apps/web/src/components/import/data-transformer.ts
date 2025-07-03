@@ -15,28 +15,24 @@ export function transformCsvData(
     const rowData: Record<string, string> = {};
 
     // Build row data from mappings
-    fieldMappings.forEach(mapping => {
+    for (const mapping of fieldMappings) {
       const column = csvColumns.find(col => col.name === mapping.csvColumn);
       if (column) {
         rowData[mapping.targetField] = column.values[rowIndex] || '';
       }
-    });
+    }
 
     // Determine if this row represents a company, contact, or both
     const hasCompanyData = hasRequiredCompanyFields(rowData);
     const hasContactData = hasRequiredContactFields(rowData);
 
-    if (importType === 'companies' || (importType === 'mixed' && hasCompanyData)) {
-      if (hasRequiredCompanyFields(rowData)) {
+    if ((importType === 'companies' || (importType === 'mixed' && hasCompanyData)) && hasRequiredCompanyFields(rowData)) {
         companies.push(transformToCompanyData(rowData));
       }
-    }
 
-    if (importType === 'contacts' || (importType === 'mixed' && hasContactData)) {
-      if (hasRequiredContactFields(rowData)) {
+    if ((importType === 'contacts' || (importType === 'mixed' && hasContactData)) && hasRequiredContactFields(rowData)) {
         contacts.push(transformToContactData(rowData));
       }
-    }
   }
 
   return { companies, contacts };

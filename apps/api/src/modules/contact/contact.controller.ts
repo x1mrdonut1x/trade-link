@@ -10,15 +10,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { GetAllContactsQuery } from '@tradelink/shared';
+
 import { ContactService } from './contact.service';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+
 import type {
   CreateContactRequest,
   UpdateContactRequest,
   ContactWithCompanyDto,
   DeleteContactResponse,
 } from '@tradelink/shared';
-import { GetAllContactsQuery } from '@tradelink/shared';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('contacts')
 @UseGuards(JwtAuthGuard)

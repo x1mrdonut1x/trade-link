@@ -8,10 +8,11 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
+import { RegisterRequest } from '@tradelink/shared';
+
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { LoginRequest, RegisterRequest } from '@tradelink/shared';
+import { LocalAuthGuard } from '../../guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +20,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req, @Body() loginData: LoginRequest) {
+  async login(@Request() req) {
     return this.authService.login(req.user);
   }
 

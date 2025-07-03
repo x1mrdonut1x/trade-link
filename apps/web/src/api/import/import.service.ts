@@ -80,13 +80,13 @@ export class ImportAPI {
     }
 
     const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+    const url = globalThis.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${type}_template.csv`;
-    document.body.appendChild(a);
+    document.body.append(a);
     a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+    globalThis.URL.revokeObjectURL(url);
+    a.remove();
   }
 }

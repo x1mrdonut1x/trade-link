@@ -25,7 +25,7 @@ export const ImportSteps = ({ steps }: ImportStepsProps) => {
             <div key={step.id} className="flex items-center space-x-4">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  step.completed ? 'bg-green-500 text-white' : step.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+                  step.completed ? 'bg-green-500 text-white' : (step.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600')
                 }`}
               >
                 {step.completed ? <CheckCircle className="h-4 w-4" /> : <span>{index + 1}</span>}

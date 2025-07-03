@@ -1,7 +1,8 @@
-import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Avatar, AvatarFallback } from '@tradelink/ui/components/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Mail, MapPin, Phone, User } from '@tradelink/ui/icons';
+
+import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 
 interface ContactInfoCardProps {
   contact: ContactWithCompanyDto;

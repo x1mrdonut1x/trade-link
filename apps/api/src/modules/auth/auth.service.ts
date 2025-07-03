@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { RegisterRequest } from '@tradelink/shared';
+import * as bcrypt from 'bcrypt';
+
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface AuthenticatedUser {
   id: number;
@@ -41,9 +42,12 @@ export class AuthService {
     const passwordMatches = await bcrypt.compare(password, user.password);
     if (!passwordMatches) return null;
 
-    const { password: _, ...result } = user;
-
-    return result;
+    return {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      id: user.id,
+    };
   }
 
   async login(user: AuthenticatedUser): Promise<LoginResponse> {
@@ -83,8 +87,11 @@ export class AuthService {
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
-
-    return this.login(userWithoutPassword);
+    return this.login({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
   }
 }

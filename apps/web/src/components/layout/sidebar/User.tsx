@@ -1,6 +1,5 @@
 'use client';
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from '@tradelink/ui/icons';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@tradelink/ui/components/avatar';
 import {
@@ -13,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tradelink/ui/components/sidebar';
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from '@tradelink/ui/icons';
+
 import { useAuth } from '../../../context/auth-context';
 
 export function NavUser() {

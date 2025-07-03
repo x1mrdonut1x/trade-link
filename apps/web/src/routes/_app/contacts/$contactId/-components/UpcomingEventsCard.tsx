@@ -10,14 +10,18 @@ interface UpcomingEventsCardProps {
 export function UpcomingEventsCard({ events }: UpcomingEventsCardProps) {
   const getStatusVariant = (status: any) => {
     switch (status) {
-      case 'upcoming':
+      case 'upcoming': {
         return 'default';
-      case 'completed':
+      }
+      case 'completed': {
         return 'secondary';
-      case 'cancelled':
+      }
+      case 'cancelled': {
         return 'destructive';
-      default:
+      }
+      default: {
         return 'secondary';
+      }
     }
   };
 

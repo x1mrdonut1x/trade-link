@@ -10,31 +10,41 @@ interface RecentActivitiesCardProps {
 export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) {
   const getActivityIcon = (type: any) => {
     switch (type) {
-      case 'call':
+      case 'call': {
         return Phone;
-      case 'email':
+      }
+      case 'email': {
         return Mail;
-      case 'meeting':
+      }
+      case 'meeting': {
         return Users;
-      case 'event':
+      }
+      case 'event': {
         return Calendar;
-      default:
+      }
+      default: {
         return Activity;
+      }
     }
   };
 
   const getActivityColor = (type: any) => {
     switch (type) {
-      case 'call':
+      case 'call': {
         return 'bg-blue-100 text-blue-800';
-      case 'email':
+      }
+      case 'email': {
         return 'bg-green-100 text-green-800';
-      case 'meeting':
+      }
+      case 'meeting': {
         return 'bg-purple-100 text-purple-800';
-      case 'event':
+      }
+      case 'event': {
         return 'bg-orange-100 text-orange-800';
-      default:
+      }
+      default: {
         return 'bg-gray-100 text-gray-800';
+      }
     }
   };
 

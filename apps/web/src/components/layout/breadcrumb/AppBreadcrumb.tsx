@@ -26,13 +26,13 @@ export const AppBreadcrumb = () => {
             <BreadcrumbItem className={index === 0 ? 'hidden md:block' : ''}>
               {breadcrumb.isLoading ? (
                 <div className="h-4 w-16 bg-muted animate-pulse rounded" />
-              ) : breadcrumb.isActive || index === breadcrumbs.length - 1 ? (
+              ) : (breadcrumb.isActive || index === breadcrumbs.length - 1 ? (
                 <BreadcrumbPage className="line-clamp-1 max-w-[200px]">{breadcrumb.title}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild className="line-clamp-1 max-w-[200px]">
                   <Link to={breadcrumb.href}>{breadcrumb.title}</Link>
                 </BreadcrumbLink>
-              )}
+              ))}
             </BreadcrumbItem>
           </Fragment>
         ))}

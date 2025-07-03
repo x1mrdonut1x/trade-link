@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/componen
 import { Label } from '@tradelink/ui/components/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { AlertTriangle } from '@tradelink/ui/icons';
-import type { CsvColumn, FieldMapping, ImportType } from './types';
+
 import { COMPANY_FIELDS, CONTACT_FIELDS } from './types';
+
+import type { CsvColumn, FieldMapping, ImportType } from './types';
 
 interface FieldMappingStepProps {
   csvColumns: CsvColumn[];
@@ -17,7 +19,7 @@ interface FieldMappingStepProps {
 
 export function FieldMappingStep({ csvColumns, fieldMappings, importType, onMappingChange, onNext, onBack }: FieldMappingStepProps) {
   const availableFields =
-    importType === 'companies' ? COMPANY_FIELDS : importType === 'contacts' ? CONTACT_FIELDS : [...COMPANY_FIELDS, ...CONTACT_FIELDS];
+    importType === 'companies' ? COMPANY_FIELDS : (importType === 'contacts' ? CONTACT_FIELDS : [...COMPANY_FIELDS, ...CONTACT_FIELDS]);
 
   const handleMappingChange = (csvColumn: string, targetField: string) => {
     const newMappings = fieldMappings.filter(m => m.csvColumn !== csvColumn);
@@ -32,8 +34,8 @@ export function FieldMappingStep({ csvColumns, fieldMappings, importType, onMapp
   };
 
   const getRequiredFieldsNotMapped = () => {
-    const mappedFields = fieldMappings.map(m => m.targetField);
-    return availableFields.filter(field => field.required && !mappedFields.includes(field.key));
+    const mappedFields = new Set(fieldMappings.map(m => m.targetField));
+    return availableFields.filter(field => field.required && !mappedFields.has(field.key));
   };
 
   const requiredFieldsNotMapped = getRequiredFieldsNotMapped();

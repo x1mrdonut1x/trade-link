@@ -1,6 +1,7 @@
 import { Outlet } from '@tanstack/react-router';
 import { Separator } from '@tradelink/ui/components/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@tradelink/ui/components/sidebar';
+
 import { AppBreadcrumb } from '../breadcrumb/AppBreadcrumb';
 import { AppSidebar } from '../sidebar/Sidebar';
 

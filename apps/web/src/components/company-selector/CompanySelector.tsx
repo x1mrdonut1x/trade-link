@@ -1,5 +1,6 @@
 import { Combobox, type ComboboxOption } from '@tradelink/ui/components/combobox';
 import { useEffect, useMemo, useState } from 'react';
+
 import { useGetAllCompanies } from '../../api/company/hooks';
 
 export interface CompanySelectorProps {
@@ -41,10 +42,22 @@ export function CompanySelector({
 
   const companyOptions: ComboboxOption[] = useMemo(
     () =>
-      companies.map(company => ({
-        value: company.id.toString(),
-        label: `${company.name}${company.city ? ` - ${company.city}` : ''}${company.country ? `, ${company.country}` : ''}`,
-      })),
+      companies.map(company => {
+        const labelParts = [company.name];
+
+        if (company.city) {
+          labelParts.push(` - ${company.city}`);
+        }
+
+        if (company.country) {
+          labelParts.push(`, ${company.country}`);
+        }
+
+        return {
+          value: company.id.toString(),
+          label: labelParts.join(''),
+        };
+      }),
     [companies]
   );
 

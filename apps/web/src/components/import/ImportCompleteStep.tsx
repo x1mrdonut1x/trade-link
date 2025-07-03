@@ -119,8 +119,8 @@ export function ImportCompleteStep({
             <Button onClick={onStartOver} variant="outline">
               Import More Data
             </Button>
-            <Button onClick={() => (window.location.href = '/companies')}>View Companies</Button>
-            <Button onClick={() => (window.location.href = '/contacts')}>View Contacts</Button>
+            <Button onClick={() => (globalThis.location.href = '/companies')}>View Companies</Button>
+            <Button onClick={() => (globalThis.location.href = '/contacts')}>View Contacts</Button>
           </div>
         </CardContent>
       </Card>

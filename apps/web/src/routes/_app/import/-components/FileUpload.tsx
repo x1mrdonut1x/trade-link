@@ -4,11 +4,13 @@ import { Label } from '@tradelink/ui/components/label';
 import { FileSpreadsheet, Upload } from '@tradelink/ui/icons';
 import React from 'react';
 
+type ImportType = 'companies' | 'contacts' | 'events' | 'all';
+
 interface FileUploadProps {
   selectedFile: File | null;
   onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  importType: 'companies' | 'contacts' | 'events' | 'all';
-  onImportTypeChange: (type: 'companies' | 'contacts' | 'events' | 'all') => void;
+  importType: ImportType;
+  onImportTypeChange: (type: ImportType) => void;
 }
 
 export const FileUpload = ({ selectedFile, onFileSelect, importType, onImportTypeChange }: FileUploadProps) => {

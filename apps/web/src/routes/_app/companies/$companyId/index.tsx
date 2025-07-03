@@ -4,6 +4,7 @@ import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from '@tradel
 import { useGetCompany } from 'api/company/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
+
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
 import { SalesAgentsCard } from './-components/SalesAgentsCard';

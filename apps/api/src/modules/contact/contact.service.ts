@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+
 import { PrismaService } from '../prisma/prisma.service';
-import type { Prisma } from 'generated/prisma';
+
 import type {
   CreateContactRequest,
   CreateContactResponse,
@@ -11,6 +12,7 @@ import type {
   UpdateContactRequest,
   UpdateContactResponse,
 } from '@tradelink/shared';
+import type { Prisma } from 'generated/prisma';
 
 @Injectable()
 export class ContactService {

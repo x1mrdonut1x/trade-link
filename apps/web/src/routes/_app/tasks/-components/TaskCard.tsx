@@ -29,40 +29,52 @@ interface TaskCardProps {
 export const TaskCard = ({ task, onToggleCompletion }: TaskCardProps) => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high':
+      case 'high': {
         return 'bg-red-100 text-red-800';
-      case 'medium':
+      }
+      case 'medium': {
         return 'bg-yellow-100 text-yellow-800';
-      case 'low':
+      }
+      case 'low': {
         return 'bg-green-100 text-green-800';
-      default:
+      }
+      default: {
         return 'bg-gray-100 text-gray-800';
+      }
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'pending': {
         return 'bg-blue-100 text-blue-800';
-      case 'completed':
+      }
+      case 'completed': {
         return 'bg-green-100 text-green-800';
-      case 'overdue':
+      }
+      case 'overdue': {
         return 'bg-red-100 text-red-800';
-      default:
+      }
+      default: {
         return 'bg-gray-100 text-gray-800';
+      }
     }
   };
 
   const getRelatedIcon = (type: string) => {
     switch (type) {
-      case 'company':
+      case 'company': {
         return Building2;
-      case 'contact':
+      }
+      case 'contact': {
         return User;
-      case 'event':
+      }
+      case 'event': {
         return Calendar;
-      default:
+      }
+      default: {
         return CheckSquare;
+      }
     }
   };
 

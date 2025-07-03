@@ -4,6 +4,7 @@ import { ArrowLeft, Edit, Loader2, User } from '@tradelink/ui/icons';
 import { useGetContact } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
+
 import { ContactDetailsCard } from './-components/ContactDetailsCard';
 import { ContactInfoCard } from './-components/ContactInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';

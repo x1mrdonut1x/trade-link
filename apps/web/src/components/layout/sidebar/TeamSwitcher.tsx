@@ -1,6 +1,3 @@
-import { ChevronsUpDown, Plus } from '@tradelink/ui/icons';
-import * as React from 'react';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +7,9 @@ import {
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tradelink/ui/components/sidebar';
+import { ChevronsUpDown, Plus } from '@tradelink/ui/icons';
+import * as React from 'react';
+
 
 export function TeamSwitcher({
   teams,

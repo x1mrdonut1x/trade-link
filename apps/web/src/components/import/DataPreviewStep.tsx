@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/componen
 import { Checkbox } from '@tradelink/ui/components/checkbox';
 import { AlertTriangle, Building2, Loader2, Users } from '@tradelink/ui/icons';
 import { CompanySelector } from 'components/company-selector/CompanySelector';
+
 import type { CompanyImportData, ContactImportData, ImportEntry, ImportPreviewResponse } from './types';
 
 interface DataPreviewStepProps {
@@ -191,7 +192,7 @@ function ContactEntryRow({ entry, onToggle, onCompanyChange }: ContactEntryRowPr
           <div className="mt-2">
             <CompanySelector
               value={entry.matchedCompany?.id?.toString()}
-              onValueChange={companyId => onCompanyChange(companyId ? parseInt(companyId) : null)}
+              onValueChange={companyId => onCompanyChange(companyId ? Number.parseInt(companyId) : null)}
               placeholder="Select a company (optional)"
             />
           </div>

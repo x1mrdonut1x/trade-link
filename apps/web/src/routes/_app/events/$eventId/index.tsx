@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { ArrowLeft, Calendar, Edit, UserPlus } from '@tradelink/ui/icons';
 import { PageHeader } from 'components/page-header/PageHeader';
+
 import { EventAdditionalDetailsCard } from './-components/EventAdditionalDetailsCard';
 import { EventInfoCard } from './-components/EventInfoCard';
 import { EventQuickStatsCard } from './-components/EventQuickStatsCard';
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/_app/events/$eventId/')({
 function EventDetail() {
   const params = Route.useParams();
   const eventId = params.eventId;
-  const event = mockEvents.find(e => e.id === parseInt(eventId));
+  const event = mockEvents.find(e => e.id === Number.parseInt(eventId));
 
   if (!event) {
     return (

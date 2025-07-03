@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient, type MutationOptions } from '@tanstack/react-query';
+
+import { companyApi } from './api';
+
 import type { CreateCompanyRequest, CreateCompanyResponse, UpdateCompanyRequest, UpdateCompanyResponse } from '@tradelink/shared';
 import type { GetAllCompaniesQuery } from '@tradelink/shared/company';
-import { companyApi } from './api';
 
 const COMPANIES_QUERY_KEY = 'companies';
 

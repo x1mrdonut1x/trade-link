@@ -10,7 +10,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { GetAllCompaniesQuery } from '@tradelink/shared';
+
 import { CompanyService } from './company.service';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+
 import type {
   CreateCompanyRequest,
   UpdateCompanyRequest,
@@ -19,8 +23,6 @@ import type {
   GetCompanyResponse,
   DeleteCompanyResponse,
 } from '@tradelink/shared';
-import { GetAllCompaniesQuery } from '@tradelink/shared';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('companies')
 @UseGuards(JwtAuthGuard)

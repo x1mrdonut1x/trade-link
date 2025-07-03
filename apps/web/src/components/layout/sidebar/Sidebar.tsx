@@ -1,6 +1,3 @@
-import { BedDouble, Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from '@tradelink/ui/icons';
-import * as React from 'react';
-
 import { Link, useMatchRoute } from '@tanstack/react-router';
 import {
   Sidebar,
@@ -11,6 +8,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@tradelink/ui/components/sidebar';
+import { BedDouble, Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from '@tradelink/ui/icons';
+import * as React from 'react';
+
+
 import { TeamSwitcher } from '../../../components/layout/sidebar/TeamSwitcher';
 import { NavUser } from '../../../components/layout/sidebar/User';
 

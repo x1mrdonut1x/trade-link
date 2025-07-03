@@ -1,9 +1,15 @@
 import { Link } from '@tanstack/react-router';
-import type { CompanyDto } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
 import { Building2, Edit, Mail, MapPin, MoreHorizontal, Phone, Trash2, Users } from '@tradelink/ui/icons';
+
+import type { CompanyDto } from '@tradelink/shared';
 
 interface CompanyCardProps {
   company: CompanyDto & { contactsCount: number };

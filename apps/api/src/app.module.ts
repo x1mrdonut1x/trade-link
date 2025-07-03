@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ZodValidationPipe } from 'nestjs-zod';
 import { APP_PIPE } from '@nestjs/core';
+import { ZodValidationPipe } from 'nestjs-zod';
+
 import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
-import { ContactModule } from './modules/contact/contact.module';
 import { CompanyModule } from './modules/company/company.module';
+import { ContactModule } from './modules/contact/contact.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [

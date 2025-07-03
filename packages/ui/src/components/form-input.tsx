@@ -1,5 +1,6 @@
-import * as React from "react"
 import { cn } from "@tradelink/ui/lib/utils"
+import * as React from "react"
+
 import { Input } from "./input"
 import { Label } from "./label"
 
