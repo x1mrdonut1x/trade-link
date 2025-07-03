@@ -15,10 +15,8 @@ export const Route = createFileRoute('/_app/companies/$companyId/')({
 function CompanyDetail() {
   const { companyId } = Route.useParams();
 
-  // Try to get company from API first, fallback to mock data
   const { data: company, isLoading } = useGetCompany(companyId);
 
-  // Set up breadcrumbs
   useBreadcrumbSetup(
     [
       { title: 'Companies', href: '/companies', isActive: false },

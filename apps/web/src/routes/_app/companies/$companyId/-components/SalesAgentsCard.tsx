@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import type { GetCompanyResponse } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
@@ -37,17 +38,19 @@ export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardPro
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="gap-3 flex flex-col">
             {contacts.map(contact => (
-              <div key={contact.id} className="flex items-center justify-between p-3 rounded-lg border">
-                <div>
-                  <p className="font-medium">
-                    {contact.firstName} {contact.lastName}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{contact.jobTitle}</p>
-                  <p className="text-sm text-muted-foreground">{contact.email}</p>
-                </div>
-              </div>
+              <Link key={contact.id} to="/contacts/$contactId" params={{ contactId: contact.id.toString() }}>
+                <Card className="cursor-pointer hover:shadow-md transition-shadow shadow-none">
+                  <CardContent>
+                    <p className="font-medium">
+                      {contact.firstName} {contact.lastName}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{contact.jobTitle}</p>
+                    <p className="text-sm text-muted-foreground">{contact.email}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
             {contacts.length === 0 && <p className="text-muted-foreground text-center py-6">No sales agents assigned to this company.</p>}
           </div>

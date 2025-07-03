@@ -8,9 +8,8 @@ interface ContactDetailsCardProps {
 
 export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
   const hasAddressData = contact?.address || contact?.city || contact?.country || contact?.postCode;
-  const hasCompanyData = contact.company;
 
-  if (!hasAddressData && !hasCompanyData) {
+  if (!hasAddressData && !contact.company) {
     return null;
   }
 
@@ -37,7 +36,7 @@ export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
           </div>
         )}
 
-        {hasCompanyData && contact.company && (
+        {contact.company && (
           <div>
             <h4 className="font-medium mb-3 flex items-center gap-2">
               <Building2 className="h-4 w-4" />

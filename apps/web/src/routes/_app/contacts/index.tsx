@@ -105,9 +105,10 @@ export function Contacts() {
     {
       title: 'Location',
       render: contact => {
-        return contact?.city && contact?.country ? (
+        return contact?.city || contact?.country ? (
           <div className="text-sm">
-            {contact?.city}, {contact?.country}
+            {contact?.city ? `${contact?.city}, ` : ''}
+            {contact?.country}
           </div>
         ) : (
           <span className="text-muted-foreground">-</span>
