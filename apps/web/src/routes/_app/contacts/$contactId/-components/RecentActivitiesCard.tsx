@@ -1,7 +1,7 @@
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Activity, Calendar, Mail, Phone, Plus, Users } from 'lucide-react';
+import { Activity, Calendar, Mail, Phone, Plus, Users } from '@tradelink/ui/icons';
 
 interface RecentActivitiesCardProps {
   activities: any[]; // TODO replace

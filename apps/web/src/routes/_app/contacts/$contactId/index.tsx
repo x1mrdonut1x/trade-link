@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
+import { ArrowLeft, Edit, Loader2, User } from '@tradelink/ui/icons';
 import { useGetContact } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
-import { ArrowLeft, Edit, Loader2, User } from 'lucide-react';
 import { ContactDetailsCard } from './-components/ContactDetailsCard';
 import { ContactInfoCard } from './-components/ContactInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';

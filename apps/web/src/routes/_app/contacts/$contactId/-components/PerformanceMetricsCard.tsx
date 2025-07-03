@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp } from '@tradelink/ui/icons';
 
 interface PerformanceMetricsCardProps {
   metrics: any; // TODO replace

@@ -1,6 +1,6 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { CheckSquare } from 'lucide-react';
+import { CheckSquare } from '@tradelink/ui/icons';
 
 interface Todo {
   id: number;

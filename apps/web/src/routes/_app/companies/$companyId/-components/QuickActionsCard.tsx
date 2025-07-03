@@ -1,6 +1,6 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { MessageSquare, Phone, Mail, FileText } from 'lucide-react';
+import { FileText, Mail, MessageSquare, Phone } from '@tradelink/ui/icons';
 
 export function QuickActionsCard() {
   return (

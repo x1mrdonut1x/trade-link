@@ -1,7 +1,7 @@
 import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Avatar, AvatarFallback } from '@tradelink/ui/components/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Mail, MapPin, Phone, User } from 'lucide-react';
+import { Building2, Mail, MapPin, Phone, User } from '@tradelink/ui/icons';
 
 interface ContactInfoCardProps {
   contact: ContactWithCompanyDto;

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { FileText } from 'lucide-react';
+import { FileText } from '@tradelink/ui/icons';
 
 interface AdditionalDetailsCardProps {
   customFields: any[];

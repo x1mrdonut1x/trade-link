@@ -1,4 +1,4 @@
-import { BedDouble, Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from 'lucide-react';
+import { BedDouble, Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from '@tradelink/ui/icons';
 import * as React from 'react';
 
 import { Link, useMatchRoute } from '@tanstack/react-router';

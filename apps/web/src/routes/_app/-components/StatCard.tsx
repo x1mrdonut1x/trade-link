@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '@tradelink/ui/icons';
 
 interface StatCardProps {
   title: string;

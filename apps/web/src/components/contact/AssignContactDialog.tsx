@@ -1,8 +1,8 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@tradelink/ui/components/dialog';
 import { Separator } from '@tradelink/ui/components/separator';
+import { UserPlus, Users } from '@tradelink/ui/icons';
 import { useUpdateContact } from 'api/contact/hooks';
-import { UserPlus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { ContactSelector } from '../contact-selector/ContactSelector';
 import { ContactForm } from './ContactForm';

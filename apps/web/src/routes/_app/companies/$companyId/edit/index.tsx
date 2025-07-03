@@ -1,11 +1,11 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
+import { ArrowLeft, Building2, Link } from '@tradelink/ui/icons';
 import { useGetCompany } from 'api/company';
 import { CompanyForm } from 'components/company/CompanyForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
-import { ArrowLeft, Building2, Link } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/companies/$companyId/edit/')({
   component: EditCompany,

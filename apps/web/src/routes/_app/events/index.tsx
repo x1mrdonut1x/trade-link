@@ -1,7 +1,7 @@
-import { Button } from '@tradelink/ui/components/button';
-import { PageHeader } from 'components/page-header/PageHeader';
 import { createFileRoute } from '@tanstack/react-router';
-import { Calendar, Filter, PlusCircle, Upload } from 'lucide-react';
+import { Button } from '@tradelink/ui/components/button';
+import { Calendar, Filter, PlusCircle, Upload } from '@tradelink/ui/icons';
+import { PageHeader } from 'components/page-header/PageHeader';
 import { useState } from 'react';
 import { EventCard } from './-components/EventCard';
 
@@ -116,20 +116,20 @@ function EventsPage() {
         title="Hotel Sales Events"
         actions={[
           {
-            label: "Import Event Data",
+            label: 'Import Event Data',
             icon: Upload,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Filter",
+            label: 'Filter',
             icon: Filter,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Add Event",
+            label: 'Add Event',
             icon: PlusCircle,
-            variant: "default"
-          }
+            variant: 'default',
+          },
         ]}
         showSearch={true}
         searchPlaceholder="Search events..."
@@ -139,12 +139,12 @@ function EventsPage() {
           {
             value: selectedStatus,
             onChange: setSelectedStatus,
-            placeholder: "All Statuses",
+            placeholder: 'All Statuses',
             options: statuses.map(status => ({
               value: status,
-              label: status
-            }))
-          }
+              label: status,
+            })),
+          },
         ]}
       />
 

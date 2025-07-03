@@ -1,20 +1,10 @@
+import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@tradelink/ui/components/avatar';
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
-import { Link } from '@tanstack/react-router';
-import {
-  Building2,
-  Calendar,
-  Edit,
-  Mail,
-  MapPin,
-  MessageSquare,
-  MoreHorizontal,
-  Phone,
-  Trash2,
-} from 'lucide-react';
+import { Building2, Calendar, Edit, Mail, MapPin, MessageSquare, MoreHorizontal, Phone, Trash2 } from '@tradelink/ui/icons';
 
 interface Contact {
   id: number;
@@ -60,7 +50,7 @@ export function ContactCard({ contact }: ContactCardProps) {
             </div>
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+            <DropdownMenuTrigger asChild onClick={e => e.preventDefault()}>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -82,59 +72,59 @@ export function ContactCard({ contact }: ContactCardProps) {
           </DropdownMenu>
         </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-1">
-          {contact.tags.map(tag => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-1">
+            {contact.tags.map(tag => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
 
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-muted-foreground" />
-            <span className="truncate">{contact.email}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-muted-foreground" />
-            <span>{contact.phone}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span>{contact.location}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span>{contact.company}</span>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center pt-2 border-t">
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>{contact.eventsCount} events</span>
-          </div>
-          <div className="text-xs text-muted-foreground">Last contact: {contact.lastContact}</div>
-        </div>
-
-        {contact.customFields.length > 0 && (
-          <div className="pt-2 border-t">
-            <p className="text-xs font-medium text-muted-foreground mb-2">Additional Info:</p>
-            <div className="space-y-1">
-              {contact.customFields.slice(0, 2).map((field, index) => (
-                <div key={index} className="text-xs">
-                  <span className="font-medium">{field.name}:</span> {field.value}
-                </div>
-              ))}
-              {contact.customFields.length > 2 && (
-                <div className="text-xs text-muted-foreground">+{contact.customFields.length - 2} more fields</div>
-              )}
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              <span className="truncate">{contact.email}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-muted-foreground" />
+              <span>{contact.phone}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span>{contact.location}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <span>{contact.company}</span>
             </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          <div className="flex justify-between items-center pt-2 border-t">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              <span>{contact.eventsCount} events</span>
+            </div>
+            <div className="text-xs text-muted-foreground">Last contact: {contact.lastContact}</div>
+          </div>
+
+          {contact.customFields.length > 0 && (
+            <div className="pt-2 border-t">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Additional Info:</p>
+              <div className="space-y-1">
+                {contact.customFields.slice(0, 2).map((field, index) => (
+                  <div key={index} className="text-xs">
+                    <span className="font-medium">{field.name}:</span> {field.value}
+                  </div>
+                ))}
+                {contact.customFields.length > 2 && (
+                  <div className="text-xs text-muted-foreground">+{contact.customFields.length - 2} more fields</div>
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </Link>
   );
 }

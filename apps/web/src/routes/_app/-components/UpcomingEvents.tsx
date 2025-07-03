@@ -1,7 +1,7 @@
+import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Link } from '@tanstack/react-router';
-import { Calendar } from 'lucide-react';
+import { Calendar } from '@tradelink/ui/icons';
 
 interface Event {
   id: number;

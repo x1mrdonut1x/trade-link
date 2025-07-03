@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Calendar, AlertTriangle, Users } from 'lucide-react';
+import { AlertTriangle, Building2, Calendar, Users } from '@tradelink/ui/icons';
 
 interface ImportStats {
   totalRecords: number;
@@ -31,7 +31,7 @@ export const ImportStatsDisplay = ({ stats }: ImportStatsDisplayProps) => {
               <p className="text-sm text-muted-foreground">Errors</p>
             </div>
           </div>
-          
+
           <div className="space-y-2 pt-4 border-t">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -40,7 +40,7 @@ export const ImportStatsDisplay = ({ stats }: ImportStatsDisplayProps) => {
               </div>
               <span className="font-semibold">{stats.companies}</span>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
@@ -48,7 +48,7 @@ export const ImportStatsDisplay = ({ stats }: ImportStatsDisplayProps) => {
               </div>
               <span className="font-semibold">{stats.contacts}</span>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -56,7 +56,7 @@ export const ImportStatsDisplay = ({ stats }: ImportStatsDisplayProps) => {
               </div>
               <span className="font-semibold">{stats.events}</span>
             </div>
-            
+
             {stats.errors > 0 && (
               <div className="flex items-center justify-between text-red-600">
                 <div className="flex items-center space-x-2">

@@ -1,7 +1,7 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Label } from '@tradelink/ui/components/label';
-import { Upload, FileSpreadsheet } from 'lucide-react';
+import { FileSpreadsheet, Upload } from '@tradelink/ui/icons';
 import React from 'react';
 
 interface FileUploadProps {
@@ -25,7 +25,7 @@ export const FileUpload = ({ selectedFile, onFileSelect, importType, onImportTyp
           <select
             id="importType"
             value={importType}
-            onChange={(e) => onImportTypeChange(e.target.value as 'companies' | 'contacts' | 'events' | 'all')}
+            onChange={e => onImportTypeChange(e.target.value as 'companies' | 'contacts' | 'events' | 'all')}
             className="w-full mt-2 px-3 py-2 border border-input bg-background rounded-md"
           >
             <option value="all">All Data Types</option>
@@ -51,16 +51,10 @@ export const FileUpload = ({ selectedFile, onFileSelect, importType, onImportTyp
                 </p>
                 <p className="text-xs text-gray-500">CSV or Excel files only</p>
               </div>
-              <input
-                id="file"
-                type="file"
-                className="hidden"
-                accept=".csv,.xlsx,.xls"
-                onChange={onFileSelect}
-              />
+              <input id="file" type="file" className="hidden" accept=".csv,.xlsx,.xls" onChange={onFileSelect} />
             </label>
           </div>
-          
+
           {selectedFile && (
             <div className="mt-3 flex items-center space-x-2 text-sm text-green-600">
               <FileSpreadsheet className="h-4 w-4" />
@@ -69,11 +63,7 @@ export const FileUpload = ({ selectedFile, onFileSelect, importType, onImportTyp
           )}
         </div>
 
-        {selectedFile && (
-          <Button className="w-full">
-            Proceed to Field Mapping
-          </Button>
-        )}
+        {selectedFile && <Button className="w-full">Proceed to Field Mapping</Button>}
       </CardContent>
     </Card>
   );

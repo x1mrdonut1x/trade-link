@@ -1,9 +1,9 @@
+import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Label } from '@tradelink/ui/components/label';
+import { AlertTriangle, Building2, Calendar, CheckCircle, Download, FileSpreadsheet, FileText, Upload, Users } from '@tradelink/ui/icons';
 import { PageHeader } from 'components/page-header/PageHeader';
-import { createFileRoute } from '@tanstack/react-router';
-import { AlertTriangle, Building2, Calendar, CheckCircle, Download, FileSpreadsheet, FileText, Upload, Users } from 'lucide-react';
 import React, { useState } from 'react';
 
 export const Route = createFileRoute('/_app/import/')({
@@ -81,11 +81,11 @@ function ImportDataPage() {
         title="Import Data"
         actions={[
           {
-            label: "Download Template",
+            label: 'Download Template',
             icon: Download,
-            variant: "outline",
-            onClick: () => downloadTemplate('companies')
-          }
+            variant: 'outline',
+            onClick: () => downloadTemplate('companies'),
+          },
         ]}
       />
 

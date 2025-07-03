@@ -1,10 +1,10 @@
-import { PageHeader } from 'components/page-header/PageHeader';
 import { createFileRoute } from '@tanstack/react-router';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle } from '@tradelink/ui/icons';
+import { PageHeader } from 'components/page-header/PageHeader';
 import { useState } from 'react';
 import { TaskCard, type Task } from './-components/TaskCard';
-import { TaskStats } from './-components/TaskStats';
 import { TaskFilters } from './-components/TaskFilters';
+import { TaskStats } from './-components/TaskStats';
 import { mockTasks } from './-components/mockData';
 
 export const Route = createFileRoute('/_app/tasks/')({
@@ -50,10 +50,10 @@ function TasksPage() {
         title="Tasks & Reminders"
         actions={[
           {
-            label: "Add Task",
+            label: 'Add Task',
             icon: PlusCircle,
-            variant: "default"
-          }
+            variant: 'default',
+          },
         ]}
       />
 
@@ -70,11 +70,7 @@ function TasksPage() {
 
       <div className="space-y-4">
         {filteredTasks.map(task => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onToggleCompletion={toggleTaskCompletion}
-          />
+          <TaskCard key={task.id} task={task} onToggleCompletion={toggleTaskCompletion} />
         ))}
       </div>
 

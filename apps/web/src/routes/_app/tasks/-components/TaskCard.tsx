@@ -1,19 +1,8 @@
 import { Badge } from '@tradelink/ui/components/badge';
+import { Button } from '@tradelink/ui/components/button';
 import { Checkbox } from '@tradelink/ui/components/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
-import { Button } from '@tradelink/ui/components/button';
-import {
-  AlertCircle,
-  Bell,
-  Building2,
-  Calendar,
-  CheckSquare,
-  Clock,
-  Edit,
-  MoreHorizontal,
-  Trash2,
-  User,
-} from 'lucide-react';
+import { AlertCircle, Bell, Building2, Calendar, CheckSquare, Clock, Edit, MoreHorizontal, Trash2, User } from '@tradelink/ui/icons';
 
 export interface Task {
   id: number;
@@ -91,28 +80,18 @@ export const TaskCard = ({ task, onToggleCompletion }: TaskCardProps) => {
     <div className="p-4 border rounded-lg bg-card hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3 flex-1">
-          <Checkbox
-            checked={task.completed}
-            onCheckedChange={() => onToggleCompletion(task.id)}
-            className="mt-1"
-          />
+          <Checkbox checked={task.completed} onCheckedChange={() => onToggleCompletion(task.id)} className="mt-1" />
           <div className="flex-1 space-y-2">
             <div className="flex items-start justify-between">
-              <h3 className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                {task.title}
-              </h3>
+              <h3 className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>{task.title}</h3>
               <div className="flex items-center space-x-2">
-                <Badge className={getPriorityColor(task.priority)}>
-                  {task.priority}
-                </Badge>
-                <Badge className={getStatusColor(task.status)}>
-                  {task.status}
-                </Badge>
+                <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
+                <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
               </div>
             </div>
-            
+
             <p className="text-sm text-muted-foreground">{task.description}</p>
-            
+
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1">
@@ -120,26 +99,20 @@ export const TaskCard = ({ task, onToggleCompletion }: TaskCardProps) => {
                   <span>{task.relatedTo.name}</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  {task.type === 'reminder' ? (
-                    <Bell className="h-4 w-4" />
-                  ) : (
-                    <CheckSquare className="h-4 w-4" />
-                  )}
+                  {task.type === 'reminder' ? <Bell className="h-4 w-4" /> : <CheckSquare className="h-4 w-4" />}
                   <span className="capitalize">{task.type}</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
-                {isOverdue(task.dueDate, task.status) && (
-                  <AlertCircle className="h-4 w-4 text-red-500" />
-                )}
+                {isOverdue(task.dueDate, task.status) && <AlertCircle className="h-4 w-4 text-red-500" />}
                 <Clock className="h-4 w-4" />
                 <span>Due: {formatDate(task.dueDate)}</span>
               </div>
             </div>
           </div>
         </div>
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm">

@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
+import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from '@tradelink/ui/icons';
 import { useGetCompany } from 'api/company/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
-import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from 'lucide-react';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
 import { SalesAgentsCard } from './-components/SalesAgentsCard';

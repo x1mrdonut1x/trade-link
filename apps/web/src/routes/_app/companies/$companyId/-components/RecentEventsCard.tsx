@@ -1,7 +1,7 @@
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Calendar, CalendarPlus } from 'lucide-react';
+import { Calendar, CalendarPlus } from '@tradelink/ui/icons';
 
 interface RecentEventsCardProps {
   events: any[];

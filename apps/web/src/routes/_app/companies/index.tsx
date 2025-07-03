@@ -3,10 +3,10 @@ import { zodValidator } from '@tanstack/zod-adapter';
 import { getAllCompaniesQuerySchema } from '@tradelink/shared/company';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
+import { Building2, Filter, PlusCircle } from '@tradelink/ui/icons';
 import { useGetAllCompanies } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
-import { Building2, Filter, PlusCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { CompanyCard } from './-components/CompanyCard';
 

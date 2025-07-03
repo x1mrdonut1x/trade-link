@@ -1,9 +1,9 @@
-import { PageHeader } from 'components/page-header/PageHeader';
 import { createFileRoute } from '@tanstack/react-router';
-import { Building2, Calendar, CheckSquare, PlusCircle, Users } from 'lucide-react';
+import { Building2, Calendar, CheckSquare, PlusCircle, Users } from '@tradelink/ui/icons';
+import { PageHeader } from 'components/page-header/PageHeader';
 import { StatCard } from './-components/StatCard';
-import { UpcomingTodos } from './-components/UpcomingTodos';
 import { UpcomingEvents } from './-components/UpcomingEvents';
+import { UpcomingTodos } from './-components/UpcomingTodos';
 
 function Dashboard() {
   // Mock data - would come from API
@@ -29,30 +29,12 @@ function Dashboard() {
 
   return (
     <>
-      <PageHeader
-        title="Hotel Sales Management Dashboard"
-        actions={[{ label: 'Add Company', variant: 'default', icon: PlusCircle }]}
-      />
+      <PageHeader title="Hotel Sales Management Dashboard" actions={[{ label: 'Add Company', variant: 'default', icon: PlusCircle }]} />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Companies"
-          value={dashboardStats.totalCompanies}
-          subtitle="+12 this month"
-          icon={Building2}
-        />
-        <StatCard
-          title="Total Sales Agents"
-          value={dashboardStats.totalAgents}
-          subtitle="+23 this month"
-          icon={Users}
-        />
-        <StatCard
-          title="Upcoming Events"
-          value={dashboardStats.upcomingEvents}
-          subtitle="Next: July 15th"
-          icon={Calendar}
-        />
+        <StatCard title="Companies" value={dashboardStats.totalCompanies} subtitle="+12 this month" icon={Building2} />
+        <StatCard title="Total Sales Agents" value={dashboardStats.totalAgents} subtitle="+23 this month" icon={Users} />
+        <StatCard title="Upcoming Events" value={dashboardStats.upcomingEvents} subtitle="Next: July 15th" icon={Calendar} />
         <StatCard
           title="Pending Tasks"
           value={dashboardStats.pendingTodos}

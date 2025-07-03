@@ -1,7 +1,7 @@
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Calendar, CalendarPlus, MapPin } from 'lucide-react';
+import { Calendar, CalendarPlus, MapPin } from '@tradelink/ui/icons';
 
 interface UpcomingEventsCardProps {
   events: any[]; // TODO replace;

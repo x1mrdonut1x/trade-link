@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Building2 } from 'lucide-react';
+import { Building2, Calendar, MapPin } from '@tradelink/ui/icons';
 
 interface Event {
   name: string;
@@ -21,13 +21,15 @@ export const EventInfoCard = ({ event }: EventInfoCardProps) => {
     <div className="bg-white p-6 rounded-lg border">
       <h3 className="text-lg font-semibold mb-4">Event Information</h3>
       <p className="text-muted-foreground mb-4">{event.description}</p>
-      
+
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">Date:</span>
-            <span>{event.date} - {event.endDate}</span>
+            <span>
+              {event.date} - {event.endDate}
+            </span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -40,7 +42,7 @@ export const EventInfoCard = ({ event }: EventInfoCardProps) => {
             <span>{event.venue}</span>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium">Type:</span>

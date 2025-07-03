@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd } from 'lucide-react';
+import { GalleryVerticalEnd } from '@tradelink/ui/icons';
 import { LoginForm } from './LoginForm';
 
 export const Login = () => {

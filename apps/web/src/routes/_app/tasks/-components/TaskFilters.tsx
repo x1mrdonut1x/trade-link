@@ -1,7 +1,7 @@
 import { Button } from '@tradelink/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
 import { Input } from '@tradelink/ui/components/input';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search } from '@tradelink/ui/icons';
 
 interface TaskFiltersProps {
   searchTerm: string;
@@ -27,11 +27,11 @@ export const TaskFilters = ({
         <Input
           placeholder="Search tasks, descriptions, or related items..."
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={e => onSearchChange(e.target.value)}
           className="pl-10"
         />
       </div>
-      
+
       <div className="flex gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -41,18 +41,10 @@ export const TaskFilters = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => onStatusChange('all')}>
-              All Statuses
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onStatusChange('pending')}>
-              Pending
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onStatusChange('completed')}>
-              Completed
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onStatusChange('overdue')}>
-              Overdue
-            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onStatusChange('all')}>All Statuses</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onStatusChange('pending')}>Pending</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onStatusChange('completed')}>Completed</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onStatusChange('overdue')}>Overdue</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -64,15 +56,9 @@ export const TaskFilters = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => onTypeChange('all')}>
-              All Types
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onTypeChange('todo')}>
-              To-Do
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onTypeChange('reminder')}>
-              Reminder
-            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onTypeChange('all')}>All Types</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onTypeChange('todo')}>To-Do</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onTypeChange('reminder')}>Reminder</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

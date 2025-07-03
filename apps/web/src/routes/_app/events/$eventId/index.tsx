@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
+import { ArrowLeft, Calendar, Edit, UserPlus } from '@tradelink/ui/icons';
 import { PageHeader } from 'components/page-header/PageHeader';
-import { ArrowLeft, Calendar, Edit, UserPlus } from 'lucide-react';
 import { EventAdditionalDetailsCard } from './-components/EventAdditionalDetailsCard';
 import { EventInfoCard } from './-components/EventInfoCard';
 import { EventQuickStatsCard } from './-components/EventQuickStatsCard';

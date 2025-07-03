@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from '@tradelink/ui/icons';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@tradelink/ui/components/avatar';
 import {

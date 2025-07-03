@@ -1,5 +1,5 @@
-import { ChevronsUpDown, Plus } from 'lucide-react'
-import * as React from 'react'
+import { ChevronsUpDown, Plus } from '@tradelink/ui/icons';
+import * as React from 'react';
 
 import {
   DropdownMenu,
@@ -8,23 +8,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@tradelink/ui/components/dropdown-menu'
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tradelink/ui/components/sidebar'
+} from '@tradelink/ui/components/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tradelink/ui/components/sidebar';
 
 export function TeamSwitcher({
   teams,
 }: {
   teams: {
-    name: string
-    logo?: React.ElementType
-    plan: string
-  }[]
+    name: string;
+    logo?: React.ElementType;
+    plan: string;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const { isMobile } = useSidebar();
+  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
 
   if (!activeTeam) {
-    return null
+    return null;
   }
 
   return (
@@ -73,5 +73,5 @@ export function TeamSwitcher({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

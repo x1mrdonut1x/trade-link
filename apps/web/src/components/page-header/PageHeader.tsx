@@ -1,7 +1,7 @@
 import { Link, type LinkProps } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Input } from '@tradelink/ui/components/input';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft, Search } from '@tradelink/ui/icons';
 import React from 'react';
 
 interface HeaderAction {
