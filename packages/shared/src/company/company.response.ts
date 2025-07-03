@@ -18,7 +18,7 @@ export interface CompanyDto {
 
 export type GetCompanyResponse = CompanyDto & { contact: Pick<ContactDto, 'id' | 'firstName' | 'lastName' | 'email' | 'jobTitle'>[] };
 
-export type GetAllCompaniesResponse = CompanyDto[];
+export type GetAllCompaniesResponse = (CompanyDto & { contacts: number })[];
 
 export type CreateCompanyResponse = CompanyDto;
 

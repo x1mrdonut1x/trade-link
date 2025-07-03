@@ -1,4 +1,4 @@
-import type { GetCompanyResponse } from '@tradelink/shared/company';
+import type { GetCompanyResponse } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Globe, Mail, MapPin, Phone, Users } from 'lucide-react';
 

@@ -1,5 +1,7 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
+import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
+import { ArrowLeft, PersonStanding } from '@tradelink/ui/icons';
 import { useGetContact } from 'api/contact/hooks';
 import { ContactForm } from 'components/contact/ContactForm';
 import { PageHeader } from 'components/page-header/PageHeader';
@@ -39,15 +41,33 @@ export function EditContact() {
     router.history.back();
   };
 
+  if (!contactQuery.data) {
+    return (
+      <div className="text-center py-12">
+        <PersonStanding className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Contact not found</h3>
+        <p className="text-muted-foreground mb-4">The contact you're looking for doesn't exist.</p>
+        <Button>
+          <Link to="/contacts">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Contacts
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <>
       <PageHeader title="Edit Contact" />
 
-      <Card>
-        <CardContent className="pt-6">
-          <ContactForm contact={contactQuery.data} onSuccess={handleSuccess} onCancel={handleCancel} />
-        </CardContent>
-      </Card>
+      <div className="max-w-2xl sm:mx-auto">
+        <Card>
+          <CardContent className="pt-6">
+            <ContactForm contact={contactQuery.data} onSuccess={handleSuccess} onCancel={handleCancel} />
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }

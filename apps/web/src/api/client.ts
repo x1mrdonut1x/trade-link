@@ -15,6 +15,10 @@ export async function myFetch<T = unknown>(
 
   const parsedBody = JSON.stringify(data?.body);
 
+  if (data?.method !== 'GET') {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
   const response = await fetch(parsedUrl, { ...data, headers, body: parsedBody });
 
   return response.json() as T;

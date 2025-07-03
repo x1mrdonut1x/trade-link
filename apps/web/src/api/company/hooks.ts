@@ -27,7 +27,7 @@ export function useCreateCompany(options?: MutationOptions<CreateCompanyResponse
     ...options,
     onSuccess: (...args) => {
       options?.onSuccess?.(...args);
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_QUERY_KEY] });
+      queryClient.resetQueries({ queryKey: [COMPANIES_QUERY_KEY] });
     },
   });
 }
@@ -40,8 +40,8 @@ export function useUpdateCompany(options?: MutationOptions<UpdateCompanyResponse
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_QUERY_KEY] });
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_QUERY_KEY, variables.id] });
+      queryClient.resetQueries({ queryKey: [COMPANIES_QUERY_KEY] });
+      queryClient.resetQueries({ queryKey: [COMPANIES_QUERY_KEY, variables.id] });
     },
   });
 }
@@ -52,7 +52,7 @@ export function useDeleteCompany() {
   return useMutation({
     mutationFn: companyApi.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_QUERY_KEY] });
+      queryClient.resetQueries({ queryKey: [COMPANIES_QUERY_KEY] });
     },
   });
 }

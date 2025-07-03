@@ -19,7 +19,15 @@ export class CompanyService {
     const company = await this.prisma.company.findUniqueOrThrow({
       where: { id },
       include: {
-        contact: true,
+        contact: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            jobTitle: true,
+          },
+        },
         company_type_tag: true,
       },
     });
@@ -74,8 +82,12 @@ export class CompanyService {
 
     const companies = await this.prisma.company.findMany({
       where: whereClause,
+      include: { contact: { select: { id: true } } },
     });
 
-    return companies;
+    return companies.map((company) => ({
+      ...company,
+      contacts: company.contact.length,
+    }));
   }
 }

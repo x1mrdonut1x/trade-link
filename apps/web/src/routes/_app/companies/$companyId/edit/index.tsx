@@ -1,13 +1,13 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Card, CardContent } from '@tradelink/ui/components/card';
 import { useGetCompany } from 'api/company';
 import { CompanyForm } from 'components/company/CompanyForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { ArrowLeft, Building2, Link } from 'lucide-react';
 
-export const Route = createFileRoute('/_app/companies/$companyId/edit')({
+export const Route = createFileRoute('/_app/companies/$companyId/edit/')({
   component: EditCompany,
 });
 
@@ -64,11 +64,8 @@ function EditCompany() {
     <>
       <PageHeader title={`Edit ${company.name}`} backTo={`/companies/${companyId}`} />
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl sm:mx-auto">
         <Card>
-          <CardHeader>
-            <CardTitle>Company Information</CardTitle>
-          </CardHeader>
           <CardContent className="pt-6">
             <CompanyForm company={company} onSuccess={handleSuccess} onCancel={handleCancel} />
           </CardContent>

@@ -27,7 +27,7 @@ export function useCreateContact(options?: MutationOptions<CreateContactResponse
     ...options,
     onSuccess: (...args) => {
       options?.onSuccess?.(...args);
-      queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY] });
+      queryClient.resetQueries({ queryKey: [CONTACTS_QUERY_KEY] });
     },
   });
 }
@@ -40,8 +40,8 @@ export function useUpdateContact(options?: MutationOptions<UpdateContactResponse
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
-      queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY] });
-      queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY, variables.id] });
+      queryClient.resetQueries({ queryKey: [CONTACTS_QUERY_KEY] });
+      queryClient.resetQueries({ queryKey: [CONTACTS_QUERY_KEY, variables.id] });
     },
   });
 }
@@ -52,7 +52,7 @@ export function useDeleteContact() {
   return useMutation({
     mutationFn: contactApi.deleteContact,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CONTACTS_QUERY_KEY] });
+      queryClient.resetQueries({ queryKey: [CONTACTS_QUERY_KEY] });
     },
   });
 }

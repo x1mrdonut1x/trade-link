@@ -4,8 +4,9 @@ import { Button } from '@tradelink/ui/components/button';
 import { FormInput } from '@tradelink/ui/components/form-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Save } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useCreateCompany, useUpdateCompany } from '../../api/company/hooks';
+import { CountrySelector } from '../country-selector/CountrySelector';
 
 interface CompanyFormProps {
   company?: GetCompanyResponse;
@@ -27,7 +28,8 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    control,
+    formState: { errors },
     reset,
     watch,
     setValue,
@@ -76,7 +78,22 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormInput label="City" {...register('city')} error={errors.city?.message} />
-        <FormInput label="Country" {...register('country')} error={errors.country?.message} />
+
+        <FormInput label="Country" {...register('country')} error={errors.country?.message}>
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <CountrySelector
+                value={field.value || ''}
+                onValueChange={field.onChange}
+                placeholder="Select country..."
+                searchPlaceholder="Search countries..."
+                emptyText="No countries found."
+              />
+            )}
+          />
+        </FormInput>
       </div>
 
       <div>
@@ -91,9 +108,9 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
       </div>
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={isSubmitting || createCompany.isPending || updateCompany.isPending} className="flex-1">
+        <Button type="submit" loading={createCompany.isPending || updateCompany.isPending} className="flex-1">
           <Save className="h-4 w-4 mr-2" />
-          {isSubmitting || createCompany.isPending || updateCompany.isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Save Company'}
+          {isEdit ? 'Save Changes' : 'Save Company'}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>

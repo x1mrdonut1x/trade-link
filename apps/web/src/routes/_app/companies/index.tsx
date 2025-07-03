@@ -68,23 +68,12 @@ function Companies() {
         <div className="text-center py-8">Loading companies...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {companies?.map((company: any) => (
+          {companies?.map(company => (
             <div key={company.id} onClick={() => handleCompanyClick(company.id)} className="cursor-pointer">
               <CompanyCard
                 company={{
-                  id: company.id,
-                  name: company.name,
-                  industry: (company.contactData as any)?.industry || 'Not specified',
-                  size: (company.contactData as any)?.size || 'Not specified',
-                  location: (company.contactData as any)?.location || 'Not specified',
-                  phone: company.phone || 'Not provided',
-                  email: company.email || 'Not provided',
-                  website: (company.contactData as any)?.website || 'Not provided',
-                  agentsCount: company.contact?.length || 0,
-                  eventsCount: 0, // TODO: Add events relationship
-                  lastContact: 'Not recorded', // TODO: Add last contact tracking
-                  tags: company.company_type_tag?.map((tag: any) => tag.name) || [],
-                  customFields: [], // TODO: Add custom fields support
+                  ...company,
+                  contactsCount: company.contacts || 0,
                 }}
               />
             </div>

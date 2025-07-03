@@ -59,7 +59,7 @@ export function PageHeader({
         </div>
 
         {actions.length > 0 && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap justify-end">
             {actions.map((action, index) => (
               <Button key={index} variant={action.variant || 'default'} onClick={action.onClick} asChild={Boolean(action.link)}>
                 {action.link ? (

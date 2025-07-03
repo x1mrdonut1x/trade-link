@@ -46,15 +46,13 @@ export function AddContact() {
         ]}
       />
 
-      <Card>
-        <CardContent className="pt-6">
-          <ContactForm 
-            defaultCompanyId={companyId}
-            onSuccess={handleSuccess} 
-            onCancel={handleCancel} 
-          />
-        </CardContent>
-      </Card>
+      <div className="max-w-2xl sm:mx-auto">
+        <Card>
+          <CardContent className="pt-6">
+            <ContactForm defaultCompanyId={companyId} onSuccess={handleSuccess} onCancel={handleCancel} />
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }

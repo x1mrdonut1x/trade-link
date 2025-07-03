@@ -6,7 +6,7 @@ import { AppSidebar } from '../sidebar/Sidebar';
 
 export const Content = () => {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-6 space-y-6">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

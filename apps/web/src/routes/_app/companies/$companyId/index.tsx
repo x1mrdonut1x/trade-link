@@ -1,22 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { useGetCompany } from 'api/company/hooks';
-import { AssignContactDialog } from 'components/contact/AssignContactDialog';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
-import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare, UserPlus } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from 'lucide-react';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
+import { SalesAgentsCard } from './-components/SalesAgentsCard';
 
 export const Route = createFileRoute('/_app/companies/$companyId/')({
   component: CompanyDetail,
 });
 
 function CompanyDetail() {
-  const params = Route.useParams();
-  const companyId = params.companyId;
-  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const { companyId } = Route.useParams();
 
   // Try to get company from API first, fallback to mock data
   const { data: company, isLoading } = useGetCompany(companyId);
@@ -62,12 +59,6 @@ function CompanyDetail() {
         backTo="/companies"
         actions={[
           {
-            label: 'Add Contact',
-            icon: UserPlus,
-            variant: 'outline',
-            onClick: () => setIsAssignDialogOpen(true),
-          },
-          {
             label: 'Schedule Event',
             icon: CalendarPlus,
             variant: 'outline',
@@ -86,23 +77,12 @@ function CompanyDetail() {
         ]}
       />
 
-      <AssignContactDialog 
-        companyId={Number(companyId)} 
-        onContactAssigned={() => {
-          // Optionally refresh company data or show success message
-          console.log('Contact assigned successfully');
-          setIsAssignDialogOpen(false);
-        }} 
-        open={isAssignDialogOpen}
-        onOpenChange={setIsAssignDialogOpen}
-      />
-
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Company Overview */}
         <div className="lg:col-span-2 space-y-6">
           <CompanyInfoCard company={company} />
+          <SalesAgentsCard contacts={company.contact} companyId={companyId} />
           {/* <AdditionalDetailsCard customFields={company.customFields} />
-          <SalesAgentsCard agents={company.agents} />
           <RecentEventsCard events={company.recentEvents} /> */}
         </div>
 

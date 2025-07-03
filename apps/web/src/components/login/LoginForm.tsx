@@ -95,8 +95,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   />
                   {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
                 </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? 'Logging in...' : 'Login'}
+                <Button type="submit" className="w-full" loading={isSubmitting}>
+                  Login
                 </Button>
               </div>
               <div className="text-center text-sm">

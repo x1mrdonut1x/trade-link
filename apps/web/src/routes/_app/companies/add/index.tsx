@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Card, CardContent } from '@tradelink/ui/components/card';
 import { CompanyForm } from 'components/company/CompanyForm';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
@@ -29,11 +29,8 @@ function AddCompany() {
     <>
       <PageHeader title="Add New Company" backTo="/companies" />
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl sm:mx-auto">
         <Card>
-          <CardHeader>
-            <CardTitle>Company Information</CardTitle>
-          </CardHeader>
           <CardContent className="pt-6">
             <CompanyForm onSuccess={handleSuccess} onCancel={handleCancel} />
           </CardContent>

@@ -63,8 +63,8 @@ export function UserForm() {
               <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
             </div>
 
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create User'}
+            <Button type="submit" loading={loading}>
+              Create User
             </Button>
           </form>
         </CardContent>

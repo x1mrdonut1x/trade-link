@@ -5,10 +5,10 @@ import { Button } from '@tradelink/ui/components/button';
 import { FormInput } from '@tradelink/ui/components/form-input';
 import { Input } from '@tradelink/ui/components/input';
 import { Label } from '@tradelink/ui/components/label';
-import { Combobox, type ComboboxOption } from '@tradelink/ui/components/combobox';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useCreateContact, useUpdateContact } from '../../api/contact/hooks';
-import { useGetAllCompanies } from '../../api/company/hooks';
+import { CompanySelector } from '../company-selector/CompanySelector';
+import { CountrySelector } from '../country-selector/CountrySelector';
 
 interface ContactFormProps {
   contact?: ContactWithCompanyDto;
@@ -19,8 +19,7 @@ interface ContactFormProps {
 
 export function ContactForm({ contact, defaultCompanyId, onSuccess, onCancel }: ContactFormProps) {
   const isEdit = !!contact;
-  const { data: companies = [] } = useGetAllCompanies();
-  
+
   const createContact = useCreateContact({
     onSuccess: data => {
       onSuccess?.(data.id);
@@ -36,8 +35,7 @@ export function ContactForm({ contact, defaultCompanyId, onSuccess, onCancel }: 
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
-    reset,
+    formState: { errors },
   } = useForm<CreateContactRequest>({
     resolver: zodResolver(contactSchema.create),
     defaultValues: {
@@ -46,17 +44,11 @@ export function ContactForm({ contact, defaultCompanyId, onSuccess, onCancel }: 
     },
   });
 
-  const companyOptions: ComboboxOption[] = companies.map((company) => ({
-    value: company.id.toString(),
-    label: company.name,
-  }));
-
   const onSubmit = (data: CreateContactRequest) => {
     if (isEdit) {
       updateContact.mutate({ id: contact.id, data });
     } else {
       createContact.mutate(data);
-      reset();
     }
   };
 
@@ -82,19 +74,16 @@ export function ContactForm({ contact, defaultCompanyId, onSuccess, onCancel }: 
             name="companyId"
             control={control}
             render={({ field }) => (
-              <Combobox
-                options={companyOptions}
+              <CompanySelector
                 value={field.value?.toString() || ''}
-                onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                onValueChange={value => field.onChange(value ? Number(value) : null)}
                 placeholder="Select a company..."
                 searchPlaceholder="Search companies..."
                 emptyText="No companies found."
               />
             )}
           />
-          {errors.companyId && (
-            <p className="text-sm text-destructive">{errors.companyId.message}</p>
-          )}
+          {errors.companyId && <p className="text-sm text-destructive">{errors.companyId.message}</p>}
         </div>
       </div>
 
@@ -113,7 +102,23 @@ export function ContactForm({ contact, defaultCompanyId, onSuccess, onCancel }: 
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Location</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormInput label="Country" {...register('country')} error={errors.country?.message} />
+          <div className="space-y-2">
+            <Label>Country</Label>
+            <Controller
+              name="country"
+              control={control}
+              render={({ field }) => (
+                <CountrySelector
+                  value={field.value || ''}
+                  onValueChange={field.onChange}
+                  placeholder="Select country..."
+                  searchPlaceholder="Search countries..."
+                  emptyText="No countries found."
+                />
+              )}
+            />
+            {errors.country && <p className="text-sm text-destructive">{errors.country.message}</p>}
+          </div>
           <FormInput label="City" {...register('city')} error={errors.city?.message} />
         </div>
         <FormInput label="Address" {...register('address')} error={errors.address?.message} />
@@ -121,8 +126,8 @@ export function ContactForm({ contact, defaultCompanyId, onSuccess, onCancel }: 
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : isEdit ? 'Update Contact' : 'Create Contact'}
+        <Button type="submit" loading={createContact.isPending || updateContact.isPending} className="flex-1">
+          {isEdit ? 'Update Contact' : 'Create Contact'}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
