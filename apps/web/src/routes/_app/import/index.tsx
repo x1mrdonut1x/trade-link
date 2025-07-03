@@ -1,297 +1,288 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Button } from '@tradelink/ui/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Label } from '@tradelink/ui/components/label';
-import { AlertTriangle, Building2, Calendar, CheckCircle, Download, FileSpreadsheet, FileText, Upload, Users } from '@tradelink/ui/icons';
+import { ImportAPI } from 'api/import/import.service';
+import {
+  DataPreviewStep,
+  FieldMappingStep,
+  FileUploadStep,
+  ImportCompleteStep,
+  ImportHelpSidebar,
+  parseCSV,
+  type CsvColumn,
+  type FieldMapping,
+  type ImportPreviewResponse,
+  type ImportStep,
+  type ImportType,
+} from 'components/import';
 import { PageHeader } from 'components/page-header/PageHeader';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/_app/import/')({
   component: ImportDataPage,
 });
 
-interface ImportStep {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-  active: boolean;
-}
-
-interface ImportStats {
-  totalRecords: number;
-  companies: number;
-  contacts: number;
-  events: number;
-  errors: number;
-}
-
 function ImportDataPage() {
+  // State for the import process
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [importType, setImportType] = useState<'companies' | 'contacts' | 'events' | 'all'>('all');
+  const [importType, setImportType] = useState<ImportType>('mixed');
+  const [csvColumns, setCsvColumns] = useState<CsvColumn[]>([]);
+  const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([]);
+  const [previewData, setPreviewData] = useState<ImportPreviewResponse | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importComplete, setImportComplete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [importStats, setImportStats] = useState<any>(null);
 
-  const [importSteps, setImportSteps] = useState<ImportStep[]>([
-    { id: 1, title: 'Upload File', description: 'Select your CSV or Excel file', completed: false, active: true },
-    { id: 2, title: 'Map Fields', description: 'Match your columns to our fields', completed: false, active: false },
-    { id: 3, title: 'Review Data', description: 'Preview and validate your data', completed: false, active: false },
-    { id: 4, title: 'Import', description: 'Import your data into the system', completed: false, active: false },
-  ]);
+  const importSteps: ImportStep[] = [
+    { id: 1, title: 'Upload File', description: 'Select your CSV file', completed: currentStep > 1, active: currentStep === 1 },
+    { id: 2, title: 'Map Fields', description: 'Match your columns to our fields', completed: currentStep > 2, active: currentStep === 2 },
+    { id: 3, title: 'Review Data', description: 'Preview and validate your data', completed: currentStep > 3, active: currentStep === 3 },
+    { id: 4, title: 'Import', description: 'Import your data into the system', completed: importComplete, active: currentStep === 4 },
+  ];
 
-  const [importStats] = useState<ImportStats>({
-    totalRecords: 245,
-    companies: 67,
-    contacts: 156,
-    events: 22,
-    errors: 3,
-  });
+  const handleFileSelect = async (file: File) => {
+    setSelectedFile(file);
+    setError(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      // Update steps
-      const newSteps = [...importSteps];
-      newSteps[0].completed = true;
-      newSteps[1].active = true;
-      setImportSteps(newSteps);
+    try {
+      const columns = await parseCSV(file);
+      setCsvColumns(columns);
+
+      // Auto-map some common fields
+      const autoMappings: FieldMapping[] = [];
+      columns.forEach(column => {
+        const columnName = column.name.toLowerCase().trim();
+
+        // Auto-map common field names
+        if (columnName.includes('first') && columnName.includes('name')) {
+          autoMappings.push({ csvColumn: column.name, targetField: 'firstName' });
+        } else if (columnName.includes('last') && columnName.includes('name')) {
+          autoMappings.push({ csvColumn: column.name, targetField: 'lastName' });
+        } else if (columnName === 'email') {
+          autoMappings.push({ csvColumn: column.name, targetField: 'email' });
+        } else if (columnName === 'company' || columnName === 'company name') {
+          autoMappings.push({ csvColumn: column.name, targetField: importType === 'contacts' ? 'companyName' : 'name' });
+        } else if (columnName === 'phone') {
+          autoMappings.push({ csvColumn: column.name, targetField: 'phoneNumber' });
+        } else if (columnName === 'city') {
+          autoMappings.push({ csvColumn: column.name, targetField: 'city' });
+        } else if (columnName === 'country') {
+          autoMappings.push({ csvColumn: column.name, targetField: 'country' });
+        }
+      });
+
+      setFieldMappings(autoMappings);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to parse CSV file');
     }
   };
 
-  const handleImport = () => {
-    setIsImporting(true);
-    // Simulate import process
-    setTimeout(() => {
-      setIsImporting(false);
-      setImportComplete(true);
-      const newSteps = importSteps.map(step => ({ ...step, completed: true, active: false }));
-      setImportSteps(newSteps);
-    }, 3000);
+  const handleNext = () => {
+    setCurrentStep(prev => prev + 1);
   };
 
-  const downloadTemplate = (type: string) => {
-    // In a real app, this would download the actual template
-    console.log(`Downloading ${type} template...`);
+  const handleBack = () => {
+    setCurrentStep(prev => prev - 1);
+  };
+
+  const handleProcessData = async () => {
+    if (!csvColumns.length || !fieldMappings.length) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      // Create the request for the backend
+      const csvData = csvColumns[0].values.map((_, rowIndex) => csvColumns.map(col => col.values[rowIndex] || ''));
+
+      const processResponse = await ImportAPI.processImport({
+        csvData,
+        fieldMappings,
+        importType,
+      });
+
+      setPreviewData(processResponse);
+      setCurrentStep(3);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to process data');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleEntryToggle = (type: 'companies' | 'contacts', index: number) => {
+    if (!previewData) return;
+
+    const updatedData = { ...previewData };
+    if (type === 'companies') {
+      updatedData.companies[index].selected = !updatedData.companies[index].selected;
+    } else {
+      updatedData.contacts[index].selected = !updatedData.contacts[index].selected;
+    }
+    setPreviewData(updatedData);
+  };
+
+  const handleCompanyChange = (contactIndex: number, companyId: number | null) => {
+    if (!previewData) return;
+
+    const updatedData = { ...previewData };
+    if (companyId) {
+      updatedData.contacts[contactIndex].matchedCompany = { id: companyId, name: 'Selected Company' };
+    } else {
+      updatedData.contacts[contactIndex].matchedCompany = undefined;
+    }
+    setPreviewData(updatedData);
+  };
+
+  const handleImport = async () => {
+    if (!previewData) return;
+
+    setIsImporting(true);
+    setError(null);
+
+    try {
+      const selectedCompanies = previewData.companies.filter(entry => entry.selected);
+      const selectedContacts = previewData.contacts.filter(entry => entry.selected);
+
+      const executeResponse = await ImportAPI.executeImport({
+        companies: selectedCompanies.map(entry => ({
+          data: entry.data,
+          action: entry.action,
+          existingId: entry.existingId,
+        })),
+        contacts: selectedContacts.map(entry => ({
+          data: entry.data,
+          action: entry.action,
+          existingId: entry.existingId,
+          companyId: entry.matchedCompany?.id,
+        })),
+      });
+
+      setImportStats(executeResponse.stats);
+      setImportComplete(true);
+      setCurrentStep(4);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to import data');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleStartOver = () => {
+    setCurrentStep(1);
+    setSelectedFile(null);
+    setCsvColumns([]);
+    setFieldMappings([]);
+    setPreviewData(null);
+    setImportComplete(false);
+    setError(null);
+    setImportStats(null);
+  };
+
+  const handleDownloadTemplate = async (type: string) => {
+    try {
+      await ImportAPI.downloadTemplate(type);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to download template');
+    }
   };
 
   return (
     <>
-      <PageHeader
-        title="Import Data"
-        actions={[
-          {
-            label: 'Download Template',
-            icon: Download,
-            variant: 'outline',
-            onClick: () => downloadTemplate('companies'),
-          },
-        ]}
-      />
+      <PageHeader title="Import Data" />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Import Process */}
-        <div className="lg:col-span-2 space-y-6">
-          {!importComplete ? (
-            <>
-              {/* Progress Steps */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Import Process</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {importSteps.map(step => (
-                      <div
-                        key={step.id}
-                        className={`flex items-center gap-4 p-3 rounded-lg ${
-                          step.active
-                            ? 'bg-blue-50 border border-blue-200'
-                            : step.completed
-                              ? 'bg-green-50 border border-green-200'
-                              : 'bg-gray-50 border border-gray-200'
-                        }`}
-                      >
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            step.completed
-                              ? 'bg-green-500 text-white'
-                              : step.active
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-300 text-gray-600'
-                          }`}
-                        >
-                          {step.completed ? <CheckCircle className="h-4 w-4" /> : step.id}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{step.title}</h4>
-                          <p className="text-sm text-muted-foreground">{step.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* File Upload */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upload Your File</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="importType">Import Type</Label>
-                    <select
-                      id="importType"
-                      value={importType}
-                      onChange={e => setImportType(e.target.value as 'companies' | 'contacts' | 'events' | 'all')}
-                      className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
+      <div className="h-[calc(100vh-8rem)] flex flex-col space-y-6">
+        {currentStep <= 3 && !importComplete && (
+          <div className="bg-card border rounded-lg p-4 flex-shrink-0">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-medium">Import Progress</h3>
+              <span className="text-sm text-muted-foreground">Step {currentStep} of 4</span>
+            </div>
+            <div className="flex items-center gap-4">
+              {importSteps.map((step, index) => (
+                <div key={step.id} className="flex items-center">
+                  <div className="flex flex-col items-center min-w-0">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        step.completed ? 'bg-green-500 text-white' : step.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+                      }`}
                     >
-                      <option value="all">All Data (Companies, Contacts, Events)</option>
-                      <option value="companies">Companies Only</option>
-                      <option value="contacts">Contacts Only</option>
-                      <option value="events">Events Only</option>
-                    </select>
-                  </div>
-
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileSelect} className="hidden" id="file-upload" />
-                    <label htmlFor="file-upload" className="cursor-pointer">
-                      <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      {selectedFile ? (
-                        <div>
-                          <p className="text-lg font-medium">{selectedFile.name}</p>
-                          <p className="text-sm text-muted-foreground">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="text-lg font-medium">Drop your file here or click to browse</p>
-                          <p className="text-sm text-muted-foreground">Supports CSV, Excel (.xlsx, .xls)</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-
-                  {selectedFile && (
-                    <Button onClick={handleImport} disabled={isImporting} className="w-full">
-                      {isImporting ? 'Importing...' : 'Start Import'}
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            </>
-          ) : (
-            /* Import Complete */
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-6 w-6 text-green-500" />
-                  Import Complete!
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <FileText className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{importStats.totalRecords}</div>
-                    <div className="text-sm text-muted-foreground">Total Records</div>
-                  </div>
-                  <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <Building2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{importStats.companies}</div>
-                    <div className="text-sm text-muted-foreground">Companies</div>
-                  </div>
-                  <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <Users className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{importStats.contacts}</div>
-                    <div className="text-sm text-muted-foreground">Contacts</div>
-                  </div>
-                  <div className="text-center p-3 bg-orange-50 rounded-lg">
-                    <Calendar className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{importStats.events}</div>
-                    <div className="text-sm text-muted-foreground">Events</div>
-                  </div>
-                </div>
-
-                {importStats.errors > 0 && (
-                  <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                    <div>
-                      <p className="font-medium">{importStats.errors} records had errors</p>
-                      <p className="text-sm text-muted-foreground">These records were skipped. Download the error report to review.</p>
+                      {step.completed ? '✓' : step.id}
                     </div>
+                    <span
+                      className={`text-xs mt-1 font-medium text-center whitespace-nowrap ${
+                        step.active ? 'text-blue-600' : step.completed ? 'text-green-600' : 'text-gray-500'
+                      }`}
+                    >
+                      {step.title}
+                    </span>
                   </div>
-                )}
-
-                <div className="flex gap-2">
-                  <Button onClick={() => window.location.reload()}>Import More Data</Button>
-                  {importStats.errors > 0 && (
-                    <Button variant="outline">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download Error Report
-                    </Button>
+                  {index < importSteps.length - 1 && (
+                    <div className={`w-12 h-0.5 mx-3 ${step.completed ? 'bg-green-500' : 'bg-gray-200'}`} />
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-hidden">
+          {currentStep === 1 && (
+            <div className="grid gap-6 lg:grid-cols-4 h-full">
+              <div className="lg:col-span-3">
+                <FileUploadStep
+                  selectedFile={selectedFile}
+                  importType={importType}
+                  onFileSelect={handleFileSelect}
+                  onImportTypeChange={setImportType}
+                  onNext={handleNext}
+                />
+              </div>
+              <div>
+                <ImportHelpSidebar onDownloadTemplate={handleDownloadTemplate} />
+              </div>
+            </div>
           )}
-        </div>
 
-        {/* Help & Templates */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Download Templates</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start" onClick={() => downloadTemplate('companies')}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                Companies Template
-              </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => downloadTemplate('contacts')}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                Contacts Template
-              </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => downloadTemplate('events')}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                Events Template
-              </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => downloadTemplate('all')}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                Complete Template
-              </Button>
-            </CardContent>
-          </Card>
+          {currentStep === 2 && (
+            <div className="h-full">
+              <FieldMappingStep
+                csvColumns={csvColumns}
+                fieldMappings={fieldMappings}
+                importType={importType}
+                onMappingChange={setFieldMappings}
+                onNext={handleProcessData}
+                onBack={handleBack}
+              />
+            </div>
+          )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Import Tips</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <h4 className="font-medium mb-1">File Format</h4>
-                <p className="text-muted-foreground">Use CSV or Excel files. First row should contain column headers.</p>
-              </div>
-              <div>
-                <h4 className="font-medium mb-1">Required Fields</h4>
-                <p className="text-muted-foreground">
-                  Companies: Name, Industry
-                  <br />
-                  Contacts: First Name, Last Name, Email
-                  <br />
-                  Events: Name, Date, Location
-                </p>
-              </div>
-              <div>
-                <h4 className="font-medium mb-1">Custom Fields</h4>
-                <p className="text-muted-foreground">Additional columns will be imported as custom fields.</p>
-              </div>
-              <div>
-                <h4 className="font-medium mb-1">Data Validation</h4>
-                <p className="text-muted-foreground">Invalid records will be flagged and can be reviewed before import.</p>
-              </div>
-            </CardContent>
-          </Card>
+          {currentStep === 3 && (
+            <div className="h-full">
+              <DataPreviewStep
+                previewData={previewData}
+                isLoading={isProcessing}
+                error={error}
+                onEntryToggle={handleEntryToggle}
+                onCompanyChange={handleCompanyChange}
+                onNext={handleImport}
+                onBack={handleBack}
+              />
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <div className="h-full">
+              <ImportCompleteStep
+                isImporting={isImporting}
+                importComplete={importComplete}
+                importStats={importStats}
+                error={error}
+                onStartOver={handleStartOver}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
