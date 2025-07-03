@@ -33,14 +33,15 @@
     "db:studio": {
       "cache": false
     },
-    "build:watch": {
-      "cache": false,
-      "persistent": true
-    },
     "build:api": {
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build", "@tradelink/api#build"],
+      "cache": false
+    },
+    "start:api": {
       "cache": false
     },
     "build:web": {
+      "dependsOn": ["@tradelink/shared#build", "@tradelink/web#build"],
       "cache": false
     }
   }
