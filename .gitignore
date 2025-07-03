@@ -47,6 +47,7 @@ Thumbs.db
 # Output of 'npm pack'
 *.tgz
 
-generated
-
 .tanstack
+
+generated
+.turbo

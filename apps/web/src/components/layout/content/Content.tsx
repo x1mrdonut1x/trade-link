@@ -1,12 +1,12 @@
 import { Outlet } from '@tanstack/react-router';
-import { AppSidebar } from '../sidebar/Sidebar';
+import { Separator } from '@tradelink/ui/components/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@tradelink/ui/components/sidebar';
 import { AppBreadcrumb } from '../breadcrumb/AppBreadcrumb';
-import { Separator } from '../../ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '../../ui/sidebar';
+import { AppSidebar } from '../sidebar/Sidebar';
 
 export const Content = () => {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-6 space-y-6">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

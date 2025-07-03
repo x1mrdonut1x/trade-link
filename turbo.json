@@ -1,0 +1,48 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["@tradelink/api#db:generate", "^build"],
+      "outputs": ["dist/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["DATABASE_URL"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "dev": {
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build"],
+      "cache": false,
+      "persistent": true,
+      "interruptible": true
+    },
+    "db:generate": {
+      "cache": true
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false
+    },
+    "build:api": {
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build", "@tradelink/api#build"],
+      "cache": false
+    },
+    "start:api": {
+      "cache": false
+    },
+    "build:web": {
+      "dependsOn": ["@tradelink/shared#build", "@tradelink/web#build"],
+      "cache": false
+    }
+  }
+}

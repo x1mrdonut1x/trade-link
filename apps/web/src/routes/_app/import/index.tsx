@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { PageHeader } from '@/components/page-header/PageHeader';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Label } from '@tradelink/ui/components/label';
+import { PageHeader } from 'components/page-header/PageHeader';
 import { createFileRoute } from '@tanstack/react-router';
 import { AlertTriangle, Building2, Calendar, CheckCircle, Download, FileSpreadsheet, FileText, Upload, Users } from 'lucide-react';
 import React, { useState } from 'react';

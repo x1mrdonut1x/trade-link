@@ -1,30 +1,38 @@
-import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/page-header/PageHeader';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { 
-  ArrowLeft, 
-  Building2, 
-  Edit, 
-  UserPlus,
-  CalendarPlus,
-  MessageSquare
-} from 'lucide-react';
+import { Button } from '@tradelink/ui/components/button';
+import { useGetCompany } from 'api/company/hooks';
+import { PageHeader } from 'components/page-header/PageHeader';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
+import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from 'lucide-react';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
-import { AdditionalDetailsCard } from './-components/AdditionalDetailsCard';
-import { SalesAgentsCard } from './-components/SalesAgentsCard';
-import { RecentEventsCard } from './-components/RecentEventsCard';
-import { QuickStatsCard } from './-components/QuickStatsCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
-import { mockCompanies } from './-components/mockData';
+import { SalesAgentsCard } from './-components/SalesAgentsCard';
 
 export const Route = createFileRoute('/_app/companies/$companyId/')({
   component: CompanyDetail,
 });
 
 function CompanyDetail() {
-  const params = Route.useParams();
-  const companyId = params.companyId;
-  const company = mockCompanies.find(c => c.id === parseInt(companyId));
+  const { companyId } = Route.useParams();
+
+  const { data: company, isLoading } = useGetCompany(companyId);
+
+  useBreadcrumbSetup(
+    [
+      { title: 'Companies', href: '/companies', isActive: false },
+      {
+        title: company?.name || '',
+        href: `/companies/${companyId}`,
+        isActive: true,
+        isLoading: isLoading && !company,
+      },
+    ],
+    isLoading && !company
+  );
+
+  if (isLoading) {
+    return <div className="text-center py-8">Loading company...</div>;
+  }
 
   if (!company) {
     return (
@@ -46,29 +54,24 @@ function CompanyDetail() {
     <>
       <PageHeader
         title={company.name}
-        showBackButton={true}
         backTo="/companies"
         actions={[
           {
-            label: "Add Agent",
-            icon: UserPlus,
-            variant: "outline"
-          },
-          {
-            label: "Schedule Event",
+            label: 'Schedule Event',
             icon: CalendarPlus,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Send Message",
+            label: 'Send Message',
             icon: MessageSquare,
-            variant: "outline"
+            variant: 'outline',
           },
           {
-            label: "Edit Company",
+            label: 'Edit Company',
             icon: Edit,
-            variant: "default"
-          }
+            link: { to: '/companies/$companyId/edit', params: { companyId } },
+            variant: 'default',
+          },
         ]}
       />
 
@@ -76,18 +79,14 @@ function CompanyDetail() {
         {/* Company Overview */}
         <div className="lg:col-span-2 space-y-6">
           <CompanyInfoCard company={company} />
-          <AdditionalDetailsCard customFields={company.customFields} />
-          <SalesAgentsCard agents={company.agents} />
-          <RecentEventsCard events={company.recentEvents} />
+          <SalesAgentsCard contacts={company.contact} companyId={companyId} />
+          {/* <AdditionalDetailsCard customFields={company.customFields} />
+          <RecentEventsCard events={company.recentEvents} /> */}
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <QuickStatsCard 
-            agentsCount={company.agentsCount}
-            eventsCount={company.eventsCount}
-            lastContact={company.lastContact}
-          />
+          {/* <QuickStatsCard agentsCount={company.agentsCount} eventsCount={company.eventsCount} lastContact={company.lastContact} /> */}
           <QuickActionsCard />
         </div>
       </div>

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import type { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import type {
   CreateUserRequest,
   GetUserResponse,
   UpdateUserRequest,
-} from 'shared/user';
+} from '@tradelink/shared';
 
 @Injectable()
 export class UserService {

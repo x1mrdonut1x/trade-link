@@ -1,4 +1,4 @@
-import { PageHeader } from '@/components/page-header/PageHeader';
+import { PageHeader } from 'components/page-header/PageHeader';
 import { createFileRoute } from '@tanstack/react-router';
 import { PlusCircle } from 'lucide-react';
 import { useState } from 'react';

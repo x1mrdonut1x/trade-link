@@ -1,7 +1,7 @@
-import { Content } from '@/components/layout/content/Content';
-import { Login } from '@/components/login/Login';
-import { useAuth } from '@/context/auth-context';
-import type { RouterContext } from '@/lib/router';
+import { Content } from '../components/layout/content/Content';
+import { Login } from '../components/login/Login';
+import { useAuth } from '../context/auth-context';
+import type { RouterContext } from '../lib/router';
 import { createRootRouteWithContext, redirect } from '@tanstack/react-router';
 import z from 'zod';
 

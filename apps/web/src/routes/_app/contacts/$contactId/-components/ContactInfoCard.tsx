@@ -1,17 +1,22 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Mail, Phone, MapPin, Building2 } from 'lucide-react';
-import type { Contact } from './types';
+import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { Avatar, AvatarFallback } from '@tradelink/ui/components/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Building2, Mail, MapPin, Phone, User } from 'lucide-react';
 
 interface ContactInfoCardProps {
-  contact: Contact;
+  contact: ContactWithCompanyDto;
 }
 
 export function ContactInfoCard({ contact }: ContactInfoCardProps) {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
+
+  const fullPhone =
+    contact?.phonePrefix && contact?.phoneNumber ? `${contact.phonePrefix} ${contact.phoneNumber}` : contact?.phoneNumber || 'Not provided';
+
+  const location = [contact?.city, contact?.country].filter(Boolean).join(', ') || 'Not provided';
+  const companyName = contact.company?.name || 'No company';
 
   return (
     <Card>
@@ -24,24 +29,15 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
       <CardContent className="space-y-4">
         <div className="flex items-start gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={contact.avatar} alt={`${contact.firstName} ${contact.lastName}`} />
-            <AvatarFallback className="text-lg">
-              {getInitials(contact.firstName, contact.lastName)}
-            </AvatarFallback>
+            <AvatarFallback className="text-lg">{getInitials(contact.firstName, contact.lastName)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h3 className="text-xl font-semibold">{contact.firstName} {contact.lastName}</h3>
-            <p className="text-muted-foreground">{contact.title}</p>
-            <p className="text-sm text-muted-foreground mt-1">{contact.company}</p>
+            <h3 className="text-xl font-semibold">
+              {contact.firstName} {contact.lastName}
+            </h3>
+            {contact.jobTitle && <p className="text-muted-foreground">{contact.jobTitle}</p>}
+            <p className="text-sm text-muted-foreground mt-1">{companyName}</p>
           </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-1">
-          {contact.tags.map(tag => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -54,20 +50,20 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
             <div className="flex items-center gap-2 text-sm">
               <Phone className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Phone:</span>
-              <span>{contact.phone}</span>
+              <span>{fullPhone}</span>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Location:</span>
-              <span>{contact.location}</span>
+              <span>{location}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Building2 className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Company:</span>
-              <span>{contact.company}</span>
+              <span>{companyName}</span>
             </div>
           </div>
         </div>

@@ -1,14 +1,21 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@tradelink/typescript-config/react-library.json",
   "compilerOptions": {
+    "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "composite": true,
+
+    /* Bundler mode */
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
 
     /* Linting */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@tradelink/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["src"]

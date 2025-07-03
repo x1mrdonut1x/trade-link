@@ -1,8 +1,10 @@
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import tailwindcss from '@tailwindcss/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { defineConfig } from 'vite';
+import checker from 'vite-plugin-checker';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
@@ -11,11 +13,16 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
+    checker({
+      typescript: true,
+    }),
+    tsconfigPaths(),
     tailwindcss(),
   ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@tradelink/shared/*': path.resolve(__dirname, '../../packages/shared/src/*'),
     },
   },
   server: {
@@ -24,4 +31,4 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-})
+});

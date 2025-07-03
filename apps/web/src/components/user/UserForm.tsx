@@ -1,17 +1,17 @@
-import { createUser } from '../../api/user/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import type { CreateUserRequest, GetUserResponse } from '@tradelink/shared/user';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
+import { Input } from '@tradelink/ui/components/input';
 import React, { useState } from 'react';
-import type { CreateUserRequest, GetUserResponse } from 'shared/user';
+import { createUser } from '../../api/user/api';
 
 export function UserForm() {
   const [user, setUser] = useState<GetUserResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateUserRequest>({
     email: '',
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,7 @@ export function UserForm() {
     try {
       const newUser = await createUser(formData);
       setUser(newUser);
-      setFormData({ email: '', first_name: '', last_name: '' });
+      setFormData({ email: '', firstName: '', lastName: '' });
     } catch (error) {
       console.error('Failed to create user:', error);
     } finally {
@@ -50,21 +50,21 @@ export function UserForm() {
             </div>
 
             <div>
-              <label htmlFor="first_name" className="block text-sm font-medium mb-1">
+              <label htmlFor="firstName" className="block text-sm font-medium mb-1">
                 First Name
               </label>
-              <Input id="first_name" name="first_name" value={formData.first_name} onChange={handleChange} required />
+              <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
             </div>
 
             <div>
-              <label htmlFor="last_name" className="block text-sm font-medium mb-1">
+              <label htmlFor="lastName" className="block text-sm font-medium mb-1">
                 Last Name
               </label>
-              <Input id="last_name" name="last_name" value={formData.last_name} onChange={handleChange} required />
+              <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
             </div>
 
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create User'}
+            <Button type="submit" loading={loading}>
+              Create User
             </Button>
           </form>
         </CardContent>
@@ -84,7 +84,7 @@ export function UserForm() {
                 <strong>Email:</strong> {user.email}
               </p>
               <p>
-                <strong>Name:</strong> {user.first_name} {user.last_name}
+                <strong>Name:</strong> {user.firstName} {user.lastName}
               </p>
             </div>
           </CardContent>

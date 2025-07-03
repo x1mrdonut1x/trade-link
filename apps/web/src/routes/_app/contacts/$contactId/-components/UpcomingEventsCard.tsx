@@ -1,15 +1,14 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@tradelink/ui/components/badge';
+import { Button } from '@tradelink/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar, CalendarPlus, MapPin } from 'lucide-react';
-import type { Event } from './types';
 
 interface UpcomingEventsCardProps {
-  events: Event[];
+  events: any[]; // TODO replace;
 }
 
 export function UpcomingEventsCard({ events }: UpcomingEventsCardProps) {
-  const getStatusVariant = (status: Event['status']) => {
+  const getStatusVariant = (status: any) => {
     switch (status) {
       case 'upcoming':
         return 'default';
@@ -52,9 +51,7 @@ export function UpcomingEventsCard({ events }: UpcomingEventsCardProps) {
               </Badge>
             </div>
           ))}
-          {events.length === 0 && (
-            <p className="text-muted-foreground text-center py-6">No upcoming events scheduled.</p>
-          )}
+          {events.length === 0 && <p className="text-muted-foreground text-center py-6">No upcoming events scheduled.</p>}
         </div>
       </CardContent>
     </Card>

@@ -1,8 +1,7 @@
-import { BedDouble, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Store } from 'lucide-react';
+import { BedDouble, Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from 'lucide-react';
 import * as React from 'react';
 
-import { TeamSwitcher } from '@/components/layout/sidebar/TeamSwitcher';
-import { NavUser } from '@/components/layout/sidebar/User';
+import { Link, useMatchRoute } from '@tanstack/react-router';
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { Link, useMatchRoute } from '@tanstack/react-router';
+} from '@tradelink/ui/components/sidebar';
+import { TeamSwitcher } from '../../../components/layout/sidebar/TeamSwitcher';
+import { NavUser } from '../../../components/layout/sidebar/User';
 
 // This is sample data.
 const data = {
@@ -37,7 +37,7 @@ const data = {
     {
       name: 'Companies',
       url: '/companies',
-      icon: Store,
+      icon: Building2,
     },
     {
       name: 'Contacts',

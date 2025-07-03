@@ -1,4 +1,11 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  "extends": "@tradelink/typescript-config/vite.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": "./src/",
+    "paths": {
+      "@tradelink/shared/*": ["../../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src"]
 }
