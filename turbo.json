@@ -34,14 +34,14 @@
       "cache": false
     },
     "build:api": {
-      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build", "@tradelink/api#build"],
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/api#db:deploy", "@tradelink/shared#build", "@tradelink/api#build"],
       "cache": false
     },
     "start:api": {
       "cache": false
     },
     "build:web": {
-      "dependsOn": ["@tradelink/shared#build", "@tradelink/web#build"],
+      "dependsOn": ["@tradelink/web#build"],
       "cache": false
     }
   }

@@ -11,6 +11,7 @@
     "build:api": "turbo build:api",
     "start:api": "pnpm --filter api start",
     "db:migrate": "pnpm --filter api db:migrate",
+    "db:deploy": "pnpm --filter api db:deploy",
     "ui": "pnpm --filter @tradelink/ui ui"
   },
   "devDependencies": {
