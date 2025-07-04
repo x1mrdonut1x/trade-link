@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { cn } from '../lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 
@@ -47,19 +48,22 @@ function DataTable<T = any>({
     }
     if (column.key) {
       const value = item[column.key];
-      return value != null ? String(value) : '-';
+      return value == null ? '-' : String(value);
     }
     return '-';
   };
 
   const getCellAlignment = (align?: 'left' | 'center' | 'right') => {
     switch (align) {
-      case 'center':
+      case 'center': {
         return 'text-center';
-      case 'right':
+      }
+      case 'right': {
         return 'text-right';
-      default:
+      }
+      default: {
         return 'text-left';
+      }
     }
   };
 
@@ -75,9 +79,9 @@ function DataTable<T = any>({
     }
 
     if (typeof rowClassName === 'function') {
-      classes += ' ' + rowClassName(item, index);
+      classes += ` ${rowClassName(item, index)}`;
     } else if (rowClassName) {
-      classes += ' ' + rowClassName;
+      classes += ` ${rowClassName}`;
     }
 
     return classes.trim();

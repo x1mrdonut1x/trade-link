@@ -1,10 +1,11 @@
 import { Link } from '@tanstack/react-router';
-import type { GetCompanyResponse } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { UserPlus, Users } from '@tradelink/ui/icons';
 import { AssignContactDialog } from 'components/contact/AssignContactDialog';
 import { useState } from 'react';
+
+import type { GetCompanyResponse } from '@tradelink/shared';
 
 interface SalesAgentsCardProps {
   companyId: string | number;

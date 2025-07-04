@@ -1,6 +1,7 @@
-import type { GetCompanyResponse } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Globe, Mail, MapPin, Phone, Users } from '@tradelink/ui/icons';
+
+import type { GetCompanyResponse } from '@tradelink/shared';
 
 interface CompanyInfoCardProps {
   company: GetCompanyResponse;

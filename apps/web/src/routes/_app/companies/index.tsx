@@ -8,6 +8,7 @@ import { useGetAllCompanies } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
+
 import { CompanyCard } from './-components/CompanyCard';
 
 export const Route = createFileRoute('/_app/companies/')({

@@ -67,5 +67,6 @@ export function useBreadcrumbSetup(newBreadcrumbs: Omit<BreadcrumbItem, 'id'>[],
     return () => {
       setBreadcrumbs(prev => prev.filter(b => b.id !== id));
     };
-  }, [JSON.stringify(newBreadcrumbs), isLoading, setBreadcrumbs, setIsLoading]);
+    // eslint-disable-next-line
+  }, [id, isLoading, JSON.stringify(newBreadcrumbs), setBreadcrumbs, setIsLoading]);
 }

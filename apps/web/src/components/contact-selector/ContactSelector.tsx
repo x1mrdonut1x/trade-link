@@ -1,5 +1,6 @@
 import { Combobox, type ComboboxOption } from '@tradelink/ui/components/combobox';
 import { useEffect, useMemo, useState } from 'react';
+
 import { useGetAllContacts } from '../../api/contact/hooks';
 
 export interface ContactSelectorProps {
@@ -53,10 +54,22 @@ export function ContactSelector({
 
   const contactOptions: ComboboxOption[] = useMemo(
     () =>
-      filteredContacts.map(contact => ({
-        value: contact.id.toString(),
-        label: `${contact.firstName} ${contact.lastName}${contact.email ? ` (${contact.email})` : ''}${contact.company ? ` - ${contact.company.name}` : ''}`,
-      })),
+      filteredContacts.map(contact => {
+        let label = `${contact.firstName} ${contact.lastName}`;
+
+        if (contact.email) {
+          label += ` (${contact.email})`;
+        }
+
+        if (contact.company) {
+          label += ` - ${contact.company.name}`;
+        }
+
+        return {
+          value: contact.id.toString(),
+          label,
+        };
+      }),
     [filteredContacts]
   );
 

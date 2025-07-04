@@ -2,10 +2,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { PlusCircle } from '@tradelink/ui/icons';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useState } from 'react';
+
+import { mockTasks } from './-components/mockData';
 import { TaskCard, type Task } from './-components/TaskCard';
 import { TaskFilters } from './-components/TaskFilters';
 import { TaskStats } from './-components/TaskStats';
-import { mockTasks } from './-components/mockData';
 
 export const Route = createFileRoute('/_app/tasks/')({
   component: TasksPage,

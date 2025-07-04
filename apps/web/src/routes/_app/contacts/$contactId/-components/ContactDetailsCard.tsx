@@ -1,6 +1,7 @@
-import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Mail, MapPin, Phone } from '@tradelink/ui/icons';
+
+import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
 
 interface ContactDetailsCardProps {
   contact: ContactWithCompanyDto;

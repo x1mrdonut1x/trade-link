@@ -1,14 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { CreateContactRequest } from '@tradelink/shared';
 import { contactSchema, type ContactWithCompanyDto } from '@tradelink/shared/contact';
 import { Button } from '@tradelink/ui/components/button';
 import { FormInput } from '@tradelink/ui/components/form-input';
 import { Input } from '@tradelink/ui/components/input';
 import { Label } from '@tradelink/ui/components/label';
 import { Controller, useForm } from 'react-hook-form';
+
 import { useCreateContact, useUpdateContact } from '../../api/contact/hooks';
 import { CompanySelector } from '../company-selector/CompanySelector';
 import { CountrySelector } from '../country-selector/CountrySelector';
+
+import type { CreateContactRequest } from '@tradelink/shared';
 
 interface ContactFormProps {
   contact?: ContactWithCompanyDto;

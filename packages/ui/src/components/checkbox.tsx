@@ -1,6 +1,6 @@
-import * as React from "react"
-import { Check } from "lucide-react"
 import { cn } from "@tradelink/ui/lib/utils"
+import { Check } from "lucide-react"
+import * as React from "react"
 
 interface CheckboxProps {
   checked?: boolean;

@@ -4,8 +4,9 @@ import { Separator } from '@tradelink/ui/components/separator';
 import { UserPlus, Users } from '@tradelink/ui/icons';
 import { useUpdateContact } from 'api/contact/hooks';
 import { useState } from 'react';
-import { ContactSelector } from '../contact-selector/ContactSelector';
+
 import { ContactForm } from './ContactForm';
+import { ContactSelector } from '../contact-selector/ContactSelector';
 
 interface AssignContactDialogProps {
   companyId: number;
@@ -20,7 +21,7 @@ export function AssignContactDialog({ companyId, onContactAssigned, open: contro
   const [selectedContactId, setSelectedContactId] = useState<string>('');
 
   // Use controlled or uncontrolled state
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const open = controlledOpen === undefined ? internalOpen : controlledOpen;
   const setOpen = onOpenChange || setInternalOpen;
 
   const updateContactMutation = useUpdateContact({

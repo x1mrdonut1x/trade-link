@@ -1,51 +1,43 @@
-import * as React from "react"
-import { cn } from "@tradelink/ui/lib/utils"
-import { Input } from "./input"
-import { Label } from "./label"
+import { cn } from '@tradelink/ui/lib/utils';
+import * as React from 'react';
 
-interface FormInputProps extends React.ComponentProps<"input"> {
-  label?: string
-  error?: string
-  required?: boolean
-  containerClassName?: string
+import { Input } from './input';
+import { Label } from './label';
+
+interface FormInputProps extends React.ComponentProps<'input'> {
+  label?: string;
+  error?: string;
+  required?: boolean;
+  containerClassName?: string;
   /** Custom content to render instead of the default Input */
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
-function FormInput({ 
-  label, 
-  error, 
-  required = false, 
-  className, 
+function FormInput({
+  label,
+  error,
+  required = false,
+  className,
   containerClassName,
   id,
   children,
-  ...props 
+  ...props
 }: FormInputProps) {
   // Generate a unique id if not provided
-  const inputId = id || React.useId()
+  const inputId = id || React.useId();
 
   return (
-    <div className={cn("space-y-1", containerClassName)}>
+    <div className={cn('space-y-1', containerClassName)}>
       {label && (
-        <Label htmlFor={inputId}>
+        <Label htmlFor={inputId} aria-required={required} className="gap-1">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-500">*</span>}
         </Label>
       )}
-      {children || (
-        <Input 
-          id={inputId}
-          className={className}
-          aria-invalid={!!error}
-          {...props}
-        />
-      )}
-      {error && (
-        <p className="text-sm text-red-600 mt-1">{error}</p>
-      )}
+      {children || <Input id={inputId} className={className} aria-invalid={!!error} {...props} />}
+      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
-  )
+  );
 }
 
-export { FormInput, type FormInputProps }
+export { FormInput, type FormInputProps };

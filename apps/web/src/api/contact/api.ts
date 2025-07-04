@@ -1,3 +1,5 @@
+import { myFetch } from '../client';
+
 import type {
   CreateContactRequest,
   CreateContactResponse,
@@ -8,7 +10,6 @@ import type {
   UpdateContactRequest,
   UpdateContactResponse,
 } from '@tradelink/shared';
-import { myFetch } from '../client';
 
 export const contactApi = {
   getAllContacts: (query: Partial<GetAllContactsQuery>) => {

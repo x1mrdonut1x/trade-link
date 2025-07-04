@@ -1,3 +1,5 @@
+import { myFetch } from '../client';
+
 import type {
   CreateCompanyRequest,
   CreateCompanyResponse,
@@ -8,7 +10,6 @@ import type {
   UpdateCompanyRequest,
   UpdateCompanyResponse,
 } from '@tradelink/shared';
-import { myFetch } from '../client';
 
 export const companyApi = {
   getAll: (query: Partial<GetAllCompaniesQuery>) => {

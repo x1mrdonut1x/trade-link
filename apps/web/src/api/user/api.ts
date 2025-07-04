@@ -1,5 +1,6 @@
-import type { CreateUserRequest, GetUserResponse, UpdateUserRequest } from '@tradelink/shared/user';
 import { myFetch } from '../client';
+
+import type { CreateUserRequest, GetUserResponse, UpdateUserRequest } from '@tradelink/shared/user';
 
 export function getAllUsers() {
   return myFetch<GetUserResponse[]>('/users');

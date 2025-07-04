@@ -1,47 +1,67 @@
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import type { AuthenticatedUser, LoginRequest, RegisterRequest } from '@tradelink/shared/auth';
+import { authApi } from 'api/auth/api';
+import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
+import { useAuthState } from '../hooks/use-auth-state';
+import { authStorage } from '../lib/auth-utils';
 
 export interface IAuthContext {
   isAuthenticated: boolean;
-  login: (username: string) => Promise<void>;
+  login: (credentials: LoginRequest) => Promise<void>;
+  register: (credentials: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
-  user: string | null;
+  user?: AuthenticatedUser;
 }
 
-const AuthContext = createContext<IAuthContext | null>(null);
-
-const storedUserKey = 'tanstack.auth.user';
-
-function getStoredUser() {
-  return localStorage.getItem(storedUserKey);
-}
-
-function setStoredUser(user: string | null) {
-  if (user) {
-    localStorage.setItem(storedUserKey, user);
-  } else {
-    localStorage.removeItem(storedUserKey);
-  }
-}
+const AuthContext = createContext<IAuthContext>({} as any);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<string | null>(getStoredUser());
-  const isAuthenticated = !!user;
+  const [user, setUser] = useState<AuthenticatedUser | undefined>(authStorage.getUser() || undefined);
+
+  const { authState, setAuthenticated } = useAuthState();
+
+  const isAuthenticated = authState.isAuthenticated && !!user;
 
   const logout = useCallback(async () => {
-    setStoredUser(null);
-    setUser(null);
-  }, []);
+    authStorage.clearAll();
+    setUser(undefined);
+    setAuthenticated(false);
+  }, [setAuthenticated]);
 
-  const login = useCallback(async (username: string) => {
-    setStoredUser(username);
-    setUser(username);
-  }, []);
+  const login = useCallback(
+    async (credentials: LoginRequest) => {
+      const response = await authApi.login(credentials);
+      authStorage.setUser(response.user);
+      authStorage.setToken(response.access_token);
+      setUser(response.user);
+      setAuthenticated(true);
+    },
+    [setAuthenticated]
+  );
 
-  useEffect(() => {
-    setUser(getStoredUser());
-  }, []);
+  const register = useCallback(
+    async (credentials: RegisterRequest) => {
+      const response = await authApi.register(credentials);
+      authStorage.setUser(response.user);
+      authStorage.setToken(response.access_token);
+      setUser(response.user);
+      setAuthenticated(true);
+    },
+    [setAuthenticated]
+  );
 
-  return <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        register,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

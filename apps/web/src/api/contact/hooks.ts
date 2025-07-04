@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient, type MutationOptions } from '@tanstack/react-query';
-import {
-  type CreateContactRequest,
-  type CreateContactResponse,
-  type GetAllContactsQuery,
-  type UpdateContactRequest,
-  type UpdateContactResponse,
-} from '@tradelink/shared/contact';
+
 import { contactApi } from './api';
+
+import type {
+  CreateContactRequest,
+  CreateContactResponse,
+  GetAllContactsQuery,
+  UpdateContactRequest,
+  UpdateContactResponse,
+} from '@tradelink/shared/contact';
+
 
 const CONTACTS_QUERY_KEY = 'contacts';
 

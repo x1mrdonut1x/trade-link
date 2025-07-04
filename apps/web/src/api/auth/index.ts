@@ -1,45 +1,36 @@
-import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryOptions } from '@tanstack/react-query';
+import type { AuthenticatedUser } from '@tradelink/shared/auth';
+import { authStorage } from '../../lib/auth-utils';
+import { myFetch, UnauthorizedError } from '../client';
 
 export function authQueryOptions() {
   return queryOptions({
     queryKey: ['auth'],
-    queryFn: () => fetch('auth') as unknown as { user: string },
-  });
-}
+    queryFn: async (): Promise<AuthenticatedUser | undefined> => {
+      const token = authStorage.getToken();
+      if (!token) return undefined;
 
-export function useAuthQuery() {
-  return useQuery(authQueryOptions());
-}
+      try {
+        return await myFetch<AuthenticatedUser>('auth/profile');
+      } catch (error) {
+        // If profile fetch fails, clear token and return undefined
+        authStorage.clearAll();
 
-export function useSignInMutation() {
-  const queryClient = useQueryClient();
+        // Re-throw UnauthorizedError to be handled by auth context
+        if (error instanceof UnauthorizedError) {
+          throw error;
+        }
 
-  return useMutation({
-    mutationKey: ['sign-in'],
-    mutationFn: async () => {
-      return fetch('sign-in');
+        return undefined;
+      }
     },
-    onSuccess: () => {
-      queryClient.setQueryData(authQueryOptions().queryKey, { user: 'test' });
-      sessionStorage.setItem('access-token', 'test-token');
-    },
-    onError: () => {
-      sessionStorage.removeItem('access-token');
-    },
-  });
-}
-
-export function useSignOutMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationKey: ['sign-out'],
-    mutationFn: async () => {
-      return fetch('sign-out');
-    },
-    onSuccess: () => {
-      queryClient.setQueryData(authQueryOptions().queryKey, undefined);
-      sessionStorage.removeItem('access-token');
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors
+      if (error instanceof UnauthorizedError) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 }

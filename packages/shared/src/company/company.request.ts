@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+
 import { paginationSchema } from '../common';
 
 const createCompanyRequestSchema = z.object({
