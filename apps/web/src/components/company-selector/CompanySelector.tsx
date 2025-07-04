@@ -27,6 +27,7 @@ export function CompanySelector({
   triggerClassName,
   contentClassName,
 }: CompanySelectorProps) {
+  console.log(' value:', value);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
@@ -60,6 +61,7 @@ export function CompanySelector({
       }),
     [companies]
   );
+  console.log(' companyOptions:', companyOptions);
 
   const handleChange = (selectedValue: string) => {
     setSearchTerm('');

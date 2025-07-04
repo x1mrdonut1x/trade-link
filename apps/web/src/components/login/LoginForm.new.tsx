@@ -18,14 +18,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">
-            {isRegistration ? 'Create your account' : 'Welcome back'}
-          </CardTitle>
+          <CardTitle className="text-xl">{isRegistration ? 'Create your account' : 'Welcome back'}</CardTitle>
           <CardDescription>
-            {isRegistration 
-              ? 'Enter your details to create your account' 
-              : 'Login with your Apple or Google account'
-            }
+            {isRegistration ? 'Enter your details to create your account' : 'Login with your Apple or Google account'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,7 +53,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               </div>
             </>
           )}
-          
+
           {isRegistration ? (
             <RegistrationForm onBackToLogin={showLogin} />
           ) : (

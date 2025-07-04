@@ -10,8 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppImportRouteRouteImport } from './routes/_app/import/route'
 import { Route as AppTasksIndexRouteImport } from './routes/_app/tasks/index'
-import { Route as AppImportIndexRouteImport } from './routes/_app/import/index'
 import { Route as AppEventsIndexRouteImport } from './routes/_app/events/index'
 import { Route as AppContactsIndexRouteImport } from './routes/_app/contacts/index'
 import { Route as AppCompaniesIndexRouteImport } from './routes/_app/companies/index'
@@ -20,6 +20,10 @@ import { Route as AppContactsAddIndexRouteImport } from './routes/_app/contacts/
 import { Route as AppContactsContactIdIndexRouteImport } from './routes/_app/contacts/$contactId/index'
 import { Route as AppCompaniesAddIndexRouteImport } from './routes/_app/companies/add/index'
 import { Route as AppCompaniesCompanyIdIndexRouteImport } from './routes/_app/companies/$companyId/index'
+import { Route as AppImport4SuccessRouteImport } from './routes/_app/import/_4/success'
+import { Route as AppImport3ReviewRouteImport } from './routes/_app/import/_3/review'
+import { Route as AppImport2MapRouteImport } from './routes/_app/import/_2/map'
+import { Route as AppImport1UploadRouteImport } from './routes/_app/import/_1/upload'
 import { Route as AppContactsContactIdEditIndexRouteImport } from './routes/_app/contacts/$contactId/edit/index'
 import { Route as AppCompaniesCompanyIdEditIndexRouteImport } from './routes/_app/companies/$companyId/edit/index'
 
@@ -28,14 +32,14 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppImportRouteRoute = AppImportRouteRouteImport.update({
+  id: '/_app/import',
+  path: '/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppTasksIndexRoute = AppTasksIndexRouteImport.update({
   id: '/_app/tasks/',
   path: '/tasks/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppImportIndexRoute = AppImportIndexRouteImport.update({
-  id: '/_app/import/',
-  path: '/import/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
@@ -80,6 +84,26 @@ const AppCompaniesCompanyIdIndexRoute =
     path: '/companies/$companyId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppImport4SuccessRoute = AppImport4SuccessRouteImport.update({
+  id: '/_4/success',
+  path: '/success',
+  getParentRoute: () => AppImportRouteRoute,
+} as any)
+const AppImport3ReviewRoute = AppImport3ReviewRouteImport.update({
+  id: '/_3/review',
+  path: '/review',
+  getParentRoute: () => AppImportRouteRoute,
+} as any)
+const AppImport2MapRoute = AppImport2MapRouteImport.update({
+  id: '/_2/map',
+  path: '/map',
+  getParentRoute: () => AppImportRouteRoute,
+} as any)
+const AppImport1UploadRoute = AppImport1UploadRouteImport.update({
+  id: '/_1/upload',
+  path: '/upload',
+  getParentRoute: () => AppImportRouteRoute,
+} as any)
 const AppContactsContactIdEditIndexRoute =
   AppContactsContactIdEditIndexRouteImport.update({
     id: '/_app/contacts/$contactId/edit/',
@@ -94,12 +118,16 @@ const AppCompaniesCompanyIdEditIndexRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/import': typeof AppImportRouteRouteWithChildren
   '/': typeof AppIndexRoute
   '/companies': typeof AppCompaniesIndexRoute
   '/contacts': typeof AppContactsIndexRoute
   '/events': typeof AppEventsIndexRoute
-  '/import': typeof AppImportIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/import/upload': typeof AppImport1UploadRoute
+  '/import/map': typeof AppImport2MapRoute
+  '/import/review': typeof AppImport3ReviewRoute
+  '/import/success': typeof AppImport4SuccessRoute
   '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
   '/companies/add': typeof AppCompaniesAddIndexRoute
   '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
@@ -109,12 +137,16 @@ export interface FileRoutesByFullPath {
   '/contacts/$contactId/edit': typeof AppContactsContactIdEditIndexRoute
 }
 export interface FileRoutesByTo {
+  '/import': typeof AppImportRouteRouteWithChildren
   '/': typeof AppIndexRoute
   '/companies': typeof AppCompaniesIndexRoute
   '/contacts': typeof AppContactsIndexRoute
   '/events': typeof AppEventsIndexRoute
-  '/import': typeof AppImportIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/import/upload': typeof AppImport1UploadRoute
+  '/import/map': typeof AppImport2MapRoute
+  '/import/review': typeof AppImport3ReviewRoute
+  '/import/success': typeof AppImport4SuccessRoute
   '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
   '/companies/add': typeof AppCompaniesAddIndexRoute
   '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
@@ -125,12 +157,16 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_app/import': typeof AppImportRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
   '/_app/companies/': typeof AppCompaniesIndexRoute
   '/_app/contacts/': typeof AppContactsIndexRoute
   '/_app/events/': typeof AppEventsIndexRoute
-  '/_app/import/': typeof AppImportIndexRoute
   '/_app/tasks/': typeof AppTasksIndexRoute
+  '/_app/import/_1/upload': typeof AppImport1UploadRoute
+  '/_app/import/_2/map': typeof AppImport2MapRoute
+  '/_app/import/_3/review': typeof AppImport3ReviewRoute
+  '/_app/import/_4/success': typeof AppImport4SuccessRoute
   '/_app/companies/$companyId/': typeof AppCompaniesCompanyIdIndexRoute
   '/_app/companies/add/': typeof AppCompaniesAddIndexRoute
   '/_app/contacts/$contactId/': typeof AppContactsContactIdIndexRoute
@@ -142,12 +178,16 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/import'
     | '/'
     | '/companies'
     | '/contacts'
     | '/events'
-    | '/import'
     | '/tasks'
+    | '/import/upload'
+    | '/import/map'
+    | '/import/review'
+    | '/import/success'
     | '/companies/$companyId'
     | '/companies/add'
     | '/contacts/$contactId'
@@ -157,12 +197,16 @@ export interface FileRouteTypes {
     | '/contacts/$contactId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/import'
     | '/'
     | '/companies'
     | '/contacts'
     | '/events'
-    | '/import'
     | '/tasks'
+    | '/import/upload'
+    | '/import/map'
+    | '/import/review'
+    | '/import/success'
     | '/companies/$companyId'
     | '/companies/add'
     | '/contacts/$contactId'
@@ -172,12 +216,16 @@ export interface FileRouteTypes {
     | '/contacts/$contactId/edit'
   id:
     | '__root__'
+    | '/_app/import'
     | '/_app/'
     | '/_app/companies/'
     | '/_app/contacts/'
     | '/_app/events/'
-    | '/_app/import/'
     | '/_app/tasks/'
+    | '/_app/import/_1/upload'
+    | '/_app/import/_2/map'
+    | '/_app/import/_3/review'
+    | '/_app/import/_4/success'
     | '/_app/companies/$companyId/'
     | '/_app/companies/add/'
     | '/_app/contacts/$contactId/'
@@ -188,11 +236,11 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AppImportRouteRoute: typeof AppImportRouteRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
   AppCompaniesIndexRoute: typeof AppCompaniesIndexRoute
   AppContactsIndexRoute: typeof AppContactsIndexRoute
   AppEventsIndexRoute: typeof AppEventsIndexRoute
-  AppImportIndexRoute: typeof AppImportIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
   AppCompaniesCompanyIdIndexRoute: typeof AppCompaniesCompanyIdIndexRoute
   AppCompaniesAddIndexRoute: typeof AppCompaniesAddIndexRoute
@@ -212,18 +260,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/import': {
+      id: '/_app/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AppImportRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/tasks/': {
       id: '/_app/tasks/'
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AppTasksIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app/import/': {
-      id: '/_app/import/'
-      path: '/import'
-      fullPath: '/import'
-      preLoaderRoute: typeof AppImportIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/events/': {
@@ -282,6 +330,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompaniesCompanyIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/import/_4/success': {
+      id: '/_app/import/_4/success'
+      path: '/success'
+      fullPath: '/import/success'
+      preLoaderRoute: typeof AppImport4SuccessRouteImport
+      parentRoute: typeof AppImportRouteRoute
+    }
+    '/_app/import/_3/review': {
+      id: '/_app/import/_3/review'
+      path: '/review'
+      fullPath: '/import/review'
+      preLoaderRoute: typeof AppImport3ReviewRouteImport
+      parentRoute: typeof AppImportRouteRoute
+    }
+    '/_app/import/_2/map': {
+      id: '/_app/import/_2/map'
+      path: '/map'
+      fullPath: '/import/map'
+      preLoaderRoute: typeof AppImport2MapRouteImport
+      parentRoute: typeof AppImportRouteRoute
+    }
+    '/_app/import/_1/upload': {
+      id: '/_app/import/_1/upload'
+      path: '/upload'
+      fullPath: '/import/upload'
+      preLoaderRoute: typeof AppImport1UploadRouteImport
+      parentRoute: typeof AppImportRouteRoute
+    }
     '/_app/contacts/$contactId/edit/': {
       id: '/_app/contacts/$contactId/edit/'
       path: '/contacts/$contactId/edit'
@@ -299,12 +375,30 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppImportRouteRouteChildren {
+  AppImport1UploadRoute: typeof AppImport1UploadRoute
+  AppImport2MapRoute: typeof AppImport2MapRoute
+  AppImport3ReviewRoute: typeof AppImport3ReviewRoute
+  AppImport4SuccessRoute: typeof AppImport4SuccessRoute
+}
+
+const AppImportRouteRouteChildren: AppImportRouteRouteChildren = {
+  AppImport1UploadRoute: AppImport1UploadRoute,
+  AppImport2MapRoute: AppImport2MapRoute,
+  AppImport3ReviewRoute: AppImport3ReviewRoute,
+  AppImport4SuccessRoute: AppImport4SuccessRoute,
+}
+
+const AppImportRouteRouteWithChildren = AppImportRouteRoute._addFileChildren(
+  AppImportRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
+  AppImportRouteRoute: AppImportRouteRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
   AppCompaniesIndexRoute: AppCompaniesIndexRoute,
   AppContactsIndexRoute: AppContactsIndexRoute,
   AppEventsIndexRoute: AppEventsIndexRoute,
-  AppImportIndexRoute: AppImportIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
   AppCompaniesCompanyIdIndexRoute: AppCompaniesCompanyIdIndexRoute,
   AppCompaniesAddIndexRoute: AppCompaniesAddIndexRoute,

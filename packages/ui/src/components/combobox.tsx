@@ -1,8 +1,14 @@
 'use client';
 
-
 import { Button } from '@tradelink/ui/components/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@tradelink/ui/components/command';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@tradelink/ui/components/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@tradelink/ui/components/popover';
 import { cn } from '@tradelink/ui/lib/utils';
 import { ChevronsUpDown } from 'lucide-react';
@@ -68,14 +74,22 @@ export function Combobox({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className={cn('w-[var(--radix-popover-trigger-width)] p-0', contentClassName)} onWheel={e => e.stopPropagation()}>
+        <PopoverContent
+          className={cn('w-[var(--radix-popover-trigger-width)] p-0', contentClassName)}
+          onWheel={e => e.stopPropagation()}
+        >
           <Command shouldFilter={false}>
             {!searchDisabled && <CommandInput placeholder={searchPlaceholder} onValueChange={onSearchChange} />}
             <CommandList className="max-h-[200px]">
               <CommandEmpty>{emptyText}</CommandEmpty>
               <CommandGroup>
                 {options.map(option => (
-                  <CommandItem key={option.value} value={option.value} disabled={option.disabled} onSelect={handleSelect}>
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    disabled={option.disabled}
+                    onSelect={handleSelect}
+                  >
                     {option.label}
                   </CommandItem>
                 ))}

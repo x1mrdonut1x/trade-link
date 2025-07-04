@@ -11,7 +11,7 @@ import { router } from './lib/router';
 
 function InnerApp() {
   const auth = useAuth();
-  return <RouterProvider router={router} context={{ auth }} />;
+  return <RouterProvider router={router} context={{ auth, queryClient }} />;
 }
 
 function App() {

@@ -5,8 +5,6 @@ import {
   UseGuards,
   Body,
   Get,
-  ConflictException,
-  BadRequestException,
 } from '@nestjs/common';
 import { RegisterRequest } from '@tradelink/shared';
 
@@ -26,17 +24,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerData: RegisterRequest) {
-    try {
-      return await this.authService.register(registerData);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message === 'User with this email already exists'
-      ) {
-        throw new ConflictException(error.message);
-      }
-      throw new BadRequestException('Registration failed');
-    }
+    return this.authService.register(registerData);
   }
 
   @UseGuards(JwtAuthGuard)
