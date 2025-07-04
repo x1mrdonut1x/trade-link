@@ -1,16 +1,16 @@
-import type {
-  ImportExecuteRequest,
-  ImportExecuteResponse,
-  ImportPreviewResponse,
-  ImportProcessRequest,
-} from '@tradelink/shared';
+import type { ImportExecuteRequest, ImportExecuteResponse, ImportPreviewResponse } from '@tradelink/shared';
 import { myFetch } from 'api/client';
 
 export const importAPI = {
-  async processImport(body: ImportProcessRequest) {
+  async processImport(body: { fieldMappings: any; importType: any; csvFile: File }) {
+    const formData = new FormData();
+    formData.append('csvFile', body.csvFile);
+    formData.append('fieldMappings', JSON.stringify(body.fieldMappings));
+    formData.append('importType', body.importType);
+
     return myFetch<ImportPreviewResponse>('import/process', {
       method: 'POST',
-      body,
+      body: formData,
     });
   },
 
@@ -20,18 +20,4 @@ export const importAPI = {
       body,
     });
   },
-
-  // static async downloadTemplate(type: string) {
-  //   const response = await myFetch(`import/template/${type}`);
-
-  //   const blob = await response.blob();
-  //   const url = globalThis.URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = `${type}_template.csv`;
-  //   document.body.append(a);
-  //   a.click();
-  //   globalThis.URL.revokeObjectURL(url);
-  //   a.remove();
-  // }
 };

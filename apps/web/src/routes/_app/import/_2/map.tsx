@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Label } from '@tradelink/ui/components/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
-import { AlertTriangle } from '@tradelink/ui/icons';
+import { AlertTriangle, Loader2 } from '@tradelink/ui/icons';
 import { importAPI } from 'api/import/import.service';
 import { useImportContext } from 'context';
 import { useState } from 'react';
@@ -18,35 +18,22 @@ function ImportDataPage() {
   const importContext = useImportContext();
   const { csvColumns, importType, fieldMappings, setFieldMappings } = importContext;
 
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleProcessData = async () => {
     if (
       csvColumns.length === 0 ||
-      (fieldMappings.companyMappings.length === 0 && fieldMappings.contactMappings.length === 0)
+      (fieldMappings.companyMappings.length === 0 && fieldMappings.contactMappings.length === 0) ||
+      !importContext.csvFile
     )
       return;
-    setIsProcessing(true);
+    setIsLoading(true);
     setError(null);
 
     try {
-      // Create headers row from column names
-      const headers = csvColumns.map(col => col.name);
-
-      // Find the maximum number of rows across all columns
-      const maxRows = Math.max(...csvColumns.map(col => col.values.length));
-
-      // Create data rows by mapping through each row index
-      const dataRows = Array.from({ length: maxRows }, (_, rowIndex) =>
-        csvColumns.map(col => col.values[rowIndex] || '')
-      );
-
-      // Combine headers and data rows
-      const csvData = [headers, ...dataRows];
-
       const processResponse = await importAPI.processImport({
-        csvData,
+        csvFile: importContext.csvFile,
         fieldMappings,
         importType,
       });
@@ -56,7 +43,7 @@ function ImportDataPage() {
     } catch (error_) {
       setError(error_ instanceof Error ? error_.message : 'Failed to process data');
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
@@ -87,30 +74,38 @@ function ImportDataPage() {
   };
 
   const getRequiredFieldsNotMapped = () => {
-    const mappedCompanyFields = new Set(fieldMappings.companyMappings.map(m => m.targetField));
     const mappedContactFields = new Set(fieldMappings.contactMappings.map(m => m.targetField));
+    const mappedCompanyFields = new Set(fieldMappings.companyMappings.map(m => m.targetField));
 
-    const availableFields =
-      importType === 'companies'
-        ? COMPANY_FIELDS
-        : importType === 'contacts'
-          ? CONTACT_FIELDS
-          : [...COMPANY_FIELDS, ...CONTACT_FIELDS];
-
-    return availableFields.filter(field => {
-      if (!field.required) return false;
-
-      // Check if field is mapped in the appropriate category
-      if (COMPANY_FIELDS.some(f => f.key === field.key)) {
-        return !mappedCompanyFields.has(field.key);
-      } else {
-        return !mappedContactFields.has(field.key);
-      }
+    const missingContactFields = CONTACT_FIELDS.filter(field => {
+      return !mappedContactFields.has(field.key) && field.required;
     });
+    const missingCompanyFields = COMPANY_FIELDS.filter(field => {
+      return !mappedCompanyFields.has(field.key) && field.required;
+    });
+
+    if (importType === 'contacts') {
+      return { contacts: missingContactFields, companies: [] };
+    }
+
+    if (importType === 'companies') {
+      return { contacts: [], companies: missingCompanyFields };
+    }
+
+    return { contacts: missingContactFields, companies: missingCompanyFields };
   };
 
   const requiredFieldsNotMapped = getRequiredFieldsNotMapped();
-  const canProceed = requiredFieldsNotMapped.length === 0;
+
+  if (isLoading) {
+    return (
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-500" />
+        <p className="text-lg font-medium">Processing your data...</p>
+        <p className="text-sm text-muted-foreground">This may take a moment</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -137,13 +132,24 @@ function ImportDataPage() {
         </div>
       </div>
 
-      {!canProceed && (
+      {requiredFieldsNotMapped.contacts.length > 0 && (
         <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex-shrink-0">
           <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
           <div>
-            <p className="font-medium text-sm">Required fields missing</p>
+            <p className="font-medium text-sm">Required fields missing in Contacts</p>
             <p className="text-sm text-muted-foreground">
-              Please map the following required fields: {requiredFieldsNotMapped.map(f => f.label).join(', ')}
+              Please map the following required fields: {requiredFieldsNotMapped.contacts.map(f => f.label).join(', ')}
+            </p>
+          </div>
+        </div>
+      )}
+      {requiredFieldsNotMapped.companies.length > 0 && (
+        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex-shrink-0">
+          <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+          <div>
+            <p className="font-medium text-sm">Required fields missing in Companies</p>
+            <p className="text-sm text-muted-foreground">
+              Please map the following required fields: {requiredFieldsNotMapped.companies.map(f => f.label).join(', ')}
             </p>
           </div>
         </div>
@@ -173,9 +179,7 @@ function ImportDataPage() {
                     <span className="font-mono text-xs bg-gray-100 px-1 py-0.5 rounded">
                       {column.values.slice(0, 3).join(', ')}
                     </span>
-                    {column.values.length > 3 && (
-                      <span className="text-gray-500"> + {column.values.length - 3} more</span>
-                    )}
+                    {column.values.length > 3 && <span className="text-gray-500"> + more</span>}
                   </div>
                 </div>
                 <div className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">Index: {columnIndex}</div>
@@ -327,14 +331,14 @@ function ImportDataPage() {
       </div>
 
       <div className="flex gap-2 pt-4 flex-shrink-0 border-t justify-center">
-        <Button variant="outline" onClick={() => navigate({ to: '/import/upload' })} disabled={isProcessing}>
+        <Button variant="outline" onClick={() => navigate({ to: '/import/upload' })} disabled={isLoading}>
           Back
         </Button>
         <Button
           onClick={() => {
             handleProcessData();
           }}
-          loading={isProcessing}
+          loading={isLoading}
         >
           Next
         </Button>

@@ -17,6 +17,7 @@ const parseCSV = (file: File): Promise<CsvColumn[]> => {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      preview: 50, // Only parse the first 10 rows
       complete: results => {
         if (results.errors.length > 0) {
           reject(new Error(`CSV parsing errors: ${results.errors.map(e => e.message).join(', ')}`));
@@ -144,6 +145,9 @@ function UploadDataPage() {
     try {
       setIsLoading(true);
       columns = await parseCSV(file);
+
+      // Store the file in context
+      importContext.setCsvFile(file);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to parse CSV file');
     } finally {

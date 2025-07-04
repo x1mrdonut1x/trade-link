@@ -8,13 +8,16 @@ import {
   HttpCode,
   HttpStatus,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import {
-  ImportProcessRequest,
   ImportExecuteRequest,
   ImportPreviewResponse,
   ImportExecuteResponse,
+  ImportType,
 } from '@tradelink/shared';
 
 import { ImportService } from './import.service';
@@ -27,10 +30,19 @@ export class ImportController {
 
   @Post('process')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('csvFile'))
   async processImport(
-    @Body() body: ImportProcessRequest,
+    @UploadedFile() csvFile: any,
+    @Body() body: { fieldMappings: string; importType: string },
   ): Promise<ImportPreviewResponse> {
-    return this.importService.processImport(body);
+    // Parse the JSON strings from the form data
+    const fieldMappings = JSON.parse(body.fieldMappings);
+    const importType = body.importType as ImportType;
+
+    return this.importService.processImport(
+      { fieldMappings, importType },
+      csvFile,
+    );
   }
 
   @Post('execute')

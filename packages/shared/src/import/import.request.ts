@@ -18,7 +18,6 @@ const importTypeSchema = z.enum(['companies', 'contacts', 'mixed']);
 
 // Process import request schema
 const importProcessRequestSchema = z.object({
-  csvData: z.array(z.array(z.string())),
   fieldMappings: importFieldMappingsSchema,
   importType: importTypeSchema,
 });
@@ -77,17 +76,6 @@ const importExecuteRequestSchema = z.object({
     })
   ),
 });
-
-// Export schemas
-export const importSchema = {
-  process: importProcessRequestSchema,
-  execute: importExecuteRequestSchema,
-  fieldMapping: importFieldMappingSchema,
-  fieldMappings: importFieldMappingsSchema,
-  importType: importTypeSchema,
-  companyImportData: companyImportDataSchema,
-  contactImportData: contactImportDataSchema,
-};
 
 // Export DTO classes
 export class ImportProcessRequest extends createZodDto(importProcessRequestSchema) {}

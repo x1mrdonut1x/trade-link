@@ -9,6 +9,7 @@ import {
   ContactImportData,
   ImportFieldMappings,
 } from '@tradelink/shared';
+import Papa from 'papaparse';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { CompanyService } from '../company/company.service';
@@ -24,8 +25,16 @@ export class ImportService {
 
   async processImport(
     request: ImportProcessRequest,
+    csvFile: any,
   ): Promise<ImportPreviewResponse> {
-    const { csvData, fieldMappings, importType } = request;
+    const { fieldMappings, importType } = request;
+
+    if (!csvFile) {
+      throw new BadRequestException('CSV file is required');
+    }
+
+    // Parse CSV file
+    const csvData = await this.parseCSV(csvFile);
 
     if (csvData.length === 0) {
       throw new BadRequestException('CSV data is empty');
@@ -282,6 +291,8 @@ export class ImportService {
         });
       }
 
+      this.removeFalsyValues(companyData);
+
       companies.push({
         data: companyData,
         action: existingCompany ? 'update' : 'create',
@@ -354,6 +365,7 @@ export class ImportService {
       }
     }
 
+    this.removeFalsyValues(contactData);
     contacts.push({
       data: contactData,
       action: existingContact ? 'update' : 'create',
@@ -629,6 +641,17 @@ export class ImportService {
     return hasRequiredFields;
   }
 
+  private removeFalsyValues(myObj: Record<string, unknown>) {
+    for (const k in myObj) {
+      if (
+        Object.prototype.hasOwnProperty.call(myObj, k) &&
+        myObj[k] === false
+      ) {
+        delete myObj[k];
+      }
+    }
+  }
+
   private extractCompanyData(
     mappedData: Record<string, string>,
   ): CompanyImportData {
@@ -637,16 +660,16 @@ export class ImportService {
 
     return {
       name: companyName,
-      email: mappedData.email || null,
-      phonePrefix: mappedData.phonePrefix || null,
-      phoneNumber: mappedData.phoneNumber || null,
-      description: mappedData.description || null,
-      website: mappedData.website || null,
-      size: mappedData['size'] || null,
-      address: mappedData.address || null,
-      city: mappedData.city || null,
-      country: mappedData.country || null,
-      postCode: mappedData.postCode || null,
+      email: mappedData.email,
+      phonePrefix: mappedData.phonePrefix,
+      phoneNumber: mappedData.phoneNumber,
+      description: mappedData.description,
+      website: mappedData.website,
+      size: mappedData['size'],
+      address: mappedData.address,
+      city: mappedData.city,
+      country: mappedData.country,
+      postCode: mappedData.postCode,
     };
   }
 
@@ -654,17 +677,17 @@ export class ImportService {
     mappedData: Record<string, string>,
   ): ContactImportData {
     return {
-      firstName: mappedData.firstName || '',
-      lastName: mappedData.lastName || '',
-      email: mappedData.email || '',
-      jobTitle: mappedData.jobTitle || null,
-      phonePrefix: mappedData.phonePrefix || null,
-      phoneNumber: mappedData.phoneNumber || null,
-      address: mappedData.address || null,
-      city: mappedData.city || null,
-      country: mappedData.country || null,
-      postCode: mappedData.postCode || null,
-      companyName: mappedData.companyName || null,
+      firstName: mappedData.firstName,
+      lastName: mappedData.lastName,
+      email: mappedData.email,
+      jobTitle: mappedData.jobTitle,
+      phonePrefix: mappedData.phonePrefix,
+      phoneNumber: mappedData.phoneNumber,
+      address: mappedData.address,
+      city: mappedData.city,
+      country: mappedData.country,
+      postCode: mappedData.postCode,
+      companyName: mappedData.companyName,
     };
   }
 
@@ -695,6 +718,37 @@ export class ImportService {
           mode: 'insensitive',
         },
       },
+    });
+  }
+
+  private async parseCSV(csvFile: any): Promise<string[][]> {
+    return new Promise((resolve, reject) => {
+      const fileContent = csvFile.buffer.toString('utf8');
+
+      Papa.parse(fileContent, {
+        header: false,
+        skipEmptyLines: true,
+        complete: (results) => {
+          if (results.errors.length > 0) {
+            reject(
+              new BadRequestException(
+                `CSV parsing errors: ${results.errors
+                  .map((e) => e.message)
+                  .join(', ')}`,
+              ),
+            );
+            return;
+          }
+
+          const csvData = results.data as string[][];
+          resolve(csvData);
+        },
+        error: (error) => {
+          reject(
+            new BadRequestException(`Failed to parse CSV: ${error.message}`),
+          );
+        },
+      });
     });
   }
 }

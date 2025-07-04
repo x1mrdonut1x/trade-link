@@ -18,6 +18,10 @@ export interface CsvColumn {
 export type ImportType = 'companies' | 'contacts' | 'mixed';
 
 interface ImportContextValue {
+  // CSV file from upload step
+  csvFile: File | null;
+  setCsvFile: (file: File | null) => void;
+
   // CSV data from upload step
   csvColumns: CsvColumn[];
   setCsvColumns: (columns: CsvColumn[]) => void;
@@ -49,6 +53,7 @@ interface ImportProviderProps {
 }
 
 export function ImportProvider({ children }: ImportProviderProps) {
+  const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvColumns, setCsvColumns] = useState<CsvColumn[]>([]);
   const [importType, setImportType] = useState<ImportType>('mixed');
   const [fieldMappings, setFieldMappings] = useState<ImportFieldMappings>({
@@ -59,6 +64,7 @@ export function ImportProvider({ children }: ImportProviderProps) {
   const [importStats, setImportStats] = useState<ImportExecuteResponse['stats']>();
 
   const clearImportData = () => {
+    setCsvFile(null);
     setCsvColumns([]);
     setImportType('mixed');
     setFieldMappings({
@@ -69,6 +75,8 @@ export function ImportProvider({ children }: ImportProviderProps) {
   };
 
   const value: ImportContextValue = {
+    csvFile,
+    setCsvFile,
     csvColumns,
     setCsvColumns,
     importType,

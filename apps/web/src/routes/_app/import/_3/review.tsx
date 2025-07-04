@@ -33,6 +33,7 @@ export function DataPreviewPage() {
       const selectedCompanies = previewData.companies.filter(entry => entry.selected);
       const selectedContacts = previewData.contacts.filter(entry => entry.selected);
 
+      console.log('1');
       const executeResponse = await importAPI.executeImport({
         companies: selectedCompanies.map(entry => ({
           data: entry.data,
@@ -46,6 +47,7 @@ export function DataPreviewPage() {
           companyId: entry.companyId || entry.matchedCompany?.id,
         })),
       });
+      console.log('2');
 
       if (executeResponse.success) {
         importContext.setImportStats(executeResponse.stats);
@@ -63,47 +65,41 @@ export function DataPreviewPage() {
 
   if (isLoading) {
     return (
-      <Card className="h-full flex items-center justify-center">
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-500" />
-            <p className="text-lg font-medium">Processing your data...</p>
-            <p className="text-sm text-muted-foreground">This may take a moment</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-500" />
+        <p className="text-lg font-medium">Processing your data...</p>
+        <p className="text-sm text-muted-foreground">This may take a moment</p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card className="h-full flex items-center justify-center">
-        <CardContent className="py-12">
-          <div className="text-center">
-            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Processing Error</h3>
-            <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => navigate({ to: '/import/map' })} variant="outline">
-              Go Back
-            </Button>
-          </div>
-          {importErrorDetails?.length && (
-            <div className="flex flex-col gap-2">
-              {importErrorDetails.map(error => (
-                <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex-shrink-0">
-                  <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm">
-                      Row: {error.row}, Field: {error.field}
-                    </p>
-                    <p className="text-sm text-muted-foreground">{error.message}</p>
-                  </div>
+      <>
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium mb-2">Processing Error</h3>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={() => navigate({ to: '/import/map' })} variant="outline">
+            Go Back
+          </Button>
+        </div>
+        {importErrorDetails?.length && (
+          <div className="flex flex-col gap-2">
+            {importErrorDetails.map(error => (
+              <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-sm">
+                    Row: {error.row}, Field: {error.field}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{error.message}</p>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            ))}
+          </div>
+        )}
+      </>
     );
   }
 
