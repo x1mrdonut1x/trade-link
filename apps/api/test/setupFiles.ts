@@ -12,9 +12,10 @@ const githubActionsEnvVars = {
   PORT: process.env.PORT,
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
 };
+console.log(' githubActionsEnvVars.process.env.DATABASE_URL:', githubActionsEnvVars.process?.env?.DATABASE_URL);
 
 // Load test environment variables
-config({ path: path.join(__dirname, '../../.env.test') });
+config({ path: path.join(__dirname, '.env.test') });
 
 // Restore GitHub Actions environment variables if they exist
 // This ensures GitHub Actions env vars take precedence over .env.test
