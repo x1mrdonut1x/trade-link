@@ -5,7 +5,7 @@ import {
   loginUser,
   registerUser,
 } from '../../helpers/auth/auth.helper';
-import { resetDatabase } from '../../setup';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Auth Controller (e2e)', () => {
   beforeEach(async () => {

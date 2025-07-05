@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { getTestApp } from '../setup';
+import { getTestApp } from '../setupFilesAfterEnv';
 
 let globalAuthToken: string | null = null;
 

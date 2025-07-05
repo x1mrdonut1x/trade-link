@@ -20,7 +20,7 @@ export default [
     rules: {},
   },
   {
-    files: ['**/tests/**/*.ts'],
+    files: ['**/test/**/*.ts'],
     rules: {
       // Test file specific rules
       'sonarjs/no-duplicate-string': 'off',

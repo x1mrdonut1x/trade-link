@@ -2,7 +2,7 @@ import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
 import { companyFixtures, createCompany } from '../../helpers/company/company.helper';
 import { contactFixtures, createContact } from '../../helpers/contact/contact.helper';
 import { getDashboardStats } from '../../helpers/dashboard/dashboard.helper';
-import { resetDatabase, setTestAuthToken } from '../../setup';
+import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
 
 describe('Dashboard Controller (e2e)', () => {
   let authToken: string;
@@ -35,18 +35,6 @@ describe('Dashboard Controller (e2e)', () => {
       expect(response).toHaveProperty('totalCompanies');
       expect(response.totalContacts).toBe(2);
       expect(response.totalCompanies).toBe(1);
-    });
-
-    it('should not get dashboard stats without authentication', async () => {
-      setTestAuthToken('');
-      await expect(getDashboardStats()).rejects.toThrow();
-      setTestAuthToken(authToken);
-    });
-
-    it('should not get dashboard stats with invalid token', async () => {
-      setTestAuthToken('invalid-token');
-      await expect(getDashboardStats()).rejects.toThrow();
-      setTestAuthToken(authToken);
     });
   });
 

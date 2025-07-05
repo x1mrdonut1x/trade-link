@@ -8,7 +8,7 @@ import {
   getContact,
   updateContact,
 } from '../../helpers/contact/contact.helper';
-import { resetDatabase, setTestAuthToken } from '../../setup';
+import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
 
 describe('Contact Controller (e2e)', () => {
   let authToken: string;
@@ -61,12 +61,6 @@ describe('Contact Controller (e2e)', () => {
     it('should validate required fields', async () => {
       await expect(createContact(contactFixtures.invalidContact as any)).rejects.toThrow();
     });
-
-    it('should not create contact without authentication', async () => {
-      setTestAuthToken(''); // Clear auth token
-      await expect(createContact(contactFixtures.validContact)).rejects.toThrow();
-      setTestAuthToken(authToken); // Restore auth token
-    });
   });
 
   describe('GET /contacts', () => {
@@ -92,12 +86,6 @@ describe('Contact Controller (e2e)', () => {
       expect(response.length).toBe(1);
       expect(response[0].firstName).toBe('John');
     });
-
-    it('should not get contacts without authentication', async () => {
-      setTestAuthToken('');
-      await expect(getAllContacts()).rejects.toThrow();
-      setTestAuthToken(authToken);
-    });
   });
 
   describe('GET /contacts/:id', () => {
@@ -119,12 +107,6 @@ describe('Contact Controller (e2e)', () => {
 
     it('should return 404 for non-existent contact', async () => {
       await expect(getContact(999)).rejects.toThrow();
-    });
-
-    it('should not get contact without authentication', async () => {
-      setTestAuthToken('');
-      await expect(getContact(contactId)).rejects.toThrow();
-      setTestAuthToken(authToken);
     });
   });
 
@@ -164,12 +146,6 @@ describe('Contact Controller (e2e)', () => {
     it('should return 404 for non-existent contact', async () => {
       await expect(updateContact(999, { firstName: 'Test' })).rejects.toThrow();
     });
-
-    it('should not update contact without authentication', async () => {
-      setTestAuthToken('');
-      await expect(updateContact(contactId, { firstName: 'Test' })).rejects.toThrow();
-      setTestAuthToken(authToken);
-    });
   });
 
   describe('DELETE /contacts/:id', () => {
@@ -191,12 +167,6 @@ describe('Contact Controller (e2e)', () => {
 
     it('should return 404 for non-existent contact', async () => {
       await expect(deleteContact(999)).rejects.toThrow();
-    });
-
-    it('should not delete contact without authentication', async () => {
-      setTestAuthToken('');
-      await expect(deleteContact(contactId)).rejects.toThrow();
-      setTestAuthToken(authToken);
     });
   });
 

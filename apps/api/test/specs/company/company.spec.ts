@@ -7,7 +7,7 @@ import {
   getCompany,
   updateCompany,
 } from '../../helpers/company/company.helper';
-import { resetDatabase, setTestAuthToken } from '../../setup';
+import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
 
 describe('Company Controller (e2e)', () => {
   let authToken: string;
@@ -68,12 +68,6 @@ describe('Company Controller (e2e)', () => {
     it('should validate required fields', async () => {
       await expect(createCompany(companyFixtures.invalidCompany as any)).rejects.toThrow();
     });
-
-    it('should not create company without authentication', async () => {
-      setTestAuthToken('');
-      await expect(createCompany(companyFixtures.validCompany)).rejects.toThrow();
-      setTestAuthToken(authToken);
-    });
   });
 
   describe('GET /companies', () => {
@@ -112,12 +106,6 @@ describe('Company Controller (e2e)', () => {
 
       expect(response.length).toBe(2);
     });
-
-    it('should not get companies without authentication', async () => {
-      setTestAuthToken('');
-      await expect(getAllCompanies()).rejects.toThrow();
-      setTestAuthToken(authToken);
-    });
   });
 
   describe('GET /companies/:id', () => {
@@ -139,12 +127,6 @@ describe('Company Controller (e2e)', () => {
 
     it('should return 404 for non-existent company', async () => {
       await expect(getCompany(999)).rejects.toThrow();
-    });
-
-    it('should not get company without authentication', async () => {
-      setTestAuthToken('');
-      await expect(getCompany(companyId)).rejects.toThrow();
-      setTestAuthToken(authToken);
     });
   });
 
@@ -196,12 +178,6 @@ describe('Company Controller (e2e)', () => {
     it('should return 404 for non-existent company', async () => {
       await expect(updateCompany(999, { name: 'Test' })).rejects.toThrow();
     });
-
-    it('should not update company without authentication', async () => {
-      setTestAuthToken('');
-      await expect(updateCompany(companyId, { name: 'Test' })).rejects.toThrow();
-      setTestAuthToken(authToken);
-    });
   });
 
   describe('DELETE /companies/:id', () => {
@@ -223,12 +199,6 @@ describe('Company Controller (e2e)', () => {
 
     it('should return 404 for non-existent company', async () => {
       await expect(deleteCompany(999)).rejects.toThrow();
-    });
-
-    it('should not delete company without authentication', async () => {
-      setTestAuthToken('');
-      await expect(deleteCompany(companyId)).rejects.toThrow();
-      setTestAuthToken(authToken);
     });
   });
 

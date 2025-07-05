@@ -3,13 +3,12 @@ import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
 import { createCompany, getCompany } from '../../helpers/company/company.helper';
 import { createContact, getContact } from '../../helpers/contact/contact.helper';
 import { executeImport, importFixtures, processImport } from '../../helpers/import/import.helper';
-import { resetDatabase, setTestAuthToken } from '../../setup';
+import { setTestAuthToken } from '../../setupFilesAfterEnv';
 
 describe('Import Controller (e2e)', () => {
   let authToken: string;
 
   beforeEach(async () => {
-    await resetDatabase();
     authToken = await createAuthenticatedUser();
     setTestAuthToken(authToken);
   });

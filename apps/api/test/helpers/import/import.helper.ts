@@ -1,6 +1,6 @@
 import type { ImportFieldMappings, ImportType } from '@tradelink/shared';
 import request from 'supertest';
-import { getTestApp } from '../../setup';
+import { getTestApp } from '../../setupFilesAfterEnv';
 
 export interface ImportFixtures {
   validCsvData: string;
