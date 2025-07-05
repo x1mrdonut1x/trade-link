@@ -111,10 +111,32 @@ export class ContactService {
     });
   }
 
-  async createManyContacts(
-    contacts: CreateContactRequest[],
-    tx?: Prisma.TransactionClient
-  ): Promise<{ id: number; email: string }[]> {
+  async findContactsByEmails(emails: string[]): Promise<Map<string, GetContactResponse>> {
+    if (emails.length === 0) {
+      return new Map();
+    }
+
+    const contacts = await this.prisma.contact.findMany({
+      where: {
+        email: {
+          in: emails,
+        },
+      },
+      include: {
+        company: true,
+      },
+    });
+
+    // Create a map for quick lookup by email
+    const contactMap = new Map<string, GetContactResponse>();
+    for (const contact of contacts) {
+      contactMap.set(contact.email, contact);
+    }
+
+    return contactMap;
+  }
+
+  async createManyContacts(contacts: CreateContactRequest[], tx?: Prisma.TransactionClient) {
     const prismaClient = tx || this.prisma;
     return prismaClient.contact.createManyAndReturn({
       data: contacts,
@@ -125,10 +147,7 @@ export class ContactService {
     });
   }
 
-  async bulkUpdateContacts(
-    updates: Array<{ id: number; data: UpdateContactRequest }>,
-    tx?: Prisma.TransactionClient
-  ): Promise<void> {
+  async bulkUpdateContacts(updates: Array<{ id: number; data: UpdateContactRequest }>, tx?: Prisma.TransactionClient) {
     const prismaClient = tx || this.prisma;
     await Promise.all(
       updates.map(({ id, data }) =>

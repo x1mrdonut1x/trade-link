@@ -19,6 +19,10 @@ export type ImportType = 'companies' | 'contacts' | 'mixed';
 
 interface ImportContextValue {
   // CSV file from upload step
+  selectedRawFile?: File;
+  setSelectedRawFile: (file?: File) => void;
+
+  // CSV file from upload step
   csvFile?: Blob;
   setCsvFile: (file?: Blob) => void;
 
@@ -44,6 +48,9 @@ interface ImportContextValue {
 
   // Helper to clear all data
   clearImportData: () => void;
+
+  // Helper to remove entries with duplicate emails
+  removeDuplicateEmailEntries: (email: string, type: 'company' | 'contact', rowsToRemove: number[]) => void;
 }
 
 const ImportContext = createContext<ImportContextValue | null>(null);
@@ -53,6 +60,7 @@ interface ImportProviderProps {
 }
 
 export function ImportProvider({ children }: ImportProviderProps) {
+  const [selectedRawFile, setSelectedRawFile] = useState<File>();
   const [csvFile, setCsvFile] = useState<Blob>();
   const [csvColumns, setCsvColumns] = useState<CsvColumn[]>([]);
   const [importType, setImportType] = useState<ImportType>('mixed');
@@ -74,7 +82,41 @@ export function ImportProvider({ children }: ImportProviderProps) {
     setPreviewData(undefined);
   };
 
+  const removeDuplicateEmailEntries = (email: string, type: 'company' | 'contact', rowsToRemove: number[]) => {
+    if (!previewData) return;
+
+    setPreviewData(prev => {
+      if (!prev) return prev;
+
+      // Update entry selections by marking specified rows as unselected
+      const entries = type === 'company' ? prev.companies : prev.contacts;
+      for (const [index, entry] of entries.entries()) {
+        if (rowsToRemove.includes(index + 1)) {
+          entry.selected = false;
+        }
+      }
+
+      // Update duplicateEmailErrors by removing specified rows and cleaning up resolved duplicates
+      const updatedDuplicateEmailErrors =
+        prev.duplicateEmailErrors
+          ?.map(error => {
+            if (error.email !== email || error.type !== type) return error;
+
+            const remainingRows = error.rows.filter(row => !rowsToRemove.includes(row));
+            return remainingRows.length > 1 ? { ...error, rows: remainingRows } : null;
+          })
+          .filter((error): error is NonNullable<typeof error> => error !== null) || [];
+
+      return {
+        ...prev,
+        duplicateEmailErrors: updatedDuplicateEmailErrors,
+      };
+    });
+  };
+
   const value: ImportContextValue = {
+    selectedRawFile,
+    setSelectedRawFile,
     csvFile,
     setCsvFile,
     csvColumns,
@@ -88,6 +130,7 @@ export function ImportProvider({ children }: ImportProviderProps) {
     clearImportData,
     importStats,
     setImportStats,
+    removeDuplicateEmailEntries,
   };
 
   return <ImportContext.Provider value={value}>{children}</ImportContext.Provider>;

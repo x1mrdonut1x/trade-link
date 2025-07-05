@@ -3,9 +3,9 @@ import { useState } from 'react';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
-  selectedFile: File | null;
+  selectedFile?: File;
   isLoading?: boolean;
-  error?: string | null;
+  error?: string;
   accept?: string;
   maxSize?: number; // in MB
   className?: string;

@@ -9,15 +9,25 @@ import { EditContactForm } from './EditContactForm';
 
 interface ContactEntryRowProps {
   entry: ImportEntry<ContactImportData>;
+  index: number;
   onToggle: () => void;
   onCompanyChange: (companyId: number | null) => void;
-  onDataChange: (field: keyof ContactImportData, value: string) => void;
+  onDataChange: <K extends keyof ContactImportData>(field: K, value: ContactImportData[K]) => void;
 }
 
-export function ContactEntryRow({ entry, onToggle, onCompanyChange, onDataChange }: ContactEntryRowProps) {
+export function ContactEntryRow({ entry, index, onToggle, onCompanyChange, onDataChange }: ContactEntryRowProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleStartEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = (...args: Parameters<typeof onDataChange>) => {
+    onDataChange(...args);
     setIsEditing(false);
   };
 
@@ -36,12 +46,10 @@ export function ContactEntryRow({ entry, onToggle, onCompanyChange, onDataChange
     return (
       <EditContactForm
         entry={entry}
+        index={index}
         onToggle={onToggle}
         onCompanyChange={onCompanyChange}
-        onDataChange={(...args) => {
-          onDataChange(...args);
-          setIsEditing(false);
-        }}
+        onDataChange={handleSaveEdit}
         onCancel={handleCancelEdit}
       />
     );
@@ -49,7 +57,12 @@ export function ContactEntryRow({ entry, onToggle, onCompanyChange, onDataChange
 
   return (
     <div className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50">
-      <Checkbox checked={entry.selected} onCheckedChange={onToggle} />
+      <div className="flex items-center gap-2 min-w-0">
+        <Badge variant="secondary" className="text-gray-500">
+          #{index + 1}
+        </Badge>
+        <Checkbox checked={entry.selected} onCheckedChange={onToggle} />
+      </div>
       <div className="flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           {/* Contact name section */}
@@ -68,9 +81,7 @@ export function ContactEntryRow({ entry, onToggle, onCompanyChange, onDataChange
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setIsEditing(true);
-            }}
+            onClick={handleStartEdit}
             className="h-6 w-6 p-0"
             title="Edit contact details"
           >

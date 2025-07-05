@@ -1,66 +1,16 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import type { CompanyImportData, ContactImportData } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Label } from '@tradelink/ui/components/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Loader2 } from '@tradelink/ui/icons';
-import { importAPI } from 'api/import/import.service';
+import { importAPI } from 'api/import/api';
 import { Alert } from 'components/ui/alert';
 import { useImportContext } from 'context';
 import * as Papa from 'papaparse';
 import { useEffect, useState } from 'react';
+import { FieldMappingSummary } from './-components/FieldMappingSummary';
 import { COMPANY_FIELDS, CONTACT_FIELDS } from './-components/fields';
-
-interface FieldMappingSummaryProps {
-  title: string;
-  fields: readonly { readonly key: string; readonly label: string; readonly required?: boolean }[];
-  mappings: Array<{ targetField: string; csvColumnIndex: number }>;
-  colorClass: 'blue' | 'green';
-}
-
-function FieldMappingSummary({ title, fields, mappings, colorClass }: FieldMappingSummaryProps) {
-  const colorClasses = {
-    blue: {
-      header: 'text-blue-900',
-      dot: 'bg-blue-500',
-    },
-    green: {
-      header: 'text-green-900',
-      dot: 'bg-green-500',
-    },
-  };
-
-  const colors = colorClasses[colorClass];
-
-  return (
-    <div>
-      <h4 className={`font-medium ${colors.header} mb-2 flex items-center gap-1`}>
-        <div className={`w-3 h-3 ${colors.dot} rounded-full`}></div>
-        {title}
-      </h4>
-      <div className="space-y-1">
-        {fields.map(field => {
-          const isMapped = mappings.some(m => m.targetField === field.key);
-
-          return (
-            <div
-              key={field.key}
-              className={`flex items-center justify-between px-2 py-1 rounded ${
-                isMapped
-                  ? 'bg-green-100 text-green-800'
-                  : field.required
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-gray-100 text-gray-500'
-              }`}
-            >
-              <span>{field.label}</span>
-              <span className="text-xs">{isMapped ? '✓ Mapped' : field.required ? '✗ Required' : 'Optional'}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export const Route = createFileRoute('/_app/import/_2/map')({
   component: ImportDataPage,
@@ -134,15 +84,19 @@ function ImportDataPage() {
     if (
       csvColumns.length === 0 ||
       (fieldMappings.companyMappings.length === 0 && fieldMappings.contactMappings.length === 0) ||
-      !importContext.csvFile
+      !importContext.selectedRawFile
     )
       return;
+
     setIsLoading(true);
     setError(null);
 
     try {
       // Generate filtered CSV with only mapped columns
-      const { filteredCsvFile, updatedFieldMappings } = await generateFilteredCsv(importContext.csvFile, fieldMappings);
+      const { filteredCsvFile, updatedFieldMappings } = await generateFilteredCsv(
+        importContext.selectedRawFile,
+        fieldMappings
+      );
 
       const processResponse = await importAPI.processImport({
         csvFile: filteredCsvFile,
@@ -163,25 +117,37 @@ function ImportDataPage() {
     const newMappings = { ...fieldMappings };
 
     if (fieldType === 'company') {
+      // Remove any existing mapping for this column
       newMappings.companyMappings = newMappings.companyMappings.filter(m => m.csvColumnIndex !== csvColumnIndex);
+
       if (targetField !== 'none') {
-        newMappings.companyMappings.push({ csvColumnIndex, targetField });
+        // Remove any existing mapping for this target field from other columns
+        newMappings.companyMappings = newMappings.companyMappings.filter(m => m.targetField !== targetField);
+
+        // Add the new mapping
+        newMappings.companyMappings.push({ csvColumnIndex, targetField: targetField as keyof CompanyImportData });
       }
     } else {
+      // Remove any existing mapping for this column
       newMappings.contactMappings = newMappings.contactMappings.filter(m => m.csvColumnIndex !== csvColumnIndex);
+
       if (targetField !== 'none') {
-        newMappings.contactMappings.push({ csvColumnIndex, targetField });
+        // Remove any existing mapping for this target field from other columns
+        newMappings.contactMappings = newMappings.contactMappings.filter(m => m.targetField !== targetField);
+
+        // Add the new mapping
+        newMappings.contactMappings.push({ csvColumnIndex, targetField: targetField as keyof ContactImportData });
       }
     }
 
     setFieldMappings(newMappings);
   };
 
-  const getMappingForColumn = (csvColumnIndex: number, fieldType: 'company' | 'contact') => {
+  const getMappingForColumn = (csvColumnIndex: number, fieldType: 'company' | 'contact'): string => {
     if (fieldType === 'company') {
-      return fieldMappings.companyMappings.find(m => m.csvColumnIndex === csvColumnIndex)?.targetField || '';
+      return fieldMappings.companyMappings.find(m => m.csvColumnIndex === csvColumnIndex)?.targetField || 'none';
     } else {
-      return fieldMappings.contactMappings.find(m => m.csvColumnIndex === csvColumnIndex)?.targetField || '';
+      return fieldMappings.contactMappings.find(m => m.csvColumnIndex === csvColumnIndex)?.targetField || 'none';
     }
   };
 
@@ -209,9 +175,6 @@ function ImportDataPage() {
 
   const requiredFieldsNotMapped = getRequiredFieldsNotMapped();
 
-  useEffect(() => {
-    console.log('hi map');
-  }, []);
   if (isLoading) {
     return (
       <div className="text-center">

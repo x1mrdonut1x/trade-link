@@ -10,6 +10,7 @@ export const COMPANY_FIELDS = [
   { key: 'city', label: 'City', required: false },
   { key: 'country', label: 'Country', required: false },
   { key: 'postCode', label: 'Post Code', required: false },
+  { key: 'createdAt', label: 'Created At', required: false },
 ] as const;
 
 export const CONTACT_FIELDS = [
@@ -24,4 +25,5 @@ export const CONTACT_FIELDS = [
   { key: 'country', label: 'Country', required: false },
   { key: 'postCode', label: 'Post Code', required: false },
   { key: 'companyName', label: 'Company Name', required: false },
+  { key: 'createdAt', label: 'Created At', required: false },
 ] as const;

@@ -7,12 +7,13 @@ import { useState } from 'react';
 
 interface EditCompanyFormProps {
   entry: ImportEntry<CompanyImportData>;
+  index: number;
   onToggle: () => void;
-  onDataChange: (field: keyof CompanyImportData, value: string) => void;
+  onDataChange: <K extends keyof CompanyImportData>(field: K, value: CompanyImportData[K]) => void;
   onCancel: () => void;
 }
 
-export function EditCompanyForm({ entry, onToggle, onDataChange, onCancel }: EditCompanyFormProps) {
+export function EditCompanyForm({ entry, index, onToggle, onDataChange, onCancel }: EditCompanyFormProps) {
   const [tempData, setTempData] = useState(entry.data);
 
   const handleSaveEdit = () => {
@@ -27,7 +28,12 @@ export function EditCompanyForm({ entry, onToggle, onDataChange, onCancel }: Edi
   return (
     <div className="border rounded-lg shadow-sm bg-muted/30">
       <div className="flex items-center gap-3 p-3 border-b bg-background">
-        <Checkbox checked={entry.selected} onCheckedChange={onToggle} />
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="flex-shrink-0 w-8 h-6 bg-slate-100 rounded-full flex items-center justify-center">
+            <span className="text-xs font-medium text-slate-600">#{index + 1}</span>
+          </div>
+          <Checkbox checked={entry.selected} onCheckedChange={onToggle} />
+        </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">Editing Company</span>

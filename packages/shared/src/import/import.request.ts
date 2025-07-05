@@ -25,7 +25,12 @@ const importProcessRequestSchema = z.object({
 // Company import data schema
 export const companyImportDataSchema = z.object({
   name: z.string().min(1, 'Company name is required'),
-  email: z.string().email('Please enter a valid email').optional().nullable(),
+  email: z
+    .string()
+    .email('Please enter a valid email')
+    .transform(val => val.toLocaleLowerCase())
+    .optional()
+    .nullable(),
   phonePrefix: z.string().optional().nullable(),
   phoneNumber: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
@@ -35,13 +40,17 @@ export const companyImportDataSchema = z.object({
   city: z.string().optional().nullable(),
   country: z.string().optional().nullable(),
   postCode: z.string().optional().nullable(),
+  createdAt: z.string().pipe(z.coerce.date()).optional().nullable(),
 });
 
 // Contact import data schema
 export const contactImportDataSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Please enter a valid email'),
+  email: z
+    .string()
+    .email('Please enter a valid email')
+    .transform(val => val.toLocaleLowerCase()),
   jobTitle: z.string().optional().nullable(),
   phonePrefix: z.string().optional().nullable(),
   phoneNumber: z.string().optional().nullable(),
@@ -50,14 +59,15 @@ export const contactImportDataSchema = z.object({
   country: z.string().optional().nullable(),
   postCode: z.string().optional().nullable(),
   companyName: z.string().optional().nullable(),
+  createdAt: z.string().pipe(z.coerce.date()).optional().nullable(),
 });
 
 // Execute import request schema (using CSV files)
 const importExecuteRequestSchema = z.object({
   fieldMappings: importFieldMappingsSchema,
   importType: importTypeSchema,
-  selectedCompanyRows: z.array(z.number()).optional(),
-  selectedContactRows: z.array(z.number()).optional(),
+  skippedCompanyRows: z.array(z.number()).optional(),
+  skippedContactRows: z.array(z.number()).optional(),
 });
 
 // Export DTO classes
@@ -65,14 +75,14 @@ export class ImportProcessRequest extends createZodDto(importProcessRequestSchem
 export class ImportExecuteRequest extends createZodDto(importExecuteRequestSchema) {}
 
 // Export types
-export interface ImportFieldMapping {
+export interface ImportFieldMapping<T> {
   csvColumnIndex: number;
-  targetField: string;
+  targetField: keyof T;
 }
 
 export interface ImportFieldMappings {
-  companyMappings: ImportFieldMapping[];
-  contactMappings: ImportFieldMapping[];
+  companyMappings: ImportFieldMapping<CompanyImportData>[];
+  contactMappings: ImportFieldMapping<ContactImportData>[];
 }
 
 export type ImportType = z.infer<typeof importTypeSchema>;

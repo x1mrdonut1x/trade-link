@@ -10,7 +10,7 @@ interface AlertActionButton {
 
 interface AlertProps {
   variant?: 'warning' | 'error' | 'info';
-  title: string;
+  title?: string;
   description: string;
   className?: string;
   action?: AlertActionButton;
@@ -35,7 +35,7 @@ export function Alert({ variant = 'warning', title, description, className, acti
     >
       <AlertTriangle className={cn('h-5 w-5 flex-shrink-0', iconStyles[variant])} />
       <div className="flex-1">
-        <p className="font-medium text-sm">{title}</p>
+        {title && <p className="font-medium text-sm">{title}</p>}
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       {action && (

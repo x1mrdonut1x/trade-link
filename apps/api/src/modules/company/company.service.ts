@@ -148,4 +148,54 @@ export class CompanyService {
       )
     );
   }
+
+  async findCompaniesByIds(ids: number[]) {
+    if (ids.length === 0) {
+      return [];
+    }
+    return this.prisma.company.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
+  async findCompaniesByEmails(emails: string[]): Promise<Map<string, { id: number; name: string; email: string }>> {
+    if (emails.length === 0) {
+      return new Map();
+    }
+
+    const companies = await this.prisma.company.findMany({
+      where: {
+        email: {
+          in: emails,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    // Create a map for quick lookup by email
+    const companyMap = new Map<string, { id: number; name: string; email: string }>();
+    for (const company of companies) {
+      if (company.email) {
+        companyMap.set(company.email, {
+          id: company.id,
+          name: company.name,
+          email: company.email,
+        });
+      }
+    }
+
+    return companyMap;
+  }
 }

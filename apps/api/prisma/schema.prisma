@@ -29,7 +29,7 @@ model contact {
 model company {
   id               Int                @id @unique @default(autoincrement())
   name             String
-  email            String?
+  email            String?            @unique
   description      String?
   phonePrefix      String?
   phoneNumber      String?

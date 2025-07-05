@@ -1,19 +1,39 @@
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { ContactImportData, ImportEntry } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Filter, Users } from '@tradelink/ui/icons';
 import { useImportContext } from 'context';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ContactEntryRow } from './ContactEntryRow';
 
 type FilterOption = 'all' | 'new' | 'update';
 
+const filterContacts = (contacts: ImportEntry<ContactImportData>[], filter: FilterOption) => {
+  if (filter === 'all') return contacts;
+  return contacts.filter(entry => entry.action === (filter === 'new' ? 'create' : 'update'));
+};
+
 export function ContactsList() {
   const importContext = useImportContext();
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const [contactFilter, setContactFilter] = useState<FilterOption>('all');
 
   const { previewData } = importContext;
+
+  // Calculate filtered contacts
+  const filteredContacts = previewData ? filterContacts(previewData.contacts, contactFilter) : [];
+
+  const virtualizer = useVirtualizer({
+    count: filteredContacts.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 120, // Initial estimate, will be measured dynamically
+    overscan: 5,
+    measureElement: element => {
+      return element.getBoundingClientRect().height;
+    },
+  });
 
   const handleEntryToggle = (type: 'companies' | 'contacts', index: number) => {
     if (!previewData) return;
@@ -48,7 +68,11 @@ export function ContactsList() {
     importContext.setPreviewData(updatedData);
   };
 
-  const handleContactDataChange = (index: number, field: keyof ContactImportData, value: string) => {
+  const handleContactDataChange = <K extends keyof ContactImportData>(
+    index: number,
+    field: K,
+    value: ContactImportData[K]
+  ) => {
     if (!previewData) return;
 
     const updatedData = { ...previewData };
@@ -60,13 +84,6 @@ export function ContactsList() {
   };
 
   if (!previewData) return null;
-
-  const filterContacts = (contacts: ImportEntry<ContactImportData>[], filter: FilterOption) => {
-    if (filter === 'all') return contacts;
-    return contacts.filter(entry => entry.action === (filter === 'new' ? 'create' : 'update'));
-  };
-
-  const filteredContacts = filterContacts(previewData.contacts, contactFilter);
 
   return (
     <Card className="flex-1">
@@ -92,19 +109,43 @@ export function ContactsList() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {filteredContacts.map(entry => {
-            const originalIndex = previewData.contacts.indexOf(entry);
-            return (
-              <ContactEntryRow
-                key={originalIndex}
-                entry={entry}
-                onToggle={() => handleEntryToggle('contacts', originalIndex)}
-                onCompanyChange={companyId => handleCompanyChange(originalIndex, companyId)}
-                onDataChange={(field, value) => handleContactDataChange(originalIndex, field, value)}
-              />
-            );
-          })}
+        <div ref={parentRef} className="h-[400px] overflow-auto">
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {virtualizer.getVirtualItems().map(virtualItem => {
+              const entry = filteredContacts[virtualItem.index];
+              const originalIndex = previewData.contacts.indexOf(entry);
+              return (
+                <div
+                  key={virtualItem.key}
+                  data-index={virtualItem.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                >
+                  <div className="pb-3">
+                    <ContactEntryRow
+                      entry={entry}
+                      index={originalIndex}
+                      onToggle={() => handleEntryToggle('contacts', originalIndex)}
+                      onCompanyChange={companyId => handleCompanyChange(originalIndex, companyId)}
+                      onDataChange={(field, value) => handleContactDataChange(originalIndex, field, value)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
         {filteredContacts.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">No contacts match the selected filter.</div>

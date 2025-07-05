@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { AlertTriangle, Building2, FileText, Users } from '@tradelink/ui/icons';
 import { useImportContext } from 'context';
@@ -61,8 +61,12 @@ export function SubmitStepPage() {
       </div>
 
       <div className="flex gap-3 mt-auto pt-4 border-t">
-        <Button onClick={() => (globalThis.location.href = '/companies')}>View Companies</Button>
-        <Button onClick={() => (globalThis.location.href = '/contacts')}>View Contacts</Button>
+        <Button asChild>
+          <Link to="/companies">View Companies</Link>
+        </Button>
+        <Button asChild>
+          <Link to="/contacts">View Contacts</Link>
+        </Button>
       </div>
     </>
   );
