@@ -1,19 +1,39 @@
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { CompanyImportData, ImportEntry } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Building2, Filter } from '@tradelink/ui/icons';
 import { useImportContext } from 'context';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CompanyEntryRow } from './CompanyEntryRow';
 
 type FilterOption = 'all' | 'new' | 'update';
 
+const filterCompanies = (companies: ImportEntry<CompanyImportData>[], filter: FilterOption) => {
+  if (filter === 'all') return companies;
+  return companies.filter(entry => entry.action === (filter === 'new' ? 'create' : 'update'));
+};
+
 export function CompaniesList() {
   const importContext = useImportContext();
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const [companyFilter, setCompanyFilter] = useState<FilterOption>('all');
 
   const { previewData } = importContext;
+
+  // Calculate filtered companies
+  const filteredCompanies = previewData ? filterCompanies(previewData.companies, companyFilter) : [];
+
+  const virtualizer = useVirtualizer({
+    count: filteredCompanies.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 120, // Initial estimate, will be measured dynamically
+    overscan: 5,
+    measureElement: element => {
+      return element.getBoundingClientRect().height;
+    },
+  });
 
   const handleEntryToggle = (type: 'companies' | 'contacts', index: number) => {
     if (!previewData) return;
@@ -27,7 +47,11 @@ export function CompaniesList() {
     importContext.setPreviewData(updatedData);
   };
 
-  const handleCompanyDataChange = (index: number, field: keyof CompanyImportData, value: string) => {
+  const handleCompanyDataChange = <K extends keyof CompanyImportData>(
+    index: number,
+    field: K,
+    value: CompanyImportData[K]
+  ) => {
     if (!previewData) return;
 
     const updatedData = { ...previewData };
@@ -39,14 +63,7 @@ export function CompaniesList() {
   };
 
   // Filter functions
-  const filterCompanies = (companies: ImportEntry<CompanyImportData>[], filter: FilterOption) => {
-    if (filter === 'all') return companies;
-    return companies.filter(entry => entry.action === (filter === 'new' ? 'create' : 'update'));
-  };
-
   if (!previewData) return;
-
-  const filteredCompanies = filterCompanies(previewData.companies, companyFilter);
 
   return (
     <Card className="flex-1">
@@ -72,18 +89,42 @@ export function CompaniesList() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {filteredCompanies.map(entry => {
-            const originalIndex = previewData.companies.indexOf(entry);
-            return (
-              <CompanyEntryRow
-                key={originalIndex}
-                entry={entry}
-                onToggle={() => handleEntryToggle('companies', originalIndex)}
-                onDataChange={(field, value) => handleCompanyDataChange(originalIndex, field, value)}
-              />
-            );
-          })}
+        <div ref={parentRef} className="h-[400px] overflow-auto">
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {virtualizer.getVirtualItems().map(virtualItem => {
+              const entry = filteredCompanies[virtualItem.index];
+              const originalIndex = previewData.companies.indexOf(entry);
+              return (
+                <div
+                  key={virtualItem.key}
+                  data-index={virtualItem.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                >
+                  <div className="pb-3">
+                    <CompanyEntryRow
+                      entry={entry}
+                      index={originalIndex}
+                      onToggle={() => handleEntryToggle('companies', originalIndex)}
+                      onDataChange={(field, value) => handleCompanyDataChange(originalIndex, field, value)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
         {filteredCompanies.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">No companies match the selected filter.</div>

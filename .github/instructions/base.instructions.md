@@ -12,3 +12,5 @@ API requests should be validated using zod and their schemas should be saved in 
 API responses should be typescript types or interfaces defined in the `packages/shared/*/*.response.ts`.
 
 Follow existing code style and conventions.
+
+Do not write summaries at the end of your work.

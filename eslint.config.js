@@ -67,6 +67,7 @@ export default [
       'unicorn/no-nested-ternary': 'off',
       'unicorn/prefer-top-level-await': 'off',
       'unicorn/prefer-ternary': 'off',
+      'unicorn/explicit-length-check': 'off',
 
       'sonarjs/redundant-type-aliases': 'off',
       'sonarjs/prefer-read-only-props': 'off',

@@ -1,132 +1,108 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import type { ImportFieldMapping, ImportFieldMappings } from '@tradelink/shared';
+import type { CompanyImportData, ContactImportData, ImportFieldMapping, ImportFieldMappings } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Label } from '@tradelink/ui/components/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { FileUpload } from 'components/file-upload';
 import { useImportContext } from 'context';
 import type { CsvColumn, ImportType } from 'context/import-context';
-import Papa from 'papaparse';
 import { useState } from 'react';
+import { parseCSV } from '../-utils/util';
 
 export const Route = createFileRoute('/_app/import/_1/upload')({
   component: UploadDataPage,
 });
 
-const parseCSV = (file: File): Promise<{ columns: CsvColumn[]; slicedFile: Blob }> => {
-  return new Promise((resolve, reject) => {
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      preview: 10_000,
-      complete: results => {
-        if (results.errors.length > 0) {
-          reject(new Error(`CSV parsing errors: ${results.errors.map(e => e.message).join(', ')}`));
-          return;
-        }
-
-        const data = results.data as Record<string, string>[];
-        const columns: CsvColumn[] = [];
-
-        // Get column names from the first row
-        if (data.length > 0) {
-          const columnNames = Object.keys(data[0]);
-
-          for (const columnName of columnNames) {
-            const values = data.map(row => row[columnName] || '').filter(value => value.trim() !== '');
-
-            columns.push({
-              name: columnName,
-              values: values,
-            });
-          }
-        }
-
-        const slicedFile = new Blob([Papa.unparse(data)], { type: 'text/csv' });
-
-        resolve({ columns, slicedFile });
-      },
-      error: error => {
-        reject(new Error(`Failed to parse CSV: ${error.message}`));
-      },
-    });
-  });
-};
-
 function UploadDataPage() {
   const navigate = useNavigate();
   const importContext = useImportContext();
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
 
   const createAutoMappings = (columns: CsvColumn[], importType: ImportType): ImportFieldMappings => {
-    const companyMappings: ImportFieldMapping[] = [];
-    const contactMappings: ImportFieldMapping[] = [];
+    const companyMappings: ImportFieldMapping<CompanyImportData>[] = [];
+    const contactMappings: ImportFieldMapping<ContactImportData>[] = [];
+
+    const isCompanyOrMixed = importType === 'companies' || importType === 'mixed';
+    const isContactOrMixed = importType === 'contacts' || importType === 'mixed';
+
+    const fieldMappingRules: {
+      columnMatches: (name: string) => boolean;
+      contactField?: keyof ContactImportData;
+      companyField?: keyof CompanyImportData;
+    }[] = [
+      {
+        columnMatches: (name: string) => name.includes('first') && name.includes('name'),
+        contactField: 'firstName',
+      },
+      {
+        columnMatches: (name: string) => name.includes('last') && name.includes('name'),
+        contactField: 'lastName',
+      },
+      {
+        columnMatches: (name: string) => name.includes('company'),
+        contactField: 'companyName',
+        companyField: 'name',
+      },
+      {
+        columnMatches: (name: string) => name.includes('country'),
+        contactField: 'country',
+        companyField: 'country',
+      },
+      {
+        columnMatches: (name: string) => name.includes('city'),
+        contactField: 'city',
+        companyField: 'city',
+      },
+      {
+        columnMatches: (name: string) => name.includes('phone'),
+        contactField: 'phoneNumber',
+        companyField: 'phoneNumber',
+      },
+      {
+        columnMatches: (name: string) => name.includes('email'),
+        contactField: 'email',
+        companyField: 'email',
+      },
+      {
+        columnMatches: (name: string) => name.includes('create'),
+        contactField: 'createdAt',
+        companyField: 'createdAt',
+      },
+    ];
+
+    const addMapping = (columnIndex: number, rule: (typeof fieldMappingRules)[0]) => {
+      if (rule.contactField && isContactOrMixed) {
+        // Check if this field is already mapped
+        const existingMapping = contactMappings.find(m => m.targetField === rule.contactField);
+        if (!existingMapping) {
+          contactMappings.push({
+            csvColumnIndex: columnIndex,
+            targetField: rule.contactField,
+          });
+        }
+      }
+      if (rule.companyField && isCompanyOrMixed) {
+        // Check if this field is already mapped
+        const existingMapping = companyMappings.find(m => m.targetField === rule.companyField);
+        if (!existingMapping) {
+          companyMappings.push({
+            csvColumnIndex: columnIndex,
+            targetField: rule.companyField,
+          });
+        }
+      }
+    };
 
     for (const [columnIndex, column] of columns.entries()) {
       const columnName = column.name.toLowerCase().trim();
 
-      // Auto-map common field names
-      if (columnName.includes('first') && columnName.includes('name')) {
-        contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'firstName' });
-      } else if (columnName.includes('last') && columnName.includes('name')) {
-        contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'lastName' });
-      } else
-        switch (columnName) {
-          case 'email': {
-            if (importType === 'contacts' || importType === 'mixed') {
-              contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'email' });
-            }
-            if (importType === 'companies' || importType === 'mixed') {
-              companyMappings.push({ csvColumnIndex: columnIndex, targetField: 'email' });
-            }
+      const matchingRule = fieldMappingRules.find(rule => rule.columnMatches(columnName));
 
-            break;
-          }
-          case 'company':
-          case 'company name': {
-            if (importType === 'contacts' || importType === 'mixed') {
-              contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'companyName' });
-            }
-            if (importType === 'companies' || importType === 'mixed') {
-              companyMappings.push({ csvColumnIndex: columnIndex, targetField: 'name' });
-            }
-
-            break;
-          }
-          case 'phone': {
-            if (importType === 'contacts' || importType === 'mixed') {
-              contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'phoneNumber' });
-            }
-            if (importType === 'companies' || importType === 'mixed') {
-              companyMappings.push({ csvColumnIndex: columnIndex, targetField: 'phoneNumber' });
-            }
-
-            break;
-          }
-          case 'city': {
-            if (importType === 'contacts' || importType === 'mixed') {
-              contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'city' });
-            }
-            if (importType === 'companies' || importType === 'mixed') {
-              companyMappings.push({ csvColumnIndex: columnIndex, targetField: 'city' });
-            }
-
-            break;
-          }
-          case 'country': {
-            if (importType === 'contacts' || importType === 'mixed') {
-              contactMappings.push({ csvColumnIndex: columnIndex, targetField: 'country' });
-            }
-            if (importType === 'companies' || importType === 'mixed') {
-              companyMappings.push({ csvColumnIndex: columnIndex, targetField: 'country' });
-            }
-
-            break;
-          }
-        }
+      if (matchingRule) {
+        addMapping(columnIndex, matchingRule);
+      }
     }
 
     return {
@@ -136,12 +112,12 @@ function UploadDataPage() {
   };
 
   const handleFileSelect = async (file: File) => {
-    setSelectedFile(file);
-    setError(null);
+    importContext.setSelectedRawFile(file);
+    setError(undefined);
 
     try {
       setIsLoading(true);
-      const { columns, slicedFile } = await parseCSV(file);
+      const { columns, slicedFile } = await parseCSV(file, 100);
 
       // Store the file in context
       importContext.setCsvFile(slicedFile);
@@ -178,7 +154,7 @@ function UploadDataPage() {
 
       <FileUpload
         onFileSelect={handleFileSelect}
-        selectedFile={selectedFile}
+        selectedFile={importContext.selectedRawFile}
         isLoading={isLoading}
         error={error}
         accept=".csv"
@@ -186,7 +162,11 @@ function UploadDataPage() {
       />
 
       <div className="flex gap-2 pt-4 flex-shrink-0 border-t justify-end">
-        <Button onClick={() => navigate({ to: '/import/map' })} disabled={!selectedFile} loading={isLoading}>
+        <Button
+          onClick={() => navigate({ to: '/import/map' })}
+          disabled={!importContext.selectedRawFile}
+          loading={isLoading}
+        >
           Next
         </Button>
       </div>

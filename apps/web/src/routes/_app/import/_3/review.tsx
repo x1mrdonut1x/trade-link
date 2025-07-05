@@ -3,13 +3,14 @@ import type { ImportExecuteResponse } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Loader2, Users } from '@tradelink/ui/icons';
-import { importAPI } from 'api/import/import.service';
+import { importAPI } from 'api/import/api';
 import { Alert } from 'components/ui/alert';
 import { useImportContext } from 'context';
 import Papa from 'papaparse';
 import { useEffect, useState } from 'react';
 import { CompaniesList } from './-components/companies/CompaniesList';
 import { ContactsList } from './-components/contacts/ContactsList';
+import { DuplicateEmailWarning } from './-components/DuplicateEmailWarning';
 
 export const Route = createFileRoute('/_app/import/_3/review')({
   component: DataPreviewPage,
@@ -31,43 +32,42 @@ export function DataPreviewPage() {
     }
   }, [navigate, previewData]);
 
-  // Helper function to generate CSV data for companies
-  const generateCompanyCSV = (selectedCompanies: NonNullable<typeof previewData>['companies']): string => {
-    if (selectedCompanies.length === 0) return '';
+  const generateCSV = <T extends { data: Record<string, unknown>; existingId?: number; companyId?: number }>(
+    selectedEntries: T[],
+    mappings: Array<{ targetField: string }>,
+    includeCompanyId: boolean = false
+  ): string => {
+    if (selectedEntries.length === 0) return '';
 
-    // Get all mapped company fields
-    const companyFields = fieldMappings.companyMappings.map(mapping => mapping.targetField);
+    // Get all mapped fields
+    const fields = mappings.map(mapping => mapping.targetField);
 
-    // Create header row
-    const headerRow = companyFields;
+    // Add special fields for tracking existing records and company assignments
+    const specialFields = ['__existingId'];
+    if (includeCompanyId) {
+      specialFields.push('__companyId');
+    }
+
+    // Create header row with both data fields and special fields
+    const headerRow = [...fields, ...specialFields];
 
     // Create data rows
-    const dataRows = selectedCompanies.map(entry => {
-      return companyFields.map(field => {
+    const dataRows = selectedEntries.map(entry => {
+      const dataValues = fields.map(field => {
         const value = entry.data[field as keyof typeof entry.data];
         return value ?? '';
       });
-    });
 
-    return Papa.unparse([headerRow, ...dataRows]);
-  };
+      // Add special field values
+      const specialValues = [
+        entry.existingId?.toString() ?? '', // __existingId
+      ];
 
-  // Helper function to generate CSV data for contacts
-  const generateContactCSV = (selectedContacts: NonNullable<typeof previewData>['contacts']): string => {
-    if (selectedContacts.length === 0) return '';
+      if (includeCompanyId) {
+        specialValues.push(entry.companyId?.toString() ?? ''); // __companyId
+      }
 
-    // Get all mapped contact fields
-    const contactFields = fieldMappings.contactMappings.map(mapping => mapping.targetField);
-
-    // Create header row
-    const headerRow = contactFields;
-
-    // Create data rows
-    const dataRows = selectedContacts.map(entry => {
-      return contactFields.map(field => {
-        const value = entry.data[field as keyof typeof entry.data];
-        return value ?? '';
-      });
+      return [...dataValues, ...specialValues];
     });
 
     return Papa.unparse([headerRow, ...dataRows]);
@@ -84,26 +84,28 @@ export function DataPreviewPage() {
       const selectedContacts = previewData.contacts.filter(entry => entry.selected);
 
       // Generate CSV files for selected data
-      const companyCsvData = generateCompanyCSV(selectedCompanies);
-      const contactCsvData = generateContactCSV(selectedContacts);
+      const companyCsvData = generateCSV(selectedCompanies, fieldMappings.companyMappings);
+      const contactCsvData = generateCSV(selectedContacts, fieldMappings.contactMappings, true); // Include companyId for contacts
 
       // Create Blob objects for CSV files
       const companyCsvFile = companyCsvData ? new Blob([companyCsvData], { type: 'text/csv' }) : undefined;
       const contactCsvFile = contactCsvData ? new Blob([contactCsvData], { type: 'text/csv' }) : undefined;
 
-      // Get selected row indices (for backend tracking)
-      const selectedCompanyRows = selectedCompanies
-        .map((_, index) => index)
-        .filter(index => selectedCompanies[index].selected);
-      const selectedContactRows = selectedContacts
-        .map((_, index) => index)
-        .filter(index => selectedContacts[index].selected);
+      // Get skipped row indices (for backend tracking)
+      const skippedCompanyRows = previewData.companies
+        .map((entry, index) => ({ entry, index }))
+        .filter(({ entry }) => !entry.selected)
+        .map(({ index }) => index);
+      const skippedContactRows = previewData.contacts
+        .map((entry, index) => ({ entry, index }))
+        .filter(({ entry }) => !entry.selected)
+        .map(({ index }) => index);
 
       const executeResponse = await importAPI.executeImport({
         fieldMappings,
         importType: importContext.importType,
-        selectedCompanyRows,
-        selectedContactRows,
+        skippedCompanyRows,
+        skippedContactRows,
         companyCsvFile,
         contactCsvFile,
       });
@@ -146,9 +148,7 @@ export function DataPreviewPage() {
           }}
         />
         {importErrorDetails?.length &&
-          importErrorDetails.map(error => (
-            <Alert variant="warning" title={`Row: ${error.row}, Field: ${error.field}`} description={error.message} />
-          ))}
+          importErrorDetails.map(error => <Alert variant="warning" description={error.message} />)}
       </div>
     );
   }
@@ -160,6 +160,8 @@ export function DataPreviewPage() {
   const selectedCompanies = previewData.companies.filter(entry => entry.selected).length;
   const selectedContacts = previewData.contacts.filter(entry => entry.selected).length;
   const hasSelections = selectedCompanies > 0 || selectedContacts > 0;
+  const hasDuplicateEmails = previewData.duplicateEmailErrors && previewData.duplicateEmailErrors.length > 0;
+  const canImport = hasSelections && !hasDuplicateEmails;
 
   return (
     <div className="flex flex-col space-y-6">
@@ -189,6 +191,17 @@ export function DataPreviewPage() {
         </CardContent>
       </Card>
 
+      {/* Row limit warning */}
+      {previewData.truncated && (
+        <Alert
+          variant="warning"
+          title="Import Limited to 10,000 Rows"
+          description={`Your CSV file contains ${previewData.totalRows?.toLocaleString()} rows, but we've limited your import to the first 10,000 rows to ensure optimal performance. If you need to import more data, consider splitting your file into smaller chunks.`}
+        />
+      )}
+
+      <DuplicateEmailWarning duplicateEmailErrors={previewData.duplicateEmailErrors || []} />
+
       <div className="flex flex-col 2xl:flex-row overflow-y-auto gap-4">
         <CompaniesList />
         <ContactsList />
@@ -199,7 +212,7 @@ export function DataPreviewPage() {
         <Button variant="outline" onClick={() => navigate({ to: '/import/map' })}>
           Back
         </Button>
-        <Button onClick={() => handleImport()} disabled={!hasSelections} className="flex-1">
+        <Button onClick={() => handleImport()} disabled={!canImport} className="flex-1">
           Import Selected ({selectedCompanies + selectedContacts} items)
         </Button>
       </div>

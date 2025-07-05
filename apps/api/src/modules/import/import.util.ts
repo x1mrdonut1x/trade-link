@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { CompanyImportData, ContactImportData, ImportEntry, type ImportFieldMappings } from '@tradelink/shared';
+import { CompanyImportData, ContactImportData, ImportEntry } from '@tradelink/shared';
 import Papa from 'papaparse';
 
 /**
@@ -25,14 +25,6 @@ export const importUtils = {
   },
 
   /**
-   * Checks if the given ID is a temporary company ID
-   * Temporary IDs are negative numbers used during import processing
-   */
-  isTemporaryCompanyId(id: number): boolean {
-    return id < 0;
-  },
-
-  /**
    * Removes falsy values from an object
    * Specifically removes properties with `false` values
    */
@@ -42,21 +34,6 @@ export const importUtils = {
         delete obj[key];
       }
     }
-  },
-
-  /**
-   * Finds a company by its temporary ID in the temporary companies map
-   */
-  findCompanyByTempId(
-    tempCompaniesByName: Map<string, { id: number; name: string; isTemp: boolean }>,
-    tempId: number
-  ): { id: number; name: string } | undefined {
-    for (const company of tempCompaniesByName.values()) {
-      if (company.id === tempId) {
-        return { id: company.id, name: company.name };
-      }
-    }
-    return undefined;
   },
 
   /**
@@ -79,63 +56,56 @@ export const importUtils = {
     };
   },
 
-  convertCompanyCsvToImportEntries(
+  /**
+   * Helper function to convert CSV data to import entries
+   */
+  convertCsvToImportEntries<T extends CompanyImportData | ContactImportData>(
     csvData: string[][],
-    fieldMappings: ImportFieldMappings
-  ): ImportEntry<CompanyImportData>[] {
-    const headerRow = csvData[0];
+    fieldMappings: { targetField: keyof T }[],
+    skippedRows?: number[]
+  ): ImportEntry<T>[] {
+    if (csvData.length === 0) return [];
+
+    const headerRow = csvData[0] as (keyof T | string)[];
     const dataRows = csvData.slice(1);
 
-    return dataRows.map(row => {
-      const companyData: any = {};
+    // Find special field indices
+    const existingIdIndex = headerRow.indexOf('__existingId');
+    const companyIdIndex = headerRow.indexOf('__companyId');
 
-      // Map CSV columns to company fields
-      for (const mapping of fieldMappings.companyMappings) {
+    return dataRows.map((row, index) => {
+      const data: T = {} as T;
+
+      // Map CSV columns to data fields (excluding special fields)
+      for (const mapping of fieldMappings) {
         const columnIndex = headerRow.indexOf(mapping.targetField);
         if (columnIndex !== -1 && row[columnIndex] != null) {
-          companyData[mapping.targetField] = row[columnIndex].trim();
+          data[mapping.targetField] = row[columnIndex].trim() as T[keyof T];
         }
       }
 
+      // Extract special fields
+      const existingId =
+        existingIdIndex !== -1 && row[existingIdIndex]
+          ? Number.parseInt(row[existingIdIndex].trim()) || undefined
+          : undefined;
+
+      const companyId =
+        companyIdIndex !== -1 && row[companyIdIndex]
+          ? Number.parseInt(row[companyIdIndex].trim()) || undefined
+          : undefined;
+
       return {
-        data: companyData,
-        action: 'create' as const,
-        existingId: undefined,
-        selected: true,
+        data,
+        action: existingId ? ('update' as const) : ('create' as const),
+        existingId,
+        selected: !skippedRows || !skippedRows.includes(index),
+        companyId,
       };
     });
   },
 
-  convertContactCsvToImportEntries(
-    csvData: string[][],
-    fieldMappings: ImportFieldMappings
-  ): ImportEntry<ContactImportData>[] {
-    const headerRow = csvData[0];
-    const dataRows = csvData.slice(1);
-
-    return dataRows.map(row => {
-      const contactData: any = {};
-
-      // Map CSV columns to contact fields
-      for (const mapping of fieldMappings.contactMappings) {
-        const columnIndex = headerRow.indexOf(mapping.targetField);
-        if (columnIndex !== -1 && row[columnIndex] != null) {
-          contactData[mapping.targetField] = row[columnIndex].trim();
-        }
-      }
-
-      return {
-        data: contactData,
-        action: 'create' as const,
-        existingId: undefined,
-        companyId: undefined,
-        matchedCompany: undefined,
-        selected: true,
-      };
-    });
-  },
-
-  async parseCSV(csvFile: Express.Multer.File): Promise<string[][]> {
+  async parseCSV(csvFile: Express.Multer.File): Promise<{ data: string[][]; truncated: boolean; totalRows: number }> {
     return new Promise((resolve, reject) => {
       const fileContent = csvFile.buffer.toString('utf8');
 
@@ -156,7 +126,18 @@ export const importUtils = {
             return;
           }
 
-          resolve(csvData);
+          const totalRows = csvData.length;
+          const ROW_LIMIT = 40_000;
+          const truncated = totalRows > ROW_LIMIT;
+
+          // If data exceeds limit, truncate to first 10k rows (including header)
+          const limitedData = truncated ? csvData.slice(0, ROW_LIMIT) : csvData;
+
+          resolve({
+            data: limitedData,
+            truncated,
+            totalRows,
+          });
         },
         error: error => {
           reject(new BadRequestException(`Failed to parse CSV: ${error.message}`));

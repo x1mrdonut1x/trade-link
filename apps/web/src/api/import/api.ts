@@ -24,12 +24,12 @@ export const importAPI = {
     formData.append('fieldMappings', JSON.stringify(body.fieldMappings));
     formData.append('importType', body.importType);
 
-    if (body.selectedCompanyRows) {
-      formData.append('selectedCompanyRows', JSON.stringify(body.selectedCompanyRows));
+    if (body.skippedCompanyRows) {
+      formData.append('skippedCompanyRows', JSON.stringify(body.skippedCompanyRows));
     }
 
-    if (body.selectedContactRows) {
-      formData.append('selectedContactRows', JSON.stringify(body.selectedContactRows));
+    if (body.skippedContactRows) {
+      formData.append('skippedContactRows', JSON.stringify(body.skippedContactRows));
     }
 
     if (body.companyCsvFile) {

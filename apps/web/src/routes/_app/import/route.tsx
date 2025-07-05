@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet, redirect, useLocation } from '@tanstack/react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { CheckCircle } from '@tradelink/ui/icons';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { Stepper } from 'components/stepper/Stepper';
 import { ImportProvider, type ImportStep } from 'context/import-context';
@@ -8,7 +7,7 @@ import { ImportProvider, type ImportStep } from 'context/import-context';
 export const Route = createFileRoute('/_app/import')({
   component: ImportDataPage,
   beforeLoad: ({ location }) => {
-    if (location.pathname === '/import' || location.pathname === '/import/') {
+    if (location.pathname.endsWith('/import') || location.pathname.endsWith('/import/')) {
       throw redirect({ to: importSteps[0].url });
     }
   },
@@ -37,12 +36,7 @@ const importSteps: ImportStep[] = [
     index: 3,
     url: '/import/success',
     title: 'Submit',
-    header: (
-      <>
-        <CheckCircle className="h-6 w-6 text-green-500" />
-        Import Complete!
-      </>
-    ),
+    header: 'Submit data',
     description: 'Submit your data into the system',
   },
 ];

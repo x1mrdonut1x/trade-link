@@ -8,14 +8,24 @@ import { EditCompanyForm } from './EditCompanyForm';
 
 interface CompanyEntryRowProps {
   entry: ImportEntry<CompanyImportData>;
+  index: number;
   onToggle: () => void;
-  onDataChange: (field: keyof CompanyImportData, value: string) => void;
+  onDataChange: <K extends keyof CompanyImportData>(field: K, value: CompanyImportData[K]) => void;
 }
 
-export function CompanyEntryRow({ entry, onToggle, onDataChange }: CompanyEntryRowProps) {
+export function CompanyEntryRow({ entry, index, onToggle, onDataChange }: CompanyEntryRowProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleStartEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = (...args: Parameters<typeof onDataChange>) => {
+    onDataChange(...args);
     setIsEditing(false);
   };
 
@@ -23,11 +33,9 @@ export function CompanyEntryRow({ entry, onToggle, onDataChange }: CompanyEntryR
     return (
       <EditCompanyForm
         entry={entry}
+        index={index}
         onToggle={onToggle}
-        onDataChange={(...args) => {
-          onDataChange(...args);
-          setIsEditing(false);
-        }}
+        onDataChange={handleSaveEdit}
         onCancel={handleCancelEdit}
       />
     );
@@ -35,7 +43,12 @@ export function CompanyEntryRow({ entry, onToggle, onDataChange }: CompanyEntryR
 
   return (
     <div className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50">
-      <Checkbox checked={entry.selected} onCheckedChange={onToggle} />
+      <div className="flex items-center gap-2 min-w-0">
+        <Badge variant="secondary" className="text-gray-500">
+          #{index + 1}
+        </Badge>
+        <Checkbox checked={entry.selected} onCheckedChange={onToggle} />
+      </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium">{entry.data.name}</span>
@@ -45,9 +58,7 @@ export function CompanyEntryRow({ entry, onToggle, onDataChange }: CompanyEntryR
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setIsEditing(true);
-            }}
+            onClick={handleStartEdit}
             className="h-6 w-6 p-0"
             title="Edit company details"
           >
