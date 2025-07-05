@@ -10,6 +10,9 @@
     "build:web": "turbo build:web",
     "build:api": "turbo build:api",
     "start:api": "pnpm --filter api start",
+    "test": "pnpm --filter api test",
+    "test:watch": "pnpm --filter api test:watch",
+    "test:e2e": "pnpm --filter api test:e2e",
     "db:migrate": "pnpm --filter api db:migrate",
     "db:deploy": "pnpm --filter api db:deploy",
     "ui": "pnpm --filter @tradelink/ui ui"

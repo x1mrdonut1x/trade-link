@@ -187,28 +187,23 @@ export class ImportService {
     const contactEmailsToLookup = this.collectContactEmails(dataRows, request.fieldMappings);
     const existingContactsByEmail = await this.contactService.findContactsByEmails([...contactEmailsToLookup]);
 
-    for (const [index, row] of dataRows.entries()) {
-      try {
-        const { companyData, contactData } = this.mapRowToData(row, request.fieldMappings);
+    for (const row of dataRows) {
+      const { companyData, contactData } = this.mapRowToData(row, request.fieldMappings);
 
-        let currentRowCompanyId: number | undefined;
+      let currentRowCompanyId: number | undefined;
 
-        if (companyData && request.importType !== 'contacts') {
-          currentRowCompanyId = this.processCompanyEntry(companyData, companies, existingCompanies);
-        }
+      if (companyData && request.importType !== 'contacts') {
+        currentRowCompanyId = this.processCompanyEntry(companyData, companies, existingCompanies);
+      }
 
-        if (contactData && request.importType !== 'companies') {
-          this.processContactEntry(
-            contactData,
-            contacts,
-            existingCompanies,
-            currentRowCompanyId,
-            existingContactsByEmail
-          );
-        }
-      } catch (error) {
-        console.error(`Error processing row ${index + 1}:`, error);
-        // Continue processing other rows
+      if (contactData && request.importType !== 'companies') {
+        this.processContactEntry(
+          contactData,
+          contacts,
+          existingCompanies,
+          currentRowCompanyId,
+          existingContactsByEmail
+        );
       }
     }
 
@@ -397,9 +392,29 @@ export class ImportService {
       }
     }
 
+    // Validate and parse data, throwing errors for invalid data
+    let validCompanyData: CompanyImportData | undefined;
+    let validContactData: ContactImportData | undefined;
+
+    if (Object.keys(companyData).length > 0) {
+      const companyResult = companyImportDataSchema.safeParse(companyData);
+      if (!companyResult.success) {
+        throw new BadRequestException(`Company validation error: ${companyResult.error.errors[0].message}`);
+      }
+      validCompanyData = companyResult.data;
+    }
+
+    if (Object.keys(contactData).length > 0) {
+      const contactResult = contactImportDataSchema.safeParse(contactData);
+      if (!contactResult.success) {
+        throw new BadRequestException(`Contact validation error: ${contactResult.error.errors[0].message}`);
+      }
+      validContactData = contactResult.data;
+    }
+
     return {
-      companyData: companyImportDataSchema.safeParse(companyData).data,
-      contactData: contactImportDataSchema.safeParse(contactData).data,
+      companyData: validCompanyData,
+      contactData: validContactData,
     };
   }
 

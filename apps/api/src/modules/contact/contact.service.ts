@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -30,34 +30,62 @@ export class ContactService {
   }
 
   async createContact(data: CreateContactRequest): Promise<CreateContactResponse> {
-    const contact = await this.prisma.contact.create({
-      data,
-      include: {
-        company: true,
-      },
-    });
+    try {
+      const contact = await this.prisma.contact.create({
+        data,
+        include: {
+          company: true,
+        },
+      });
 
-    return contact;
+      return contact;
+    } catch (error: any) {
+      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+        throw new ConflictException('A contact with this email already exists');
+      }
+      // Handle Prisma validation errors
+      if (error.clientVersion) {
+        throw new BadRequestException('Invalid contact data provided');
+      }
+      throw error;
+    }
   }
 
   async updateContact(id: number, data: UpdateContactRequest): Promise<UpdateContactResponse> {
-    const contact = await this.prisma.contact.update({
-      where: { id },
-      data,
-      include: {
-        company: true,
-      },
-    });
+    try {
+      const contact = await this.prisma.contact.update({
+        where: { id },
+        data,
+        include: {
+          company: true,
+        },
+      });
 
-    return contact;
+      return contact;
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Contact with ID ${id} not found`);
+      }
+      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+        throw new ConflictException('A contact with this email already exists');
+      }
+      throw error;
+    }
   }
 
   async deleteContact(id: number): Promise<DeleteContactResponse> {
-    await this.prisma.contact.delete({
-      where: { id },
-    });
+    try {
+      await this.prisma.contact.delete({
+        where: { id },
+      });
 
-    return { success: true, message: 'Contact deleted successfully' };
+      return { success: true, message: 'Contact deleted successfully' };
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Contact with ID ${id} not found`);
+      }
+      throw error;
+    }
   }
 
   async getAllContacts(query: GetAllContactsQuery): Promise<GetAllContactsResponse> {
