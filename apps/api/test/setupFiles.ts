@@ -4,26 +4,11 @@ import path from 'node:path';
 // Set NODE_ENV to test
 process.env.NODE_ENV = 'test';
 
-// Store GitHub Actions environment variables before loading .env.test
-const githubActionsEnvVars = {
-  DATABASE_URL: process.env.DATABASE_URL,
-  JWT_SECRET: process.env.JWT_SECRET,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-  PORT: process.env.PORT,
-  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
-};
-console.log(' githubActionsEnvVars.process.env.DATABASE_URL:', githubActionsEnvVars.process?.env?.DATABASE_URL);
-
-// Load test environment variables
+// Load test environment variables from the test directory
 config({ path: path.join(__dirname, '.env.test') });
 
-// Restore GitHub Actions environment variables if they exist
-// This ensures GitHub Actions env vars take precedence over .env.test
-for (const [key, value] of Object.entries(githubActionsEnvVars)) {
-  if (value) {
-    process.env[key] = value;
-  }
-}
+console.log('🧪 Test environment loaded from .env.test');
+console.log('🔑 JWT_SECRET:', process.env.JWT_SECRET ? '✅ Set' : '❌ Missing');
 
 const dbUrl = process.env.DATABASE_URL;
 if (dbUrl) {

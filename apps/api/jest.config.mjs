@@ -13,7 +13,4 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/test/setupFilesAfterEnv.ts'],
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   testTimeout: 30_000,
-  testEnvironmentOptions: {
-    NODE_ENV: 'test',
-  },
 };
