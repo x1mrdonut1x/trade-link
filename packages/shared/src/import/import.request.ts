@@ -23,7 +23,7 @@ const importProcessRequestSchema = z.object({
 });
 
 // Company import data schema
-const companyImportDataSchema = z.object({
+export const companyImportDataSchema = z.object({
   name: z.string().min(1, 'Company name is required'),
   email: z.string().email('Please enter a valid email').optional().nullable(),
   phonePrefix: z.string().optional().nullable(),
@@ -38,7 +38,7 @@ const companyImportDataSchema = z.object({
 });
 
 // Contact import data schema
-const contactImportDataSchema = z.object({
+export const contactImportDataSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email'),
@@ -52,29 +52,12 @@ const contactImportDataSchema = z.object({
   companyName: z.string().optional().nullable(),
 });
 
-// Execute import request schema
+// Execute import request schema (using CSV files)
 const importExecuteRequestSchema = z.object({
-  companies: z.array(
-    z.object({
-      data: companyImportDataSchema,
-      action: z.enum(['create', 'update']),
-      existingId: z.number().optional(),
-    })
-  ),
-  contacts: z.array(
-    z.object({
-      data: contactImportDataSchema,
-      action: z.enum(['create', 'update']),
-      existingId: z.number().optional(),
-      companyId: z.number().optional(),
-      matchedCompany: z
-        .object({
-          id: z.number(),
-          name: z.string(),
-        })
-        .optional(),
-    })
-  ),
+  fieldMappings: importFieldMappingsSchema,
+  importType: importTypeSchema,
+  selectedCompanyRows: z.array(z.number()).optional(),
+  selectedContactRows: z.array(z.number()).optional(),
 });
 
 // Export DTO classes

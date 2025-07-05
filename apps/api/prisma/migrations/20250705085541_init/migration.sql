@@ -3,9 +3,16 @@ CREATE TABLE "contact" (
     "id" SERIAL NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "contactData" JSONB,
     "jobTitle" TEXT,
+    "phonePrefix" TEXT,
+    "phoneNumber" TEXT,
+    "email" TEXT NOT NULL,
+    "address" TEXT,
+    "city" TEXT,
+    "country" TEXT,
+    "postCode" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "companyId" INTEGER,
 
     CONSTRAINT "contact_pkey" PRIMARY KEY ("id")
@@ -16,8 +23,18 @@ CREATE TABLE "company" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT,
-    "phone" TEXT,
-    "contactData" JSONB,
+    "description" TEXT,
+    "phonePrefix" TEXT,
+    "phoneNumber" TEXT,
+    "address" TEXT,
+    "city" TEXT,
+    "country" TEXT,
+    "postCode" TEXT,
+    "size" TEXT,
+    "website" TEXT,
+    "extraInfo" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "company_pkey" PRIMARY KEY ("id")
 );
@@ -46,6 +63,9 @@ CREATE TABLE "user" (
     "email" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
@@ -54,6 +74,8 @@ CREATE TABLE "user" (
 CREATE TABLE "tenant" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "tenant_pkey" PRIMARY KEY ("id")
 );
@@ -63,6 +85,8 @@ CREATE TABLE "membership" (
     "id" SERIAL NOT NULL,
     "tenantId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "membership_pkey" PRIMARY KEY ("id")
 );

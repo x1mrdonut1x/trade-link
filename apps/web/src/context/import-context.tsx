@@ -1,4 +1,4 @@
-import type { LinkProps } from '@tanstack/react-router';
+import { type LinkProps } from '@tanstack/react-router';
 import type { ImportExecuteResponse, ImportFieldMappings, ImportPreviewResponse } from '@tradelink/shared';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
@@ -19,8 +19,8 @@ export type ImportType = 'companies' | 'contacts' | 'mixed';
 
 interface ImportContextValue {
   // CSV file from upload step
-  csvFile: File | null;
-  setCsvFile: (file: File | null) => void;
+  csvFile?: Blob;
+  setCsvFile: (file?: Blob) => void;
 
   // CSV data from upload step
   csvColumns: CsvColumn[];
@@ -53,7 +53,7 @@ interface ImportProviderProps {
 }
 
 export function ImportProvider({ children }: ImportProviderProps) {
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvFile, setCsvFile] = useState<Blob>();
   const [csvColumns, setCsvColumns] = useState<CsvColumn[]>([]);
   const [importType, setImportType] = useState<ImportType>('mixed');
   const [fieldMappings, setFieldMappings] = useState<ImportFieldMappings>({
@@ -64,7 +64,7 @@ export function ImportProvider({ children }: ImportProviderProps) {
   const [importStats, setImportStats] = useState<ImportExecuteResponse['stats']>();
 
   const clearImportData = () => {
-    setCsvFile(null);
+    setCsvFile(undefined);
     setCsvColumns([]);
     setImportType('mixed');
     setFieldMappings({

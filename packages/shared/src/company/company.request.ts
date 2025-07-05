@@ -32,6 +32,8 @@ export class UpdateCompanyRequest extends createZodDto(updateCompanySchema) {}
 
 export const getAllCompaniesQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
+  sortBy: z.enum(['name', 'email', 'phoneNumber', 'city', 'contacts', 'website']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
 });
 
 export class GetAllCompaniesQuery extends createZodDto(getAllCompaniesQuerySchema) {}

@@ -2,10 +2,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import type { ImportExecuteResponse } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { AlertTriangle, Building2, Loader2, Users } from '@tradelink/ui/icons';
+import { Building2, Loader2, Users } from '@tradelink/ui/icons';
 import { importAPI } from 'api/import/import.service';
+import { Alert } from 'components/ui/alert';
 import { useImportContext } from 'context';
-import { useState } from 'react';
+import Papa from 'papaparse';
+import { useEffect, useState } from 'react';
 import { CompaniesList } from './-components/companies/CompaniesList';
 import { ContactsList } from './-components/contacts/ContactsList';
 
@@ -21,7 +23,55 @@ export function DataPreviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [importErrorDetails, setImportErrorDetails] = useState<ImportExecuteResponse['errors']>([]);
 
-  const { previewData } = importContext;
+  const { previewData, fieldMappings } = importContext;
+
+  useEffect(() => {
+    if (!previewData) {
+      navigate({ to: '/import/map' });
+    }
+  }, [navigate, previewData]);
+
+  // Helper function to generate CSV data for companies
+  const generateCompanyCSV = (selectedCompanies: NonNullable<typeof previewData>['companies']): string => {
+    if (selectedCompanies.length === 0) return '';
+
+    // Get all mapped company fields
+    const companyFields = fieldMappings.companyMappings.map(mapping => mapping.targetField);
+
+    // Create header row
+    const headerRow = companyFields;
+
+    // Create data rows
+    const dataRows = selectedCompanies.map(entry => {
+      return companyFields.map(field => {
+        const value = entry.data[field as keyof typeof entry.data];
+        return value ?? '';
+      });
+    });
+
+    return Papa.unparse([headerRow, ...dataRows]);
+  };
+
+  // Helper function to generate CSV data for contacts
+  const generateContactCSV = (selectedContacts: NonNullable<typeof previewData>['contacts']): string => {
+    if (selectedContacts.length === 0) return '';
+
+    // Get all mapped contact fields
+    const contactFields = fieldMappings.contactMappings.map(mapping => mapping.targetField);
+
+    // Create header row
+    const headerRow = contactFields;
+
+    // Create data rows
+    const dataRows = selectedContacts.map(entry => {
+      return contactFields.map(field => {
+        const value = entry.data[field as keyof typeof entry.data];
+        return value ?? '';
+      });
+    });
+
+    return Papa.unparse([headerRow, ...dataRows]);
+  };
 
   const handleImport = async () => {
     if (!previewData) return;
@@ -33,21 +83,30 @@ export function DataPreviewPage() {
       const selectedCompanies = previewData.companies.filter(entry => entry.selected);
       const selectedContacts = previewData.contacts.filter(entry => entry.selected);
 
-      console.log('1');
+      // Generate CSV files for selected data
+      const companyCsvData = generateCompanyCSV(selectedCompanies);
+      const contactCsvData = generateContactCSV(selectedContacts);
+
+      // Create Blob objects for CSV files
+      const companyCsvFile = companyCsvData ? new Blob([companyCsvData], { type: 'text/csv' }) : undefined;
+      const contactCsvFile = contactCsvData ? new Blob([contactCsvData], { type: 'text/csv' }) : undefined;
+
+      // Get selected row indices (for backend tracking)
+      const selectedCompanyRows = selectedCompanies
+        .map((_, index) => index)
+        .filter(index => selectedCompanies[index].selected);
+      const selectedContactRows = selectedContacts
+        .map((_, index) => index)
+        .filter(index => selectedContacts[index].selected);
+
       const executeResponse = await importAPI.executeImport({
-        companies: selectedCompanies.map(entry => ({
-          data: entry.data,
-          action: entry.action,
-          existingId: entry.existingId,
-        })),
-        contacts: selectedContacts.map(entry => ({
-          data: entry.data,
-          action: entry.action,
-          existingId: entry.existingId,
-          companyId: entry.companyId || entry.matchedCompany?.id,
-        })),
+        fieldMappings,
+        importType: importContext.importType,
+        selectedCompanyRows,
+        selectedContactRows,
+        companyCsvFile,
+        contactCsvFile,
       });
-      console.log('2');
 
       if (executeResponse.success) {
         importContext.setImportStats(executeResponse.stats);
@@ -75,31 +134,22 @@ export function DataPreviewPage() {
 
   if (error) {
     return (
-      <>
-        <div className="text-center">
-          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">Processing Error</h3>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={() => navigate({ to: '/import/map' })} variant="outline">
-            Go Back
-          </Button>
-        </div>
-        {importErrorDetails?.length && (
-          <div className="flex flex-col gap-2">
-            {importErrorDetails.map(error => (
-              <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex-shrink-0">
-                <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-sm">
-                    Row: {error.row}, Field: {error.field}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{error.message}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </>
+      <div className="flex flex-col gap-2">
+        <Alert
+          variant="error"
+          title="Processing Error"
+          description={error}
+          action={{
+            label: 'Go Back',
+            onClick: () => navigate({ to: '/import/map' }),
+            variant: 'outline',
+          }}
+        />
+        {importErrorDetails?.length &&
+          importErrorDetails.map(error => (
+            <Alert variant="warning" title={`Row: ${error.row}, Field: ${error.field}`} description={error.message} />
+          ))}
+      </div>
     );
   }
 

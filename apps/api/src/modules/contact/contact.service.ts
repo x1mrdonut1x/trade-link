@@ -29,9 +29,7 @@ export class ContactService {
     return contact;
   }
 
-  async createContact(
-    data: CreateContactRequest,
-  ): Promise<CreateContactResponse> {
+  async createContact(data: CreateContactRequest): Promise<CreateContactResponse> {
     const contact = await this.prisma.contact.create({
       data,
       include: {
@@ -42,10 +40,7 @@ export class ContactService {
     return contact;
   }
 
-  async updateContact(
-    id: number,
-    data: UpdateContactRequest,
-  ): Promise<UpdateContactResponse> {
+  async updateContact(id: number, data: UpdateContactRequest): Promise<UpdateContactResponse> {
     const contact = await this.prisma.contact.update({
       where: { id },
       data,
@@ -65,9 +60,7 @@ export class ContactService {
     return { success: true, message: 'Contact deleted successfully' };
   }
 
-  async getAllContacts(
-    query: GetAllContactsQuery,
-  ): Promise<GetAllContactsResponse> {
+  async getAllContacts(query: GetAllContactsQuery): Promise<GetAllContactsResponse> {
     const { search, page, size } = query;
 
     const whereClause: Prisma.contactWhereInput = query?.search
@@ -99,10 +92,51 @@ export class ContactService {
       take: size,
       skip: (page - 1) * size,
       orderBy: {
-        firstName: 'asc',
+        createdAt: 'desc',
       },
     });
 
     return contacts;
+  }
+
+  async findContactByEmail(email: string): Promise<GetContactResponse | null> {
+    if (!email) {
+      return null;
+    }
+    return this.prisma.contact.findUnique({
+      where: { email },
+      include: {
+        company: true,
+      },
+    });
+  }
+
+  async createManyContacts(
+    contacts: CreateContactRequest[],
+    tx?: Prisma.TransactionClient
+  ): Promise<{ id: number; email: string }[]> {
+    const prismaClient = tx || this.prisma;
+    return prismaClient.contact.createManyAndReturn({
+      data: contacts,
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  }
+
+  async bulkUpdateContacts(
+    updates: Array<{ id: number; data: UpdateContactRequest }>,
+    tx?: Prisma.TransactionClient
+  ): Promise<void> {
+    const prismaClient = tx || this.prisma;
+    await Promise.all(
+      updates.map(({ id, data }) =>
+        prismaClient.contact.update({
+          where: { id },
+          data,
+        })
+      )
+    );
   }
 }

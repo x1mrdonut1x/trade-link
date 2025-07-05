@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import type { ImportFieldMapping, ImportFieldMappings } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Label } from '@tradelink/ui/components/label';
-import { AlertTriangle, Upload } from '@tradelink/ui/icons';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
+import { FileUpload } from 'components/file-upload';
 import { useImportContext } from 'context';
 import type { CsvColumn, ImportType } from 'context/import-context';
 import Papa from 'papaparse';
@@ -12,12 +13,12 @@ export const Route = createFileRoute('/_app/import/_1/upload')({
   component: UploadDataPage,
 });
 
-const parseCSV = (file: File): Promise<CsvColumn[]> => {
+const parseCSV = (file: File): Promise<{ columns: CsvColumn[]; slicedFile: Blob }> => {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      preview: 50, // Only parse the first 10 rows
+      preview: 10_000,
       complete: results => {
         if (results.errors.length > 0) {
           reject(new Error(`CSV parsing errors: ${results.errors.map(e => e.message).join(', ')}`));
@@ -41,7 +42,9 @@ const parseCSV = (file: File): Promise<CsvColumn[]> => {
           }
         }
 
-        resolve(columns);
+        const slicedFile = new Blob([Papa.unparse(data)], { type: 'text/csv' });
+
+        resolve({ columns, slicedFile });
       },
       error: error => {
         reject(new Error(`Failed to parse CSV: ${error.message}`));
@@ -52,7 +55,6 @@ const parseCSV = (file: File): Promise<CsvColumn[]> => {
 
 function UploadDataPage() {
   const navigate = useNavigate();
-
   const importContext = useImportContext();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -133,75 +135,56 @@ function UploadDataPage() {
     };
   };
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const handleFileSelect = async (file: File) => {
     setSelectedFile(file);
     setError(null);
 
-    let columns: CsvColumn[] = [];
-
     try {
       setIsLoading(true);
-      columns = await parseCSV(file);
+      const { columns, slicedFile } = await parseCSV(file);
 
       // Store the file in context
-      importContext.setCsvFile(file);
+      importContext.setCsvFile(slicedFile);
+
+      // Auto-map some common fields
+      const autoMappings = createAutoMappings(columns, importContext.importType);
+      importContext.setCsvColumns(columns);
+      importContext.setFieldMappings(autoMappings);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to parse CSV file');
     } finally {
       setIsLoading(false);
     }
-
-    // Auto-map some common fields
-    const autoMappings = createAutoMappings(columns, importContext.importType);
-    importContext.setCsvColumns(columns);
-    importContext.setFieldMappings(autoMappings);
   };
 
   return (
     <>
-      {error && (
-        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex-shrink-0">
-          <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-          <div>
-            <p className="font-medium text-sm">Error</p>
-            <p className="text-sm text-muted-foreground">{error}</p>
-          </div>
-        </div>
-      )}
       <div>
         <Label htmlFor="importType">Import Type</Label>
-        <select
-          id="importType"
+        <Select
           value={importContext.importType}
-          onChange={e => importContext.setImportType(e.target.value as ImportType)}
-          className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
+          onValueChange={value => importContext.setImportType(value as ImportType)}
         >
-          <option value="mixed">Auto-detect (Companies and Contacts)</option>
-          <option value="companies">Companies Only</option>
-          <option value="contacts">Contacts Only</option>
-        </select>
+          <SelectTrigger className="w-full mt-1">
+            <SelectValue placeholder="Select import type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="mixed">Auto-detect (Companies and Contacts)</SelectItem>
+            <SelectItem value="companies">Companies Only</SelectItem>
+            <SelectItem value="contacts">Contacts Only</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-        <input type="file" accept=".csv" onChange={handleFileSelect} className="hidden" id="file-upload" />
-        <label htmlFor="file-upload" className="cursor-pointer">
-          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          {selectedFile ? (
-            <div>
-              <p className="text-lg font-medium">{selectedFile.name}</p>
-              <p className="text-sm text-muted-foreground">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-            </div>
-          ) : (
-            <div>
-              <p className="text-lg font-medium">Drop your CSV file here or click to browse</p>
-              <p className="text-sm text-muted-foreground">Only CSV files are supported</p>
-            </div>
-          )}
-        </label>
-      </div>
+      <FileUpload
+        onFileSelect={handleFileSelect}
+        selectedFile={selectedFile}
+        isLoading={isLoading}
+        error={error}
+        accept=".csv"
+        maxSize={10}
+      />
+
       <div className="flex gap-2 pt-4 flex-shrink-0 border-t justify-end">
         <Button onClick={() => navigate({ to: '/import/map' })} disabled={!selectedFile} loading={isLoading}>
           Next
