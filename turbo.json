@@ -45,6 +45,11 @@
     "build:web": {
       "dependsOn": ["@tradelink/web#build"],
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build"],
+      "cache": false,
+      "env": ["DATABASE_URL", "NODE_ENV"]
     }
   }
 }
