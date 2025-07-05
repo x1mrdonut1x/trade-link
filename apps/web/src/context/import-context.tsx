@@ -86,42 +86,26 @@ export function ImportProvider({ children }: ImportProviderProps) {
     if (!previewData) return;
 
     setPreviewData(prev => {
-      if (!prev) return;
+      if (!prev) return prev;
 
-      // Update entry selections
-      if (type === 'company') {
-        for (const [index] of prev.companies.entries()) {
-          if (rowsToRemove.some(row => row - 1 === index)) {
-            prev.companies[index].selected = false;
-          }
-        }
-      } else {
-        for (const [index] of prev.contacts.entries()) {
-          if (rowsToRemove.some(row => row - 1 === index)) prev.contacts[index].selected = false;
+      // Update entry selections by marking specified rows as unselected
+      const entries = type === 'company' ? prev.companies : prev.contacts;
+      for (const [index, entry] of entries.entries()) {
+        if (rowsToRemove.includes(index + 1)) {
+          entry.selected = false;
         }
       }
 
-      // Update duplicateEmailErrors
+      // Update duplicateEmailErrors by removing specified rows and cleaning up resolved duplicates
       const updatedDuplicateEmailErrors =
         prev.duplicateEmailErrors
           ?.map(error => {
-            if (error.email === email && error.type === type) {
-              // Remove the specified rows from this error
-              const remainingRows = error.rows.filter(row => !rowsToRemove.includes(row));
+            if (error.email !== email || error.type !== type) return error;
 
-              // If only one row remains or no rows remain, this is no longer a duplicate
-              if (remainingRows.length <= 1) {
-                return null; // Mark for removal
-              }
-
-              return {
-                ...error,
-                rows: remainingRows,
-              };
-            }
-            return error;
+            const remainingRows = error.rows.filter(row => !rowsToRemove.includes(row));
+            return remainingRows.length > 1 ? { ...error, rows: remainingRows } : null;
           })
-          .filter(error => error !== null) || [];
+          .filter((error): error is NonNullable<typeof error> => error !== null) || [];
 
       return {
         ...prev,
