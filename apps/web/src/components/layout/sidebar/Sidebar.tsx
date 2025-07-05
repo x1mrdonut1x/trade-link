@@ -8,12 +8,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@tradelink/ui/components/sidebar';
-import { BedDouble, Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from '@tradelink/ui/icons';
+import { Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from '@tradelink/ui/icons';
 import * as React from 'react';
+import { TeamSwitcher } from './TeamSwitcher';
+import { NavUser } from './User';
 
-
-import { TeamSwitcher } from '../../../components/layout/sidebar/TeamSwitcher';
-import { NavUser } from '../../../components/layout/sidebar/User';
+import logo from '../../../assets/logo.svg?react';
 
 // This is sample data.
 const data = {
@@ -25,7 +25,7 @@ const data = {
   teams: [
     {
       name: 'Trade Link CRM',
-      logo: BedDouble,
+      logo: logo,
       plan: '',
     },
   ],

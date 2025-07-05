@@ -41,6 +41,16 @@ export function EditContact() {
     router.history.back();
   };
 
+  if (contactQuery.isLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <h3 className="text-lg font-semibold mb-2">Loading contact...</h3>
+        <p className="text-muted-foreground">Please wait while we fetch the contact details.</p>
+      </div>
+    );
+  }
+
   if (!contactQuery.data) {
     return (
       <div className="text-center py-12">

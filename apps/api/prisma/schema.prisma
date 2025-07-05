@@ -20,6 +20,8 @@ model contact {
   city        String?
   country     String?
   postCode    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   company     company? @relation(fields: [companyId], references: [id])
   companyId   Int?
 }
@@ -38,6 +40,8 @@ model company {
   size             String?
   website          String?
   extraInfo        Json?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   company_type_tag company_type_tag[]
   contact          contact[]
 }
@@ -62,6 +66,8 @@ model user {
   firstName  String
   lastName   String
   password   String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
   note       note[]
   membership membership[]
 }
@@ -69,13 +75,17 @@ model user {
 model tenant {
   id         Int          @id @unique @default(autoincrement())
   name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
   membership membership[]
 }
 
 model membership {
-  id       Int    @id @unique @default(autoincrement())
-  tenant   tenant @relation(fields: [tenantId], references: [id])
-  user     user   @relation(fields: [userId], references: [id])
-  tenantId Int
-  userId   Int
+  id        Int      @id @unique @default(autoincrement())
+  tenant    tenant   @relation(fields: [tenantId], references: [id])
+  user      user     @relation(fields: [userId], references: [id])
+  tenantId  Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

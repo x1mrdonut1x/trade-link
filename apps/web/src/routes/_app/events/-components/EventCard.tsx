@@ -2,7 +2,12 @@ import { Link } from '@tanstack/react-router';
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
 import { Building2, Calendar, Download, Edit, MapPin, MoreHorizontal, Trash2, Users } from '@tradelink/ui/icons';
 
 interface Event {
@@ -124,7 +129,7 @@ export function EventCard({ event }: EventCardProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <span>{event.agentsCount} Sales Agents</span>
+                <span>{event.agentsCount} Contacts</span>
               </div>
             </div>
           </div>
@@ -154,13 +159,15 @@ export function EventCard({ event }: EventCardProps) {
                     </div>
                   ))}
                   {(event.companies?.length || 0) > 3 && (
-                    <div className="text-xs text-muted-foreground">+{(event.companies?.length || 0) - 3} more companies</div>
+                    <div className="text-xs text-muted-foreground">
+                      +{(event.companies?.length || 0) - 3} more companies
+                    </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-2">Key Sales Agents:</p>
+                <p className="text-xs font-medium text-muted-foreground mb-2">Key Contacts:</p>
                 <div className="space-y-1">
                   {event.agents?.slice(0, 3).map(agent => (
                     <div key={agent.id} className="text-xs">

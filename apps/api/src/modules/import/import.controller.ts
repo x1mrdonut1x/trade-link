@@ -1,24 +1,19 @@
 import {
-  Controller,
-  Post,
   Body,
-  Get,
-  Param,
-  UseGuards,
+  Controller,
   HttpCode,
   HttpStatus,
-  Res,
+  Post,
+  UploadedFile,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { Response } from 'express';
-import {
-  ImportProcessRequest,
-  ImportExecuteRequest,
-  ImportPreviewResponse,
-  ImportExecuteResponse,
-} from '@tradelink/shared';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { ImportExecuteResponse, ImportFieldMappings, ImportPreviewResponse, ImportType } from '@tradelink/shared';
 
-import { ImportService } from './import.service';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ImportService } from './import.service';
 
 @Controller('import')
 @UseGuards(JwtAuthGuard)
@@ -27,32 +22,46 @@ export class ImportController {
 
   @Post('process')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('csvFile'))
   async processImport(
-    @Body() body: ImportProcessRequest,
+    @UploadedFile() csvFile: Express.Multer.File,
+    @Body() body: { fieldMappings: string; importType: string }
   ): Promise<ImportPreviewResponse> {
-    return this.importService.processImport(body);
+    // Parse the JSON strings from the form data
+    const fieldMappings = JSON.parse(body.fieldMappings);
+    const importType = body.importType as ImportType;
+
+    return this.importService.processImport({ fieldMappings, importType }, csvFile);
   }
 
   @Post('execute')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FilesInterceptor('companyCsvFile,contactCsvFile'))
   async executeImport(
-    @Body() body: ImportExecuteRequest,
+    @UploadedFiles() files: { companyCsvFile?: any; contactCsvFile?: any },
+    @Body()
+    body: {
+      fieldMappings: string;
+      importType: string;
+      selectedCompanyRows?: string;
+      selectedContactRows?: string;
+    }
   ): Promise<ImportExecuteResponse> {
-    return this.importService.executeImport(body);
-  }
+    // Parse the JSON strings from the form data
+    const fieldMappings = JSON.parse(body.fieldMappings) as ImportFieldMappings;
+    const importType = body.importType as ImportType;
+    const selectedCompanyRows = body.selectedCompanyRows ? JSON.parse(body.selectedCompanyRows) : undefined;
+    const selectedContactRows = body.selectedContactRows ? JSON.parse(body.selectedContactRows) : undefined;
 
-  @Get('template/:type')
-  async downloadTemplate(
-    @Param('type') type: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const template = await this.importService.generateTemplate(type);
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="${type}_template.csv"`,
+    return this.importService.executeImportWithCsv(
+      {
+        fieldMappings,
+        importType,
+        selectedCompanyRows,
+        selectedContactRows,
+      },
+      files.companyCsvFile,
+      files.contactCsvFile
     );
-    res.send(template);
   }
 }

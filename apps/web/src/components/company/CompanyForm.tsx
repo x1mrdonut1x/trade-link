@@ -31,7 +31,6 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
     handleSubmit,
     control,
     formState: { errors },
-    reset,
     watch,
     setValue,
   } = useForm<CreateCompanyRequest>({
@@ -44,7 +43,6 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
       updateCompany.mutate({ id: company.id, data });
     } else {
       createCompany.mutate(data);
-      reset();
     }
   };
 
@@ -60,7 +58,12 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormInput label="Website" {...register('website')} error={errors.website?.message} placeholder="https://example.com" />
+        <FormInput
+          label="Website"
+          {...register('website')}
+          error={errors.website?.message}
+          placeholder="https://example.com"
+        />
         <FormInput label="Company Size" error={errors.size?.message}>
           <Select value={watch('size') || ''} onValueChange={value => setValue('size', value)}>
             <SelectTrigger className="w-full">

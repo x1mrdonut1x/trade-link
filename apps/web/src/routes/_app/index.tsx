@@ -30,12 +30,20 @@ function Dashboard() {
 
   return (
     <>
-      <PageHeader title="Hotel Sales Management Dashboard" actions={[{ label: 'Add Company', variant: 'default', icon: PlusCircle }]} />
+      <PageHeader
+        title="Hotel Sales Management Dashboard"
+        actions={[{ label: 'Add Company', variant: 'default', icon: PlusCircle }]}
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard title="Companies" value={dashboardStats.totalCompanies} subtitle="+12 this month" icon={Building2} />
-        <StatCard title="Total Sales Agents" value={dashboardStats.totalAgents} subtitle="+23 this month" icon={Users} />
-        <StatCard title="Upcoming Events" value={dashboardStats.upcomingEvents} subtitle="Next: July 15th" icon={Calendar} />
+        <StatCard title="Total Contacts" value={dashboardStats.totalAgents} subtitle="+23 this month" icon={Users} />
+        <StatCard
+          title="Upcoming Events"
+          value={dashboardStats.upcomingEvents}
+          subtitle="Next: July 15th"
+          icon={Calendar}
+        />
         <StatCard
           title="Pending Tasks"
           value={dashboardStats.pendingTodos}

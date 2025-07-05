@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback } from '@tradelink/ui/components/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Building2, Mail, MapPin, Phone, User } from '@tradelink/ui/icons';
@@ -14,10 +15,11 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
   };
 
   const fullPhone =
-    contact?.phonePrefix && contact?.phoneNumber ? `${contact.phonePrefix} ${contact.phoneNumber}` : contact?.phoneNumber || 'Not provided';
+    contact?.phonePrefix && contact?.phoneNumber
+      ? `${contact.phonePrefix} ${contact.phoneNumber}`
+      : contact?.phoneNumber || 'Not provided';
 
   const location = [contact?.city, contact?.country].filter(Boolean).join(', ') || 'Not provided';
-  const companyName = contact.company?.name || 'No company';
 
   return (
     <Card>
@@ -37,7 +39,17 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
               {contact.firstName} {contact.lastName}
             </h3>
             {contact.jobTitle && <p className="text-muted-foreground">{contact.jobTitle}</p>}
-            <p className="text-sm text-muted-foreground mt-1">{companyName}</p>
+            {contact.company?.name ? (
+              <Link
+                to="/companies/$companyId"
+                params={{ companyId: contact.company.id.toString() }}
+                className="text-sm text-blue-600 hover:underline mt-1 inline-block"
+              >
+                {contact.company.name}
+              </Link>
+            ) : (
+              <p className="text-sm text-muted-foreground mt-1">No company</p>
+            )}
           </div>
         </div>
 
@@ -64,7 +76,17 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
             <div className="flex items-center gap-2 text-sm">
               <Building2 className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Company:</span>
-              <span>{companyName}</span>
+              {contact.company?.name ? (
+                <Link
+                  to="/companies/$companyId"
+                  params={{ companyId: contact.company.id.toString() }}
+                  className="text-blue-600 hover:underline"
+                >
+                  {contact.company.name}
+                </Link>
+              ) : (
+                <span>No company</span>
+              )}
             </div>
           </div>
         </div>

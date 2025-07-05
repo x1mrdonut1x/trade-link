@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { ChevronDown, ChevronUp } from '../icons';
 import { cn } from '../lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 
@@ -10,6 +11,8 @@ export interface Column<T> {
   className?: string;
   headerClassName?: string;
   sortable?: boolean;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: () => void;
   align?: 'left' | 'center' | 'right';
 }
 
@@ -93,7 +96,25 @@ function DataTable<T = any>({
         <TableRow>
           {columns.map((column, index) => (
             <TableHead key={index} className={cn(getCellAlignment(column.align), column.headerClassName)}>
-              {column.title}
+              {column.sortable && column.onSort ? (
+                <button
+                  onClick={column.onSort}
+                  className="flex items-center gap-1 hover:text-foreground transition-colors"
+                >
+                  {column.title}
+                  {column.sortOrder === 'asc' ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : column.sortOrder === 'desc' ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <div className="h-4 w-4 opacity-50">
+                      <ChevronUp className="h-3 w-3" />
+                    </div>
+                  )}
+                </button>
+              ) : (
+                column.title
+              )}
             </TableHead>
           ))}
         </TableRow>

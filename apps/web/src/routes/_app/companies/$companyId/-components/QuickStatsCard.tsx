@@ -14,7 +14,7 @@ export function QuickStatsCard({ agentsCount, eventsCount, lastContact }: QuickS
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">Sales Agents</span>
+          <span className="text-muted-foreground">Contacts</span>
           <span className="font-semibold">{agentsCount}</span>
         </div>
         <div className="flex justify-between items-center">

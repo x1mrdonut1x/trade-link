@@ -48,12 +48,6 @@ export function SubmitStepPage() {
               {importStats.errors} records were skipped due to validation errors or conflicts.
             </p>
           </div>
-          {/* {onDownloadErrorReport && (
-                <Button size="sm" variant="outline" onClick={onDownloadErrorReport}>
-                  <Download className="h-4 w-4 mr-1" />
-                  Error Report
-                </Button>
-              )} */}
         </div>
       )}
 

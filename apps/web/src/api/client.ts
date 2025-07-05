@@ -31,7 +31,12 @@ export async function myFetch<T = unknown>(
   if (token) {
     headers.append('Authorization', `Bearer ${token}`);
   }
-  headers.append('Content-Type', 'application/json');
+
+  let parsedBody = data?.body as any;
+  if (!(parsedBody instanceof FormData)) {
+    headers.append('content-type', 'application/json');
+    parsedBody = JSON.stringify(data?.body);
+  }
 
   const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -40,8 +45,6 @@ export async function myFetch<T = unknown>(
   parsedUrl.search = new URLSearchParams(
     queryString.stringify(data?.query || {}, { skipEmptyString: true, skipNull: true })
   ).toString();
-
-  const parsedBody = JSON.stringify(data?.body);
 
   if (data?.method !== 'GET') {
     await new Promise(resolve => setTimeout(resolve, 2000));

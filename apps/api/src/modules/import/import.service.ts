@@ -1,358 +1,172 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  ImportProcessRequest,
-  ImportExecuteRequest,
-  ImportPreviewResponse,
-  ImportExecuteResponse,
-  ImportEntry,
   CompanyImportData,
   ContactImportData,
+  ImportEntry,
+  ImportExecuteRequest,
+  ImportExecuteResponse,
   ImportFieldMappings,
+  ImportPreviewResponse,
+  ImportProcessRequest,
+  companyImportDataSchema,
+  contactImportDataSchema,
 } from '@tradelink/shared';
 
-import { PrismaService } from '../prisma/prisma.service';
+import type { Prisma } from 'generated/prisma';
 import { CompanyService } from '../company/company.service';
 import { ContactService } from '../contact/contact.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { importUtils } from './import.util';
+
+// Internal format for processing imports
+interface ImportExecutionData {
+  companies: ImportEntry<CompanyImportData>[];
+  contacts: ImportEntry<ContactImportData>[];
+}
+
+interface CompanyLookupMaps {
+  existingCompaniesByName: Map<string, { id: number; name: string }>;
+  tempCompaniesByName: Map<string, { id: number; name: string; isTemp: boolean }>;
+  tempToRealIdMap: Map<number, number>;
+  nameToRealIdMap: Map<string, number>;
+}
 
 @Injectable()
 export class ImportService {
   constructor(
     private prisma: PrismaService,
     private companyService: CompanyService,
-    private contactService: ContactService,
+    private contactService: ContactService
   ) {}
 
-  async processImport(
-    request: ImportProcessRequest,
-  ): Promise<ImportPreviewResponse> {
-    const { csvData, fieldMappings, importType } = request;
+  async processImport(request: ImportProcessRequest, csvFile: Express.Multer.File): Promise<ImportPreviewResponse> {
+    if (!csvFile) {
+      throw new BadRequestException('CSV file is required');
+    }
+    const csvData = await importUtils.parseCSV(csvFile);
+    const dataRows = csvData.slice(1); // Skip header row
 
-    if (csvData.length === 0) {
+    if (dataRows.length === 0) {
       throw new BadRequestException('CSV data is empty');
     }
 
-    // Skip header row
-    const dataRows = csvData.slice(1);
+    // Initialize lookup maps
+    const companyMaps = await this.initializeCompanyMaps(dataRows, request.fieldMappings);
 
+    // Process all rows and collect import entries
+    const { companies, contacts } = await this.processAllRows(dataRows, request, companyMaps);
+
+    return { companies, contacts };
+  }
+
+  private async initializeCompanyMaps(
+    dataRows: string[][],
+    fieldMappings: ImportFieldMappings
+  ): Promise<CompanyLookupMaps> {
+    const companyNamesToLookup = this.collectCompanyNames(dataRows, fieldMappings);
+    const existingCompaniesByName = await this.fetchCompaniesByNameForPreview(companyNamesToLookup);
+
+    return {
+      existingCompaniesByName,
+      tempCompaniesByName: new Map(),
+      tempToRealIdMap: new Map(),
+      nameToRealIdMap: new Map(),
+    };
+  }
+
+  private collectCompanyNames(dataRows: string[][], fieldMappings: ImportFieldMappings): Set<string> {
+    const companyNames = new Set<string>();
+
+    for (const row of dataRows) {
+      const { companyData, contactData } = this.mapRowToData(row, fieldMappings);
+
+      if (companyData?.name) {
+        companyNames.add(companyData.name);
+      }
+      if (contactData?.companyName) {
+        companyNames.add(contactData.companyName);
+      }
+    }
+
+    return companyNames;
+  }
+
+  private async processAllRows(
+    dataRows: string[][],
+    request: ImportProcessRequest,
+    companyMaps: CompanyLookupMaps
+  ): Promise<{ companies: ImportEntry<CompanyImportData>[]; contacts: ImportEntry<ContactImportData>[] }> {
     const companies: ImportEntry<CompanyImportData>[] = [];
     const contacts: ImportEntry<ContactImportData>[] = [];
+    let tempIdCounter = -1;
 
-    // Collect all company names that need to be looked up for contacts
-    const companyNamesToLookup = new Set<string>();
-
-    // First pass: collect all mapped data and company names
-    const mappedRows = dataRows.map((row) => {
-      const { companyData, contactData } = this.mapRowToData(
-        row,
-        fieldMappings,
-      );
-      if (contactData.companyName && contactData.companyName.trim()) {
-        companyNamesToLookup.add(contactData.companyName.trim().toLowerCase());
-      }
-      // Also add company names from company data
-      if (companyData.name && companyData.name.trim()) {
-        companyNamesToLookup.add(companyData.name.trim().toLowerCase());
-      }
-      return { companyData, contactData };
-    });
-
-    // Fetch all companies by name in a single query
-    const companiesByName =
-      await this.fetchCompaniesByNameForPreview(companyNamesToLookup);
-
-    // Create a map for temporary company IDs (starting from -1 and going down)
-    const tempCompanyIdCounter = { value: -1 };
-    const tempCompaniesByName = new Map<
-      string,
-      { id: number; name: string; isTemp: boolean }
-    >();
-
-    // Process each row
-    for (const [index, { companyData, contactData }] of mappedRows.entries()) {
+    for (const [index, row] of dataRows.entries()) {
       try {
-        await this.processDataRow(
-          companyData,
-          contactData,
-          importType,
-          companies,
-          contacts,
-          companiesByName,
-          tempCompaniesByName,
-          tempCompanyIdCounter,
-        );
+        const { companyData, contactData } = this.mapRowToData(row, request.fieldMappings);
+
+        let currentRowCompanyId: number | undefined;
+
+        if (companyData && request.importType !== 'contacts') {
+          currentRowCompanyId = await this.processCompanyEntry(companyData, companies, companyMaps, tempIdCounter--);
+        }
+
+        if (contactData && request.importType !== 'companies') {
+          await this.processContactEntry(contactData, contacts, companyMaps, currentRowCompanyId);
+        }
       } catch (error) {
         console.error(`Error processing row ${index + 1}:`, error);
         // Continue processing other rows
       }
     }
 
-    return {
-      companies,
-      contacts,
-    };
+    return { companies, contacts };
   }
 
-  private async fetchCompaniesByNameForPreview(
-    companyNamesToLookup: Set<string>,
-  ): Promise<Map<string, { id: number; name: string }>> {
-    const companiesByName = new Map<string, { id: number; name: string }>();
-
-    if (companyNamesToLookup.size > 0) {
-      const companies = await this.prisma.company.findMany({
-        where: {
-          name: {
-            in: [...companyNamesToLookup],
-            mode: 'insensitive',
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-        },
-      });
-
-      // Create a case-insensitive lookup map
-      for (const company of companies) {
-        companiesByName.set(company.name.toLowerCase(), company);
-      }
-    }
-
-    return companiesByName;
-  }
-
-  async executeImport(
-    request: ImportExecuteRequest,
-  ): Promise<ImportExecuteResponse> {
-    const { companies, contacts } = request;
-
-    const stats = {
-      totalRecords: companies.length + contacts.length,
-      companies: 0,
-      contacts: 0,
-      errors: 0,
-    };
-
-    const errors: Array<{ row: number; field: string; message: string }> = [];
-
-    // Process companies first and track temporary ID mapping
-    const tempCompanyIdMap = new Map<number, number>();
-    await this.processCompaniesImport(
-      companies,
-      stats,
-      errors,
-      tempCompanyIdMap,
-    );
-
-    // Process contacts with the company ID mapping
-    await this.processContactsImport(contacts, stats, errors, tempCompanyIdMap);
-
-    return {
-      success: stats.errors === 0,
-      stats,
-      errors: errors.length > 0 ? errors : undefined,
-    };
-  }
-
-  async generateTemplate(type: string): Promise<string> {
-    const companyHeaders = [
-      'name',
-      'email',
-      'phonePrefix',
-      'phoneNumber',
-      'description',
-      'website',
-      'size',
-      'address',
-      'city',
-      'country',
-      'postCode',
-    ];
-
-    const contactHeaders = [
-      'firstName',
-      'lastName',
-      'email',
-      'jobTitle',
-      'phonePrefix',
-      'phoneNumber',
-      'address',
-      'city',
-      'country',
-      'postCode',
-      'companyName',
-    ];
-
-    let headers: string[];
-    switch (type) {
-      case 'companies': {
-        headers = companyHeaders;
-        break;
-      }
-      case 'contacts': {
-        headers = contactHeaders;
-        break;
-      }
-      case 'mixed': {
-        headers = [...new Set([...companyHeaders, ...contactHeaders])];
-        break;
-      }
-      default: {
-        throw new BadRequestException('Invalid template type');
-      }
-    }
-
-    // Generate CSV content
-    return headers.join(',') + '\n';
-  }
-
-  private async processDataRow(
-    companyData: Record<string, string>,
-    contactData: Record<string, string>,
-    importType: string,
+  private async processCompanyEntry(
+    companyData: CompanyImportData,
     companies: ImportEntry<CompanyImportData>[],
-    contacts: ImportEntry<ContactImportData>[],
-    companiesByName: Map<string, { id: number; name: string }>,
-    tempCompaniesByName: Map<
-      string,
-      { id: number; name: string; isTemp: boolean }
-    >,
-    tempCompanyIdCounter: { value: number },
-  ): Promise<void> {
-    // Determine if this row should create a company, contact, or both
-    const shouldCreateCompany = this.shouldCreateCompany(
-      companyData,
-      importType,
-    );
-    const shouldCreateContact = this.shouldCreateContact(
-      contactData,
-      importType,
-    );
+    companyMaps: CompanyLookupMaps,
+    tempId: number
+  ): Promise<number> {
+    const companyNameLower = importUtils.normalizeCompanyName(companyData.name);
+    const existingCompanies = await this.companyService.findCompaniesByNames([companyNameLower]);
+    const existingCompany = existingCompanies?.[0];
 
-    let currentRowCompanyId: number | undefined;
+    let companyId: number;
 
-    if (shouldCreateCompany) {
-      currentRowCompanyId = await this.processCompanyData(
-        companyData,
-        companies,
-        tempCompaniesByName,
-        tempCompanyIdCounter,
-      );
-    }
-
-    if (shouldCreateContact) {
-      await this.processContactData(
-        contactData,
-        contacts,
-        companiesByName,
-        tempCompaniesByName,
-        currentRowCompanyId,
-      );
-    }
-  }
-
-  private async processCompanyData(
-    mappedData: Record<string, string>,
-    companies: ImportEntry<CompanyImportData>[],
-    tempCompaniesByName: Map<
-      string,
-      { id: number; name: string; isTemp: boolean }
-    >,
-    tempCompanyIdCounter: { value: number },
-  ): Promise<number | undefined> {
-    const companyData = this.extractCompanyData(mappedData);
-
-    // Validate that we have a company name
-    if (companyData.name && companyData.name.trim()) {
-      const companyNameLower = companyData.name.trim().toLowerCase();
-
-      // Check if company already exists
-      const existingCompany = await this.findExistingCompany(companyData);
-
-      let companyId: number;
-
-      if (existingCompany) {
-        companyId = existingCompany.id;
-      } else {
-        // Assign a temporary ID for new companies
-        companyId = tempCompanyIdCounter.value--;
-        tempCompaniesByName.set(companyNameLower, {
-          id: companyId,
-          name: companyData.name.trim(),
-          isTemp: true,
-        });
-      }
-
-      companies.push({
-        data: companyData,
-        action: existingCompany ? 'update' : 'create',
-        existingId: existingCompany?.id,
-        selected: true,
+    if (existingCompany) {
+      companyId = existingCompany.id;
+    } else {
+      companyId = tempId;
+      companyMaps.tempCompaniesByName.set(companyNameLower, {
+        id: companyId,
+        name: companyNameLower,
+        isTemp: true,
       });
-
-      return companyId;
     }
 
-    return undefined;
+    importUtils.removeFalsyValues(companyData);
+
+    companies.push({
+      data: companyData,
+      action: existingCompany ? 'update' : 'create',
+      existingId: existingCompany?.id,
+      selected: true,
+    });
+
+    return companyId;
   }
 
-  private async processContactData(
-    mappedData: Record<string, string>,
+  private async processContactEntry(
+    contactData: ContactImportData,
     contacts: ImportEntry<ContactImportData>[],
-    companiesByName: Map<string, { id: number; name: string }>,
-    tempCompaniesByName: Map<
-      string,
-      { id: number; name: string; isTemp: boolean }
-    >,
-    currentRowCompanyId: number | undefined,
+    companyMaps: CompanyLookupMaps,
+    currentRowCompanyId?: number
   ): Promise<void> {
-    const contactData = this.extractContactData(mappedData);
+    const existingContact = await this.contactService.findContactByEmail(contactData.email);
+    const { matchedCompany, companyId } = this.resolveContactCompany(contactData, companyMaps, currentRowCompanyId);
 
-    // Check if contact already exists
-    const existingContact = await this.findExistingContact(contactData);
-
-    // Try to match with company using the available sources
-    let matchedCompany;
-    let companyId: number | undefined;
-
-    // First priority: use company from the same row (if any)
-    if (currentRowCompanyId) {
-      companyId = currentRowCompanyId;
-      // Find the company name for this temp ID
-      for (const [, company] of tempCompaniesByName.entries()) {
-        if (company.id === currentRowCompanyId) {
-          matchedCompany = {
-            id: company.id,
-            name: company.name,
-          };
-          break;
-        }
-      }
-    }
-
-    // Second priority: look up company by name if no same-row company
-    if (!matchedCompany && contactData.companyName) {
-      const companyKey = contactData.companyName.trim().toLowerCase();
-
-      // Check temporary companies first
-      const tempCompany = tempCompaniesByName.get(companyKey);
-      if (tempCompany) {
-        matchedCompany = {
-          id: tempCompany.id,
-          name: tempCompany.name,
-        };
-        companyId = tempCompany.id;
-      } else {
-        // Check existing companies
-        const existingCompany = companiesByName.get(companyKey);
-        if (existingCompany) {
-          matchedCompany = {
-            id: existingCompany.id,
-            name: existingCompany.name,
-          };
-          companyId = existingCompany.id;
-        }
-      }
-    }
+    importUtils.removeFalsyValues(contactData);
 
     contacts.push({
       data: contactData,
@@ -364,126 +178,148 @@ export class ImportService {
     });
   }
 
-  private async processCompaniesImport(
-    companies: ImportExecuteRequest['companies'],
-    stats: { companies: number; errors: number },
-    errors: Array<{ row: number; field: string; message: string }>,
-    tempCompanyIdMap: Map<number, number>,
-  ): Promise<void> {
-    // Create a mapping from company name to created company ID
-    const companyNameToIdMap = new Map<string, number>();
-
-    for (const companyEntry of companies) {
-      try {
-        let companyId: number | undefined;
-
-        if (companyEntry.action === 'create') {
-          const createdCompany = await this.companyService.createCompany(
-            companyEntry.data,
-          );
-          companyId = createdCompany.id;
-          // Store the mapping from company name to actual ID
-          companyNameToIdMap.set(
-            companyEntry.data.name.trim().toLowerCase(),
-            companyId,
-          );
-        } else if (
-          companyEntry.action === 'update' &&
-          companyEntry.existingId
-        ) {
-          const updatedCompany = await this.companyService.updateCompany(
-            companyEntry.existingId,
-            companyEntry.data,
-          );
-          companyId = updatedCompany.id;
-          companyNameToIdMap.set(
-            companyEntry.data.name.trim().toLowerCase(),
-            companyId,
-          );
-        }
-
-        stats.companies++;
-      } catch (error) {
-        stats.errors++;
-        errors.push({
-          row: stats.companies + stats.errors,
-          field: 'company',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        });
+  private resolveContactCompany(
+    contactData: ContactImportData,
+    companyMaps: CompanyLookupMaps,
+    currentRowCompanyId?: number
+  ): { matchedCompany?: { id: number; name: string }; companyId?: number } {
+    // Priority 1: Use company from the same row
+    if (currentRowCompanyId) {
+      const tempCompany = importUtils.findCompanyByTempId(companyMaps.tempCompaniesByName, currentRowCompanyId);
+      if (tempCompany) {
+        return {
+          matchedCompany: { id: tempCompany.id, name: tempCompany.name },
+          companyId: currentRowCompanyId,
+        };
       }
     }
 
-    // Store the company name to ID mapping for use in contact processing
-    (tempCompanyIdMap as any).companyNameToIdMap = companyNameToIdMap;
-  }
+    // Priority 2: Look up company by name
+    if (contactData.companyName) {
+      const companyKey = importUtils.normalizeCompanyName(contactData.companyName);
 
-  private async processContactsImport(
-    contacts: ImportExecuteRequest['contacts'],
-    stats: { contacts: number; errors: number },
-    errors: Array<{ row: number; field: string; message: string }>,
-    tempCompanyIdMap: Map<number, number>,
-  ): Promise<void> {
-    // Pre-fetch all companies to avoid N+1 queries
-    const companiesByName = await this.fetchCompaniesByName(contacts);
+      // Check temporary companies first
+      const tempCompany = companyMaps.tempCompaniesByName.get(companyKey);
+      if (tempCompany) {
+        return {
+          matchedCompany: { id: tempCompany.id, name: tempCompany.name },
+          companyId: tempCompany.id,
+        };
+      }
 
-    // Get the company name to ID mapping from the companies import
-    const companyNameToIdMap =
-      ((tempCompanyIdMap as any).companyNameToIdMap as Map<string, number>) ||
-      new Map();
-
-    // Merge the newly created companies with the existing ones
-    for (const [name, company] of companyNameToIdMap.entries()) {
-      companiesByName.set(name, { id: company, name });
-    }
-
-    // Process each contact
-    for (const contactEntry of contacts) {
-      try {
-        await this.processContactEntry(
-          contactEntry,
-          companiesByName,
-          tempCompanyIdMap,
-        );
-        stats.contacts++;
-      } catch (error) {
-        stats.errors++;
-        errors.push({
-          row: stats.contacts + stats.errors,
-          field: 'contact',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        });
+      // Check existing companies
+      const existingCompany = companyMaps.existingCompaniesByName.get(companyKey);
+      if (existingCompany) {
+        return {
+          matchedCompany: { id: existingCompany.id, name: existingCompany.name },
+          companyId: existingCompany.id,
+        };
       }
     }
+
+    return {};
   }
 
-  private async fetchCompaniesByName(
-    contacts: ImportExecuteRequest['contacts'],
+  /**
+   * Executes the import process using Prisma transactions and batch operations for optimal performance.
+   * All database operations are wrapped in a single transaction to ensure data consistency.
+   */
+  async executeImport(request: ImportExecutionData): Promise<ImportExecuteResponse> {
+    const { companies, contacts } = request;
+
+    const stats: ImportExecuteResponse['stats'] = {
+      totalRecords: companies.length + contacts.length,
+      companies: 0,
+      contacts: 0,
+      errors: 0,
+    };
+
+    const errors: ImportExecuteResponse['errors'] = [];
+
+    try {
+      await this.prisma.$transaction(async tx => {
+        const companyMaps: CompanyLookupMaps = {
+          existingCompaniesByName: new Map(),
+          tempCompaniesByName: new Map(),
+          tempToRealIdMap: new Map(),
+          nameToRealIdMap: new Map(),
+        };
+
+        await this.processCompaniesImportBatch(companies, stats, errors, companyMaps, tx);
+        await this.processContactsImportBatch(contacts, stats, errors, companyMaps, tx);
+      });
+    } catch (error) {
+      errors.push({
+        row: 0,
+        field: 'transaction',
+        message: error instanceof Error ? error.message : 'Transaction failed',
+      });
+      stats.errors++;
+    }
+
+    return {
+      success: stats.errors === 0,
+      stats,
+      errors: errors.length > 0 ? errors : undefined,
+    };
+  }
+
+  async executeImportWithCsv(
+    request: ImportExecuteRequest,
+    companyCsvFile?: Express.Multer.File,
+    contactCsvFile?: Express.Multer.File
+  ): Promise<ImportExecuteResponse> {
+    // Parse CSV files to extract the data
+    const companyData = companyCsvFile ? await importUtils.parseCSV(companyCsvFile) : [];
+    const contactData = contactCsvFile ? await importUtils.parseCSV(contactCsvFile) : [];
+
+    // Convert CSV data to ImportExecuteRequest format
+    const companies =
+      companyData.length > 0 ? importUtils.convertCompanyCsvToImportEntries(companyData, request.fieldMappings) : [];
+    const contacts =
+      contactData.length > 0 ? importUtils.convertContactCsvToImportEntries(contactData, request.fieldMappings) : [];
+
+    // Use the existing executeImport method with the converted data
+    return this.executeImport({ companies, contacts });
+  }
+
+  private mapRowToData(
+    row: string[],
+    fieldMappings: ImportFieldMappings
+  ): {
+    companyData?: CompanyImportData;
+    contactData?: ContactImportData;
+  } {
+    const companyData: Record<string, string> = {};
+    const contactData: Record<string, string> = {};
+
+    // Map company fields
+    for (const mapping of fieldMappings.companyMappings) {
+      if (mapping.csvColumnIndex < row.length && row[mapping.csvColumnIndex] != null) {
+        companyData[mapping.targetField] = row[mapping.csvColumnIndex].trim();
+      }
+    }
+
+    // Map contact fields
+    for (const mapping of fieldMappings.contactMappings) {
+      if (mapping.csvColumnIndex < row.length && row[mapping.csvColumnIndex] != null) {
+        contactData[mapping.targetField] = row[mapping.csvColumnIndex].trim();
+      }
+    }
+
+    return {
+      companyData: companyImportDataSchema.safeParse(companyData).data,
+      contactData: contactImportDataSchema.safeParse(contactData).data,
+    };
+  }
+
+  private async fetchCompaniesByNameForPreview(
+    companyNamesToLookup: Set<string>
   ): Promise<Map<string, { id: number; name: string }>> {
-    // Collect all unique company names that need to be looked up
-    const companyNamesToLookup = new Set<string>();
-
-    for (const contactEntry of contacts) {
-      if (!contactEntry.companyId && contactEntry.data.companyName) {
-        companyNamesToLookup.add(contactEntry.data.companyName.trim());
-      }
-    }
-
-    // Fetch all companies by name in a single query
     const companiesByName = new Map<string, { id: number; name: string }>();
 
     if (companyNamesToLookup.size > 0) {
-      const companies = await this.prisma.company.findMany({
-        where: {
-          name: {
-            in: [...companyNamesToLookup],
-            mode: 'insensitive',
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-        },
-      });
+      const companies = await this.companyService.findCompaniesByNames([...companyNamesToLookup]);
 
       // Create a case-insensitive lookup map
       for (const company of companies) {
@@ -494,47 +330,210 @@ export class ImportService {
     return companiesByName;
   }
 
-  private async processContactEntry(
-    contactEntry: ImportExecuteRequest['contacts'][0],
-    companiesByName: Map<string, { id: number; name: string }>,
-    tempCompanyIdMap: Map<number, number>,
+  private async processCompaniesImportBatch(
+    companies: ImportEntry<CompanyImportData>[],
+    stats: ImportExecuteResponse['stats'],
+    errors: ImportExecuteResponse['errors'],
+    companyMaps: CompanyLookupMaps,
+    tx: Prisma.TransactionClient
   ): Promise<void> {
-    // Determine the companyId to use
-    const companyId = this.resolveCompanyId(
-      contactEntry,
-      companiesByName,
-      tempCompanyIdMap,
-    );
+    if (companies.length === 0) return;
 
-    // Remove companyName from contact data since it's not a valid field for contact creation
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { companyName, ...contactDataWithoutCompanyName } = contactEntry.data;
+    const { companiesToCreate, companiesToUpdate } = importUtils.separateCompaniesForBatch(companies);
 
-    const contactData = {
-      ...contactDataWithoutCompanyName,
-      companyId,
-    };
-
-    if (contactEntry.action === 'create') {
-      await this.contactService.createContact(contactData);
-    } else if (contactEntry.action === 'update' && contactEntry.existingId) {
-      await this.contactService.updateContact(
-        contactEntry.existingId,
-        contactData,
-      );
+    try {
+      await this.batchCreateCompanies(companiesToCreate, stats, companyMaps, tx);
+      await this.batchUpdateCompanies(companiesToUpdate, stats, companyMaps, tx);
+    } catch (error) {
+      stats.errors++;
+      errors?.push({
+        row: stats.companies + stats.errors,
+        field: 'company',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
-  private resolveCompanyId(
-    contactEntry: ImportExecuteRequest['contacts'][0],
+  private async batchCreateCompanies(
+    companiesToCreate: ImportEntry<CompanyImportData>[],
+    stats: ImportExecuteResponse['stats'],
+    companyMaps: CompanyLookupMaps,
+    tx: Prisma.TransactionClient
+  ): Promise<void> {
+    if (companiesToCreate.length === 0) return;
+
+    const createData = companiesToCreate.map(entry => entry.data);
+    const createdCompanies = await this.companyService.createManyCompanies(createData, tx);
+
+    // Map the created companies to their temporary IDs and names
+    for (const [index, createdCompany] of createdCompanies.entries()) {
+      const originalEntry = companiesToCreate[index];
+      const companyNameLower = importUtils.normalizeCompanyName(originalEntry.data.name);
+
+      // Store mapping from company name to actual ID
+      companyMaps.nameToRealIdMap.set(companyNameLower, createdCompany.id);
+
+      // If this was a temporary company, store the temp-to-real ID mapping
+      if (originalEntry.existingId && importUtils.isTemporaryCompanyId(originalEntry.existingId)) {
+        companyMaps.tempToRealIdMap.set(originalEntry.existingId, createdCompany.id);
+      }
+    }
+
+    stats.companies += createdCompanies.length;
+  }
+
+  private async batchUpdateCompanies(
+    companiesToUpdate: ImportEntry<CompanyImportData>[],
+    stats: ImportExecuteResponse['stats'],
+    companyMaps: CompanyLookupMaps,
+    tx: Prisma.TransactionClient
+  ): Promise<void> {
+    if (companiesToUpdate.length === 0) return;
+
+    // Prepare updates for the company service
+    const updates = companiesToUpdate
+      .filter(c => c.existingId)
+      .map(c => ({
+        id: c.existingId!,
+        data: c.data,
+      }));
+
+    await this.companyService.bulkUpdateCompanies(updates, tx);
+
+    // Store mapping from company name to actual ID
+    for (const entry of companiesToUpdate) {
+      if (entry.existingId) {
+        const companyNameLower = importUtils.normalizeCompanyName(entry.data.name);
+        companyMaps.nameToRealIdMap.set(companyNameLower, entry.existingId);
+      }
+    }
+
+    stats.companies += updates.length;
+  }
+
+  private async processContactsImportBatch(
+    contacts: ImportEntry<ContactImportData>[],
+    stats: ImportExecuteResponse['stats'],
+    errors: ImportExecuteResponse['errors'],
+    companyMaps: CompanyLookupMaps,
+    tx: Prisma.TransactionClient
+  ): Promise<void> {
+    if (contacts.length === 0) return;
+
+    // Pre-fetch all companies to avoid N+1 queries
+    const companiesByName = await this.fetchCompaniesByNameForBatch(contacts);
+
+    // Merge the newly created companies with the existing ones
+    for (const [name, companyId] of companyMaps.nameToRealIdMap.entries()) {
+      companiesByName.set(name, { id: companyId, name });
+    }
+
+    const { contactsToCreate, contactsToUpdate } = importUtils.separateContactsForBatch(contacts);
+
+    try {
+      await this.batchCreateContacts(contactsToCreate, stats, companiesByName, companyMaps, tx);
+      await this.batchUpdateContacts(contactsToUpdate, stats, companiesByName, companyMaps, tx);
+    } catch (error) {
+      stats.errors++;
+      errors?.push({
+        row: stats.contacts + stats.errors,
+        field: 'contact',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  private async fetchCompaniesByNameForBatch(
+    contacts: ImportEntry<ContactImportData>[]
+  ): Promise<Map<string, { id: number; name: string }>> {
+    // Collect all unique company names that need to be looked up
+    const companyNamesToLookup = new Set<string>();
+
+    for (const contactEntry of contacts) {
+      if (!contactEntry.companyId && contactEntry.data.companyName) {
+        companyNamesToLookup.add(contactEntry.data.companyName.trim());
+      }
+    }
+
+    // Fetch all companies by name using the company service
+    const companiesByName = new Map<string, { id: number; name: string }>();
+
+    if (companyNamesToLookup.size > 0) {
+      const companies = await this.companyService.findCompaniesByNames([...companyNamesToLookup]);
+
+      // Create a case-insensitive lookup map
+      for (const company of companies) {
+        companiesByName.set(company.name.toLowerCase(), company);
+      }
+    }
+
+    return companiesByName;
+  }
+
+  private async batchCreateContacts(
+    contactsToCreate: ImportEntry<ContactImportData>[],
+    stats: ImportExecuteResponse['stats'],
     companiesByName: Map<string, { id: number; name: string }>,
-    tempCompanyIdMap: Map<number, number>,
+    companyMaps: CompanyLookupMaps,
+    tx: Prisma.TransactionClient
+  ): Promise<void> {
+    if (contactsToCreate.length === 0) return;
+
+    const createData = contactsToCreate.map(contactEntry => {
+      const companyId = this.resolveCompanyIdForBatch(contactEntry, companiesByName, companyMaps);
+      const contactDataWithoutCompanyName = importUtils.prepareContactDataForSave(contactEntry.data);
+
+      return {
+        ...contactDataWithoutCompanyName,
+        companyId,
+      };
+    });
+
+    await this.contactService.createManyContacts(createData, tx);
+
+    stats.contacts += contactsToCreate.length;
+  }
+
+  private async batchUpdateContacts(
+    contactsToUpdate: ImportEntry<ContactImportData>[],
+    stats: ImportExecuteResponse['stats'],
+    companiesByName: Map<string, { id: number; name: string }>,
+    companyMaps: CompanyLookupMaps,
+    tx: Prisma.TransactionClient
+  ): Promise<void> {
+    if (contactsToUpdate.length === 0) return;
+
+    // Prepare updates for the contact service
+    const updates = contactsToUpdate
+      .filter(c => c.existingId)
+      .map(contactEntry => {
+        const companyId = this.resolveCompanyIdForBatch(contactEntry, companiesByName, companyMaps);
+        const contactDataWithoutCompanyName = importUtils.prepareContactDataForSave(contactEntry.data);
+
+        return {
+          id: contactEntry.existingId!,
+          data: {
+            ...contactDataWithoutCompanyName,
+            companyId,
+          },
+        };
+      });
+
+    await this.contactService.bulkUpdateContacts(updates, tx);
+
+    stats.contacts += updates.length;
+  }
+
+  private resolveCompanyIdForBatch(
+    contactEntry: ImportEntry<ContactImportData>,
+    companiesByName: Map<string, { id: number; name: string }>,
+    companyMaps: CompanyLookupMaps
   ): number | undefined {
     // First check if we have a companyId from the contact entry
     if (contactEntry.companyId) {
       // If it's a temporary ID (negative), map it to the actual ID
-      if (contactEntry.companyId < 0) {
-        const actualCompanyId = tempCompanyIdMap.get(contactEntry.companyId);
+      if (importUtils.isTemporaryCompanyId(contactEntry.companyId)) {
+        const actualCompanyId = companyMaps.tempToRealIdMap.get(contactEntry.companyId);
         if (actualCompanyId) {
           return actualCompanyId;
         }
@@ -546,155 +545,11 @@ export class ImportService {
 
     // Fallback to looking up by company name
     if (contactEntry.data.companyName) {
-      const company = companiesByName.get(
-        contactEntry.data.companyName.trim().toLowerCase(),
-      );
+      const companyKey = importUtils.normalizeCompanyName(contactEntry.data.companyName);
+      const company = companiesByName.get(companyKey);
       return company?.id;
     }
 
     return undefined;
-  }
-
-  private mapRowToData(
-    row: string[],
-    fieldMappings: ImportFieldMappings,
-  ): {
-    companyData: Record<string, string>;
-    contactData: Record<string, string>;
-  } {
-    const companyData: Record<string, string> = {};
-    const contactData: Record<string, string> = {};
-
-    // Map company fields
-    for (const mapping of fieldMappings.companyMappings) {
-      if (
-        mapping.csvColumnIndex < row.length &&
-        row[mapping.csvColumnIndex] != null
-      ) {
-        companyData[mapping.targetField] = row[mapping.csvColumnIndex].trim();
-      }
-    }
-
-    // Map contact fields
-    for (const mapping of fieldMappings.contactMappings) {
-      if (
-        mapping.csvColumnIndex < row.length &&
-        row[mapping.csvColumnIndex] != null
-      ) {
-        contactData[mapping.targetField] = row[mapping.csvColumnIndex].trim();
-      }
-    }
-
-    return { companyData, contactData };
-  }
-
-  private shouldCreateCompany(
-    mappedData: Record<string, string>,
-    importType: string,
-  ): boolean {
-    if (importType === 'contacts') return false;
-
-    // For companies import type, check if we have a company name field
-    if (importType === 'companies') {
-      return !!(mappedData.name && mappedData.name.trim());
-    }
-
-    // For mixed import type, check if we have either name or companyName field
-    if (importType === 'mixed') {
-      return !!(
-        (mappedData.name && mappedData.name.trim()) ||
-        (mappedData.companyName && mappedData.companyName.trim())
-      );
-    }
-
-    return false;
-  }
-
-  private shouldCreateContact(
-    mappedData: Record<string, string>,
-    importType: string,
-  ): boolean {
-    if (importType === 'companies') return false;
-
-    // Check if we have the required contact fields
-    const hasRequiredFields = !!(
-      mappedData.firstName &&
-      mappedData.firstName.trim() &&
-      mappedData.lastName &&
-      mappedData.lastName.trim() &&
-      mappedData.email &&
-      mappedData.email.trim()
-    );
-
-    return hasRequiredFields;
-  }
-
-  private extractCompanyData(
-    mappedData: Record<string, string>,
-  ): CompanyImportData {
-    // Use either 'name' field or 'companyName' field for company name
-    const companyName = mappedData.name || mappedData.companyName || '';
-
-    return {
-      name: companyName,
-      email: mappedData.email || null,
-      phonePrefix: mappedData.phonePrefix || null,
-      phoneNumber: mappedData.phoneNumber || null,
-      description: mappedData.description || null,
-      website: mappedData.website || null,
-      size: mappedData['size'] || null,
-      address: mappedData.address || null,
-      city: mappedData.city || null,
-      country: mappedData.country || null,
-      postCode: mappedData.postCode || null,
-    };
-  }
-
-  private extractContactData(
-    mappedData: Record<string, string>,
-  ): ContactImportData {
-    return {
-      firstName: mappedData.firstName || '',
-      lastName: mappedData.lastName || '',
-      email: mappedData.email || '',
-      jobTitle: mappedData.jobTitle || null,
-      phonePrefix: mappedData.phonePrefix || null,
-      phoneNumber: mappedData.phoneNumber || null,
-      address: mappedData.address || null,
-      city: mappedData.city || null,
-      country: mappedData.country || null,
-      postCode: mappedData.postCode || null,
-      companyName: mappedData.companyName || null,
-    };
-  }
-
-  private async findExistingCompany(companyData: CompanyImportData) {
-    return await this.prisma.company.findFirst({
-      where: {
-        name: {
-          equals: companyData.name,
-          mode: 'insensitive',
-        },
-      },
-    });
-  }
-
-  private async findExistingContact(contactData: ContactImportData) {
-    return await this.prisma.contact.findFirst({
-      where: {
-        email: contactData.email,
-      },
-    });
-  }
-
-  private async findCompanyByName(companyName: string) {
-    return await this.prisma.company.findFirst({
-      where: {
-        name: {
-          equals: companyName,
-          mode: 'insensitive',
-        },
-      },
-    });
   }
 }

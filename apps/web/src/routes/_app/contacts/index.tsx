@@ -5,7 +5,13 @@ import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
 import { DataTable, type Column } from '@tradelink/ui/components/data-table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
+import { Pagination } from '@tradelink/ui/components/pagination';
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteContact, useGetAllContacts } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
@@ -26,12 +32,14 @@ export function Contacts() {
   const [searchQuery, setSearchQuery] = useState(search);
 
   useEffect(() => {
+    if (searchQuery === search) return;
+
     const timer = setTimeout(() => {
       navigate({ search: { search: searchQuery, page, size } });
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, navigate, page, size, search]);
 
   const { data: contacts, isLoading } = useGetAllContacts({ search, page, size });
   const deleteContact = useDeleteContact();
@@ -48,6 +56,10 @@ export function Contacts() {
         console.error('Failed to delete contact:', error);
       }
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    navigate({ search: { search: searchQuery, page: newPage, size } });
   };
 
   const columns: Column<ContactWithCompanyDto>[] = [
@@ -77,7 +89,14 @@ export function Contacts() {
       title: 'Company',
       render: contact =>
         contact.company?.name ? (
-          <Badge variant="secondary">{contact.company.name}</Badge>
+          <Link
+            to="/companies/$companyId"
+            params={{ companyId: contact.company.id.toString() }}
+            onClick={e => e.stopPropagation()}
+            className="hover:underline"
+          >
+            <Badge variant="secondary">{contact.company.name}</Badge>
+          </Link>
         ) : (
           <span className="text-muted-foreground">-</span>
         ),
@@ -119,7 +138,11 @@ export function Contacts() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link onClick={e => e.stopPropagation()} to="/contacts/$contactId/edit" params={{ contactId: contact.id.toString() }}>
+              <Link
+                onClick={e => e.stopPropagation()}
+                to="/contacts/$contactId/edit"
+                params={{ contactId: contact.id.toString() }}
+              >
                 Edit Contact
               </Link>
             </DropdownMenuItem>
@@ -165,7 +188,9 @@ export function Contacts() {
             skeletonRows={5}
             onRowClick={handleRowClick}
             emptyMessage={search ? 'No contacts found' : 'No contacts yet'}
-            emptyDescription={search ? `No contacts match your search for "${search}".` : 'Get started by adding your first contact.'}
+            emptyDescription={
+              search ? `No contacts match your search for "${search}".` : 'Get started by adding your first contact.'
+            }
             emptyAction={
               search ? (
                 <Button variant="outline" onClick={() => setSearchQuery('')}>
@@ -174,6 +199,17 @@ export function Contacts() {
               ) : undefined
             }
           />
+
+          {!isLoading && contacts && contacts.length > 0 && (
+            <div className="mt-4 border-t pt-4">
+              <Pagination
+                currentPage={page || 1}
+                pageSize={size || 30}
+                itemCount={contacts.length}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
     </>

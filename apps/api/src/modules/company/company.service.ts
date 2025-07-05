@@ -38,9 +38,7 @@ export class CompanyService {
     return company;
   }
 
-  async createCompany(
-    data: CreateCompanyRequest,
-  ): Promise<CreateCompanyResponse> {
+  async createCompany(data: CreateCompanyRequest): Promise<CreateCompanyResponse> {
     // Create company with tags if provided
     const company = await this.prisma.company.create({
       data,
@@ -49,10 +47,7 @@ export class CompanyService {
     return company;
   }
 
-  async updateCompany(
-    id: number,
-    data: UpdateCompanyRequest,
-  ): Promise<UpdateCompanyResponse> {
+  async updateCompany(id: number, data: UpdateCompanyRequest): Promise<UpdateCompanyResponse> {
     const company = await this.prisma.company.update({
       where: { id },
       data,
@@ -72,10 +67,8 @@ export class CompanyService {
     return { success: true, message: 'Company deleted successfully' };
   }
 
-  async getAllCompanies(
-    query: GetAllCompaniesQuery,
-  ): Promise<GetAllCompaniesResponse> {
-    const { search, page, size } = query;
+  async getAllCompanies(query: GetAllCompaniesQuery): Promise<GetAllCompaniesResponse> {
+    const { search, page, size, sortBy, sortOrder } = query;
     const whereClause: Prisma.companyWhereInput = search
       ? {
           OR: [
@@ -86,16 +79,73 @@ export class CompanyService {
         }
       : {};
 
+    let orderBy: Prisma.companyOrderByWithRelationInput = {};
+
+    if (sortBy === 'contacts') {
+      orderBy = {
+        contact: {
+          _count: sortOrder,
+        },
+      };
+    } else {
+      orderBy = { [sortBy || 'createdAt']: sortOrder || 'desc' };
+    }
+
     const companies = await this.prisma.company.findMany({
       where: whereClause,
       include: { contact: { select: { id: true } } },
+      orderBy,
       take: size,
       skip: (page - 1) * size,
     });
 
-    return companies.map((company) => ({
+    return companies.map(company => ({
       ...company,
       contacts: company.contact.length,
     }));
+  }
+
+  async findCompaniesByNames(names: string[]) {
+    if (names.length === 0) {
+      return [];
+    }
+    return this.prisma.company.findMany({
+      where: {
+        name: {
+          in: names,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
+  async createManyCompanies(companies: CreateCompanyRequest[], tx?: Prisma.TransactionClient) {
+    const prismaClient = tx || this.prisma;
+    return prismaClient.company.createManyAndReturn({
+      data: companies,
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
+  async bulkUpdateCompanies(
+    updates: Array<{ id: number; data: UpdateCompanyRequest }>,
+    tx?: Prisma.TransactionClient
+  ): Promise<void> {
+    const prismaClient = tx || this.prisma;
+    await Promise.all(
+      updates.map(({ id, data }) =>
+        prismaClient.company.update({
+          where: { id },
+          data,
+        })
+      )
+    );
   }
 }

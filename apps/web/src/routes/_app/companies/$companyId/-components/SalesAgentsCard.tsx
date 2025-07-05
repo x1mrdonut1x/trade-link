@@ -31,7 +31,7 @@ export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardPro
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Sales Agents ({contacts.length})
+            Contacts ({contacts.length})
           </CardTitle>
           <Button variant="outline" onClick={() => setIsAssignDialogOpen(true)}>
             <UserPlus className="h-4 w-4 mr-1" />
@@ -53,7 +53,9 @@ export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardPro
                 </Card>
               </Link>
             ))}
-            {contacts.length === 0 && <p className="text-muted-foreground text-center py-6">No sales agents assigned to this company.</p>}
+            {contacts.length === 0 && (
+              <p className="text-muted-foreground text-center py-6">No sales agents assigned to this company.</p>
+            )}
           </div>
         </CardContent>
       </Card>

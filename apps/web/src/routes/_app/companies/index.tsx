@@ -1,15 +1,22 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
-import { getAllCompaniesQuerySchema } from '@tradelink/shared/company';
+import { getAllCompaniesQuerySchema, type GetAllCompaniesResponse } from '@tradelink/shared/company';
+import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
-import { Building2, Filter, PlusCircle } from '@tradelink/ui/icons';
-import { useGetAllCompanies } from 'api/company';
+import { DataTable, type Column } from '@tradelink/ui/components/data-table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
+import { Pagination } from '@tradelink/ui/components/pagination';
+import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
+import { useDeleteCompany, useGetAllCompanies } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
-
-import { CompanyCard } from './-components/CompanyCard';
 
 export const Route = createFileRoute('/_app/companies/')({
   validateSearch: zodValidator(getAllCompaniesQuerySchema),
@@ -17,84 +24,233 @@ export const Route = createFileRoute('/_app/companies/')({
 });
 
 function Companies() {
-  const { search, page, size } = Route.useSearch();
+  const { search, page, size, sortBy, sortOrder } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const [searchQuery, setSearchQuery] = useState(search || '');
+  const [searchQuery, setSearchQuery] = useState(search);
 
   useBreadcrumbSetup([{ title: 'Companies', href: '/companies', isActive: true }]);
 
   useEffect(() => {
+    if (searchQuery === search) return;
+
     const timer = setTimeout(() => {
-      navigate({ search: { search: searchQuery, page, size } });
+      navigate({ search: { search: searchQuery, page, size, sortBy, sortOrder } });
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, navigate]);
+  }, [searchQuery, navigate, search, page, size, sortBy, sortOrder]);
 
-  const { data: companies, isLoading } = useGetAllCompanies({ search, page, size });
+  const { data: companies, isLoading } = useGetAllCompanies({ search, page, size, sortBy, sortOrder });
+  const deleteCompany = useDeleteCompany();
+
+  const handleRowClick = (company: GetAllCompaniesResponse[0]) => {
+    navigate({ to: '/companies/$companyId', params: { companyId: company.id.toString() } });
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm('Are you sure you want to delete this company?')) {
+      try {
+        await deleteCompany.mutateAsync(id);
+      } catch (error) {
+        console.error('Failed to delete company:', error);
+      }
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    navigate({ search: { search: searchQuery, page: newPage, size, sortBy, sortOrder } });
+  };
+
+  const handleSort = (field: string) => {
+    const newSortOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    navigate({
+      search: {
+        search: searchQuery,
+        page,
+        size,
+        sortBy: field as any,
+        sortOrder: newSortOrder,
+      },
+    });
+  };
+
+  const columns: Column<GetAllCompaniesResponse[0]>[] = [
+    {
+      title: 'Company',
+      sortable: true,
+      sortOrder: sortBy === 'name' ? sortOrder : undefined,
+      onSort: () => handleSort('name'),
+      render: company => (
+        <>
+          <div className="font-medium">{company.name}</div>
+          {company.description && (
+            <div className="text-sm text-muted-foreground truncate max-w-xs">{company.description}</div>
+          )}
+        </>
+      ),
+    },
+    {
+      title: 'Email',
+      sortable: true,
+      sortOrder: sortBy === 'email' ? sortOrder : undefined,
+      onSort: () => handleSort('email'),
+      render: company =>
+        company.email ? (
+          <a href={`mailto:${company.email}`} className="text-blue-600 hover:underline">
+            {company.email}
+          </a>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        ),
+    },
+    {
+      title: 'Phone',
+      sortable: true,
+      sortOrder: sortBy === 'phoneNumber' ? sortOrder : undefined,
+      onSort: () => handleSort('phoneNumber'),
+      render: company => {
+        return company?.phoneNumber ? (
+          <a href={`tel:${company?.phonePrefix}${company?.phoneNumber}`} className="text-blue-600 hover:underline">
+            {company?.phonePrefix} {company?.phoneNumber}
+          </a>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+    },
+    {
+      title: 'Location',
+      sortable: true,
+      sortOrder: sortBy === 'city' ? sortOrder : undefined,
+      onSort: () => handleSort('city'),
+      render: company => {
+        return company?.city || company?.country ? (
+          <div className="text-sm">
+            {company?.city ? `${company?.city}, ` : ''}
+            {company?.country}
+          </div>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+    },
+    {
+      title: 'Contacts',
+      sortable: true,
+      sortOrder: sortBy === 'contacts' ? sortOrder : undefined,
+      onSort: () => handleSort('contacts'),
+      render: company => (
+        <Badge variant="secondary">
+          {company.contacts} {company.contacts === 1 ? 'contact' : 'contacts'}
+        </Badge>
+      ),
+    },
+    {
+      title: 'Website',
+      sortable: true,
+      sortOrder: sortBy === 'website' ? sortOrder : undefined,
+      onSort: () => handleSort('website'),
+      render: company =>
+        company.website ? (
+          <a
+            href={company.website.startsWith('http') ? company.website : `https://${company.website}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+            onClick={e => e.stopPropagation()}
+          >
+            {company.website}
+          </a>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        ),
+    },
+    {
+      title: 'Actions',
+      align: 'right',
+      render: company => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link
+                onClick={e => e.stopPropagation()}
+                to="/companies/$companyId/edit"
+                params={{ companyId: company.id.toString() }}
+              >
+                Edit Company
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={e => {
+                e.stopPropagation();
+                handleDelete(company.id);
+              }}
+              className="text-destructive"
+              disabled={deleteCompany.isPending}
+            >
+              Delete Company
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
 
   return (
     <>
       <PageHeader
         title="Companies"
-        actions={[
-          {
-            label: 'Filter',
-            icon: Filter,
-            variant: 'outline',
-          },
-          {
-            label: 'Add Company',
-            icon: PlusCircle,
-            variant: 'default',
-            link: { to: '/companies/add' },
-          },
-        ]}
-        showSearch={true}
+        showSearch
         searchPlaceholder="Search companies..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
+        actions={[
+          {
+            label: 'Add Company',
+            icon: PlusCircle,
+            link: { to: '/companies/add' },
+          },
+        ]}
       />
 
-      {isLoading ? (
-        <div className="text-center py-8">Loading companies...</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {companies?.map(company => (
-            <CompanyCard
-              key={company.id}
-              company={{
-                ...company,
-                contactsCount: company.contacts || 0,
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <Card>
+        <CardContent>
+          <DataTable
+            data={companies || []}
+            columns={columns}
+            loading={isLoading}
+            skeletonRows={5}
+            onRowClick={handleRowClick}
+            emptyMessage={search ? 'No companies found' : 'No companies yet'}
+            emptyDescription={
+              search ? `No companies match your search for "${search}".` : 'Get started by adding your first company.'
+            }
+            emptyAction={
+              search ? (
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              ) : undefined
+            }
+          />
 
-      {companies?.length === 0 && !isLoading && (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{search ? 'No companies found' : 'No companies yet'}</h3>
-            <p className="text-muted-foreground mb-4">
-              {search ? `No companies match your search for "${search}".` : 'Get started by adding your first company.'}
-            </p>
-            {search ? (
-              <Button variant="outline" onClick={() => setSearchQuery('')}>
-                Clear Search
-              </Button>
-            ) : (
-              <Button asChild>
-                <Link to="/companies/add">
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Add Company
-                </Link>
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
+          {!isLoading && companies && companies.length > 0 && (
+            <div className="mt-4 border-t pt-4">
+              <Pagination
+                currentPage={page || 1}
+                pageSize={size || 30}
+                itemCount={companies.length}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </>
   );
 }

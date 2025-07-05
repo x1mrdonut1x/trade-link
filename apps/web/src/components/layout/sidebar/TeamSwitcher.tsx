@@ -10,7 +10,6 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tr
 import { ChevronsUpDown, Plus } from '@tradelink/ui/icons';
 import * as React from 'react';
 
-
 export function TeamSwitcher({
   teams,
 }: {
@@ -32,10 +31,13 @@ export function TeamSwitcher({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
               {activeTeam.logo && (
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <activeTeam.logo className="size-4" />
+                <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <activeTeam.logo className="size-4 w-full h-full" />
                 </div>
               )}
               <div className="grid flex-1 text-left text-sm leading-tight">

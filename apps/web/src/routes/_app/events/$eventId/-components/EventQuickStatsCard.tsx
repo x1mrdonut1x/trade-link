@@ -14,7 +14,7 @@ export const EventQuickStatsCard = ({ companiesCount, agentsCount, status }: Eve
           <span className="font-semibold">{companiesCount}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Sales Agents</span>
+          <span className="text-muted-foreground">Contacts</span>
           <span className="font-semibold">{agentsCount}</span>
         </div>
         <div className="flex justify-between">
