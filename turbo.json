@@ -49,7 +49,7 @@
     "test": {
       "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build"],
       "cache": false,
-      "env": ["DATABASE_URL", "NODE_ENV"]
+      "env": ["DATABASE_URL", "NODE_ENV", "JWT_SECRET", "ALLOWED_ORIGINS"]
     }
   }
 }
