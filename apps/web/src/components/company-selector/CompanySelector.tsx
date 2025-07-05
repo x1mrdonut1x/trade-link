@@ -60,7 +60,6 @@ export function CompanySelector({
       }),
     [companies]
   );
-  console.log(' companyOptions:', companyOptions);
 
   const handleChange = (selectedValue: string) => {
     setSearchTerm('');
