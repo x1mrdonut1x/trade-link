@@ -24,8 +24,9 @@
       "cache": true
     },
     "db:migrate": {
-      "cache": false,
-      "persistent": true
+      "cache": true,
+      "inputs": ["prisma/schema.prisma", "prisma/migrations/**"],
+      "env": ["DATABASE_URL"]
     },
     "db:deploy": {
       "cache": false,
@@ -47,7 +48,7 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/shared#build"],
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/api#db:migrate", "@tradelink/shared#build"],
       "cache": false,
       "env": ["DATABASE_URL", "NODE_ENV"]
     }
