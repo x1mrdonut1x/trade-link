@@ -51,6 +51,9 @@ interface ImportContextValue {
 
   // Helper to remove entries with duplicate emails
   removeDuplicateEmailEntries: (email: string, type: 'company' | 'contact', rowsToRemove: number[]) => void;
+
+  // Helper to remove entries with duplicate names
+  removeDuplicateNameEntries: (name: string, type: 'company', rowsToRemove: number[]) => void;
 }
 
 const ImportContext = createContext<ImportContextValue | null>(null);
@@ -114,6 +117,38 @@ export function ImportProvider({ children }: ImportProviderProps) {
     });
   };
 
+  const removeDuplicateNameEntries = (name: string, type: 'company', rowsToRemove: number[]) => {
+    if (!previewData) return;
+
+    setPreviewData(prev => {
+      if (!prev) return prev;
+
+      // Update entry selections by marking specified rows as unselected
+      const entries = prev.companies;
+      for (const [index, entry] of entries.entries()) {
+        if (rowsToRemove.includes(index + 1)) {
+          entry.selected = false;
+        }
+      }
+
+      // Update duplicateNameErrors by removing specified rows and cleaning up resolved duplicates
+      const updatedDuplicateNameErrors =
+        prev.duplicateNameErrors
+          ?.map(error => {
+            if (error.name !== name || error.type !== type) return error;
+
+            const remainingRows = error.rows.filter(row => !rowsToRemove.includes(row));
+            return remainingRows.length > 1 ? { ...error, rows: remainingRows } : null;
+          })
+          .filter((error): error is NonNullable<typeof error> => error !== null) || [];
+
+      return {
+        ...prev,
+        duplicateNameErrors: updatedDuplicateNameErrors,
+      };
+    });
+  };
+
   const value: ImportContextValue = {
     selectedRawFile,
     setSelectedRawFile,
@@ -131,6 +166,7 @@ export function ImportProvider({ children }: ImportProviderProps) {
     importStats,
     setImportStats,
     removeDuplicateEmailEntries,
+    removeDuplicateNameEntries,
   };
 
   return <ImportContext.Provider value={value}>{children}</ImportContext.Provider>;

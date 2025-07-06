@@ -61,12 +61,12 @@ export const importUtils = {
    */
   convertCsvToImportEntries<T extends CompanyImportData | ContactImportData>(
     csvData: string[][],
-    fieldMappings: { targetField: keyof T }[],
+    fieldMappings: { csvColumnIndex: number; targetField: keyof T }[],
     skippedRows?: number[]
   ): ImportEntry<T>[] {
     if (csvData.length === 0) return [];
 
-    const headerRow = csvData[0] as (keyof T | string)[];
+    const headerRow = csvData[0];
     const dataRows = csvData.slice(1);
 
     // Find special field indices
@@ -76,11 +76,13 @@ export const importUtils = {
     return dataRows.map((row, index) => {
       const data: T = {} as T;
 
-      // Map CSV columns to data fields (excluding special fields)
+      // Map CSV columns to data fields using column indices
       for (const mapping of fieldMappings) {
-        const columnIndex = headerRow.indexOf(mapping.targetField);
-        if (columnIndex !== -1 && row[columnIndex] != null) {
-          data[mapping.targetField] = row[columnIndex].trim() as T[keyof T];
+        if (mapping.csvColumnIndex < row.length && row[mapping.csvColumnIndex] != null) {
+          const value = row[mapping.csvColumnIndex].trim();
+          if (value !== '') {
+            data[mapping.targetField] = value as T[keyof T];
+          }
         }
       }
 

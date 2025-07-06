@@ -21,11 +21,14 @@
       "interruptible": true
     },
     "db:generate": {
-      "cache": true
+      "cache": true,
+      "inputs": ["prisma/schema.prisma"],
+      "env": ["DATABASE_URL"]
     },
     "db:migrate": {
-      "cache": false,
-      "persistent": true
+      "cache": true,
+      "inputs": ["prisma/migrations/**"],
+      "env": ["DATABASE_URL"]
     },
     "db:deploy": {
       "cache": false,
@@ -45,6 +48,12 @@
     "build:web": {
       "dependsOn": ["@tradelink/web#build"],
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/api#db:migrate", "@tradelink/shared#build"],
+      "cache": false,
+      "inputs": ["$TURBO_DEFAULT$", ".env.test"],
+      "env": ["DATABASE_URL", "NODE_ENV"]
     }
   }
 }

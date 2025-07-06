@@ -20,13 +20,14 @@ export default [
     rules: {},
   },
   {
-    files: ['**/*.spec.ts', '**/*.test.ts', '**/test/**/*.ts'],
+    files: ['**/test/**/*.ts'],
     rules: {
       // Test file specific rules
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-identical-functions': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'security/detect-object-injection': 'off',
+      'sonarjs/no-hardcoded-passwords': 'off',
     },
   },
 ];

@@ -39,7 +39,6 @@ export class CompanyService {
   }
 
   async createCompany(data: CreateCompanyRequest): Promise<CreateCompanyResponse> {
-    // Create company with tags if provided
     const company = await this.prisma.company.create({
       data,
     });

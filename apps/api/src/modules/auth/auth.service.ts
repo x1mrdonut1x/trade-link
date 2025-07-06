@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterRequest } from '@tradelink/shared';
 import * as bcrypt from 'bcrypt';
@@ -26,13 +26,10 @@ export interface LoginResponse {
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<AuthenticatedUser | null> {
+  async validateUser(email: string, password: string): Promise<AuthenticatedUser | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -70,7 +67,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new Error('User with this email already exists');
+      throw new ConflictException('User with this email already exists');
     }
 
     // Hash password
