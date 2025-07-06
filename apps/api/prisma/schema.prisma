@@ -24,6 +24,7 @@ model contact {
   updatedAt   DateTime @updatedAt
   company     company? @relation(fields: [companyId], references: [id])
   companyId   Int?
+  notes       note[]
 }
 
 model company {
@@ -44,6 +45,7 @@ model company {
   updatedAt        DateTime           @updatedAt
   company_type_tag company_type_tag[]
   contact          contact[]
+  notes            note[]
 }
 
 model company_type_tag {
@@ -54,10 +56,17 @@ model company_type_tag {
 }
 
 model note {
-  id         Int     @id @unique @default(autoincrement())
-  text       String?
-  created_by user    @relation(fields: [userId], references: [id])
-  userId     Int
+  id          Int      @id @unique @default(autoincrement())
+  title       String
+  description String?
+  contactId   Int?
+  companyId   Int?
+  createdBy   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  contact     contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  company     company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user        user     @relation(fields: [createdBy], references: [id])
 }
 
 model user {
