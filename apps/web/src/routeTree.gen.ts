@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppImportRouteRouteImport } from './routes/_app/import/route'
+import { Route as AppTodosIndexRouteImport } from './routes/_app/todos/index'
 import { Route as AppTasksIndexRouteImport } from './routes/_app/tasks/index'
 import { Route as AppEventsIndexRouteImport } from './routes/_app/events/index'
 import { Route as AppContactsIndexRouteImport } from './routes/_app/contacts/index'
@@ -35,6 +36,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppImportRouteRoute = AppImportRouteRouteImport.update({
   id: '/_app/import',
   path: '/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTodosIndexRoute = AppTodosIndexRouteImport.update({
+  id: '/_app/todos/',
+  path: '/todos/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppTasksIndexRoute = AppTasksIndexRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof AppContactsIndexRoute
   '/events': typeof AppEventsIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/todos': typeof AppTodosIndexRoute
   '/import/upload': typeof AppImport1UploadRoute
   '/import/map': typeof AppImport2MapRoute
   '/import/review': typeof AppImport3ReviewRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/contacts': typeof AppContactsIndexRoute
   '/events': typeof AppEventsIndexRoute
   '/tasks': typeof AppTasksIndexRoute
+  '/todos': typeof AppTodosIndexRoute
   '/import/upload': typeof AppImport1UploadRoute
   '/import/map': typeof AppImport2MapRoute
   '/import/review': typeof AppImport3ReviewRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/_app/contacts/': typeof AppContactsIndexRoute
   '/_app/events/': typeof AppEventsIndexRoute
   '/_app/tasks/': typeof AppTasksIndexRoute
+  '/_app/todos/': typeof AppTodosIndexRoute
   '/_app/import/_1/upload': typeof AppImport1UploadRoute
   '/_app/import/_2/map': typeof AppImport2MapRoute
   '/_app/import/_3/review': typeof AppImport3ReviewRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/events'
     | '/tasks'
+    | '/todos'
     | '/import/upload'
     | '/import/map'
     | '/import/review'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/events'
     | '/tasks'
+    | '/todos'
     | '/import/upload'
     | '/import/map'
     | '/import/review'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/_app/contacts/'
     | '/_app/events/'
     | '/_app/tasks/'
+    | '/_app/todos/'
     | '/_app/import/_1/upload'
     | '/_app/import/_2/map'
     | '/_app/import/_3/review'
@@ -242,6 +254,7 @@ export interface RootRouteChildren {
   AppContactsIndexRoute: typeof AppContactsIndexRoute
   AppEventsIndexRoute: typeof AppEventsIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
+  AppTodosIndexRoute: typeof AppTodosIndexRoute
   AppCompaniesCompanyIdIndexRoute: typeof AppCompaniesCompanyIdIndexRoute
   AppCompaniesAddIndexRoute: typeof AppCompaniesAddIndexRoute
   AppContactsContactIdIndexRoute: typeof AppContactsContactIdIndexRoute
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/import'
       fullPath: '/import'
       preLoaderRoute: typeof AppImportRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/todos/': {
+      id: '/_app/todos/'
+      path: '/todos'
+      fullPath: '/todos'
+      preLoaderRoute: typeof AppTodosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/tasks/': {
@@ -400,6 +420,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppContactsIndexRoute: AppContactsIndexRoute,
   AppEventsIndexRoute: AppEventsIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
+  AppTodosIndexRoute: AppTodosIndexRoute,
   AppCompaniesCompanyIdIndexRoute: AppCompaniesCompanyIdIndexRoute,
   AppCompaniesAddIndexRoute: AppCompaniesAddIndexRoute,
   AppContactsContactIdIndexRoute: AppContactsContactIdIndexRoute,

@@ -6,6 +6,7 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
 import { NotesCard } from 'components/notes';
+import { TodosCard } from 'components/todos';
 import { ContactDetailsCard } from './-components/ContactDetailsCard';
 import { ContactInfoCard } from './-components/ContactInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
@@ -84,7 +85,8 @@ function ContactDetail() {
           <ContactInfoCard contact={contact} />
           <ContactDetailsCard contact={contact} />
           <NotesCard contactId={Number(contactId)} title="Contact Notes" />
-          {/* TODO: Add back these components when we have the data structure for them */}
+          <TodosCard contactId={Number(contactId)} title="Contact TODOs" />
+          {/* Future: Add back these components when we have the data structure for them */}
           {/* <AdditionalDetailsCard customFields={contact.customFields} />
           <RecentActivitiesCard activities={contact.recentActivities} />
           <UpcomingEventsCard events={contact.upcomingEvents} /> */}
@@ -93,7 +95,7 @@ function ContactDetail() {
         {/* Sidebar */}
         <div className="space-y-6">
           <QuickActionsCard />
-          {/* TODO: Add back when we have metrics data */}
+          {/* Future: Add back when we have metrics data */}
           {/* <PerformanceMetricsCard metrics={contact.metrics} /> */}
         </div>
       </div>

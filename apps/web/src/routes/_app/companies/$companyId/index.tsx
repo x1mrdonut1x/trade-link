@@ -6,6 +6,7 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
 import { NotesCard } from 'components/notes';
+import { TodosCard } from 'components/todos';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
 import { SalesAgentsCard } from './-components/SalesAgentsCard';
@@ -83,6 +84,7 @@ function CompanyDetail() {
           <CompanyInfoCard company={company} />
           <SalesAgentsCard contacts={company.contact} companyId={companyId} />
           <NotesCard companyId={Number(companyId)} title="Company Notes" />
+          <TodosCard companyId={Number(companyId)} title="Company TODOs" />
           {/* <AdditionalDetailsCard customFields={company.customFields} />
           <RecentEventsCard events={company.recentEvents} /> */}
         </div>
