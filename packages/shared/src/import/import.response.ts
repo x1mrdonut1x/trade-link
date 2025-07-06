@@ -25,12 +25,23 @@ export interface DuplicateEmailError {
   };
 }
 
+export interface DuplicateNameError {
+  name: string;
+  type: 'company';
+  rows: number[]; // Array of row numbers (1-based) that have this duplicate name
+  existingEntity?: {
+    id: number;
+    name: string;
+  };
+}
+
 export interface ImportPreviewResponse {
   companies: ImportEntry<CompanyImportData>[];
   contacts: ImportEntry<ContactImportData>[];
   truncated?: boolean;
   totalRows?: number;
   duplicateEmailErrors?: DuplicateEmailError[];
+  duplicateNameErrors?: DuplicateNameError[];
 }
 
 export interface ImportEntry<T = CompanyImportData | ContactImportData> {

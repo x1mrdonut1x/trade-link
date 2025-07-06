@@ -14,3 +14,8 @@ API responses should be typescript types or interfaces defined in the `packages/
 Follow existing code style and conventions.
 
 Do not write summaries at the end of your work.
+
+When writing tests and you need to make a request to the API, always use helper defined it `apps/api/test/helpers/[module].helper.ts`.
+Even if you will be using a different module than the one currently being tested, use the helper for that module.
+
+When writing tests on the backend, do not build the app. Run `pnpm test -- [module]` to run tests for a specific module, or `pnpm tests --  --testNamePattern=<test-name-pattern>` to run a specific test.

@@ -10,7 +10,7 @@ import Papa from 'papaparse';
 import { useEffect, useState } from 'react';
 import { CompaniesList } from './-components/companies/CompaniesList';
 import { ContactsList } from './-components/contacts/ContactsList';
-import { DuplicateEmailWarning } from './-components/DuplicateEmailWarning';
+import { DuplicateWarning } from './-components/DuplicateWarning';
 
 export const Route = createFileRoute('/_app/import/_3/review')({
   component: DataPreviewPage,
@@ -34,13 +34,16 @@ export function DataPreviewPage() {
 
   const generateCSV = <T extends { data: Record<string, unknown>; existingId?: number; companyId?: number }>(
     selectedEntries: T[],
-    mappings: Array<{ targetField: string }>,
+    mappings: Array<{ targetField: string; csvColumnIndex: number }>,
     includeCompanyId: boolean = false
   ): string => {
     if (selectedEntries.length === 0) return '';
 
-    // Get all mapped fields
-    const fields = mappings.map(mapping => mapping.targetField);
+    // Sort mappings by csvColumnIndex to ensure correct column order
+    const sortedMappings = [...mappings].sort((a, b) => a.csvColumnIndex - b.csvColumnIndex);
+
+    // Get all mapped fields in the correct order
+    const fields = sortedMappings.map(mapping => mapping.targetField);
 
     // Add special fields for tracking existing records and company assignments
     const specialFields = ['__existingId'];
@@ -48,7 +51,7 @@ export function DataPreviewPage() {
       specialFields.push('__companyId');
     }
 
-    // Create header row with both data fields and special fields
+    // Create header row - use target field names as headers
     const headerRow = [...fields, ...specialFields];
 
     // Create data rows
@@ -87,6 +90,22 @@ export function DataPreviewPage() {
       const companyCsvData = generateCSV(selectedCompanies, fieldMappings.companyMappings);
       const contactCsvData = generateCSV(selectedContacts, fieldMappings.contactMappings, true); // Include companyId for contacts
 
+      // Create updated field mappings with sequential column indices
+      const updatedFieldMappings = {
+        companyMappings: [...fieldMappings.companyMappings]
+          .sort((a, b) => a.csvColumnIndex - b.csvColumnIndex)
+          .map((mapping, index) => ({
+            ...mapping,
+            csvColumnIndex: index,
+          })),
+        contactMappings: [...fieldMappings.contactMappings]
+          .sort((a, b) => a.csvColumnIndex - b.csvColumnIndex)
+          .map((mapping, index) => ({
+            ...mapping,
+            csvColumnIndex: index,
+          })),
+      };
+
       // Create Blob objects for CSV files
       const companyCsvFile = companyCsvData ? new Blob([companyCsvData], { type: 'text/csv' }) : undefined;
       const contactCsvFile = contactCsvData ? new Blob([contactCsvData], { type: 'text/csv' }) : undefined;
@@ -102,7 +121,7 @@ export function DataPreviewPage() {
         .map(({ index }) => index);
 
       const executeResponse = await importAPI.executeImport({
-        fieldMappings,
+        fieldMappings: updatedFieldMappings,
         importType: importContext.importType,
         skippedCompanyRows,
         skippedContactRows,
@@ -200,7 +219,10 @@ export function DataPreviewPage() {
         />
       )}
 
-      <DuplicateEmailWarning duplicateEmailErrors={previewData.duplicateEmailErrors || []} />
+      <DuplicateWarning
+        duplicateEmailErrors={previewData.duplicateEmailErrors || []}
+        duplicateNameErrors={previewData.duplicateNameErrors || []}
+      />
 
       <div className="flex flex-col 2xl:flex-row overflow-y-auto gap-4">
         <CompaniesList />

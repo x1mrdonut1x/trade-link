@@ -10,6 +10,7 @@ import {
   companyImportDataSchema,
   contactImportDataSchema,
   type DuplicateEmailError,
+  type DuplicateNameError,
   type GetContactResponse,
   type ImportFieldMapping,
 } from '@tradelink/shared';
@@ -52,6 +53,7 @@ export class ImportService {
     const { companies, contacts } = await this.processAllRows(dataRows, request, existingCompanies);
 
     const duplicateEmailErrors = await this.validateUniqueEmails(companies, contacts);
+    const duplicateNameErrors = await this.validateUniqueNames(companies);
 
     return {
       companies,
@@ -59,6 +61,7 @@ export class ImportService {
       truncated,
       totalRows,
       duplicateEmailErrors,
+      duplicateNameErrors,
     };
   }
 
@@ -190,10 +193,11 @@ export class ImportService {
     for (const row of dataRows) {
       const { companyData, contactData } = this.mapRowToData(row, request.fieldMappings);
 
-      let currentRowCompanyId: number | undefined;
+      let currentRowCompanyData: CompanyImportData | undefined;
 
       if (companyData && request.importType !== 'contacts') {
-        currentRowCompanyId = this.processCompanyEntry(companyData, companies, existingCompanies);
+        this.processCompanyEntry(companyData, companies, existingCompanies);
+        currentRowCompanyData = companyData;
       }
 
       if (contactData && request.importType !== 'companies') {
@@ -201,7 +205,7 @@ export class ImportService {
           contactData,
           contacts,
           existingCompanies,
-          currentRowCompanyId,
+          currentRowCompanyData,
           existingContactsByEmail
         );
       }
@@ -214,34 +218,48 @@ export class ImportService {
     companyData: CompanyImportData,
     companies: ImportEntry<CompanyImportData>[],
     existingCompanies: Map<string, { id: number; name: string }>
-  ): number | undefined {
+  ): void {
     const companyNameLower = importUtils.normalizeCompanyName(companyData.name);
     const existingCompany = existingCompanies.get(companyNameLower);
 
-    importUtils.removeFalsyValues(companyData);
+    const existingEntry = companies.find(
+      entry => importUtils.normalizeCompanyName(entry.data.name) === companyNameLower
+    );
 
-    companies.push({
-      data: companyData,
-      action: existingCompany ? 'update' : 'create',
-      existingId: existingCompany?.id,
-      selected: true,
-    });
+    if (existingEntry) {
+      // Merge the company data with existing entry
+      const mergedData = { ...existingEntry.data, ...companyData };
 
-    return existingCompany?.id;
+      // Remove falsy values from merged data
+      importUtils.removeFalsyValues(mergedData);
+
+      // Update the existing entry
+      existingEntry.data = mergedData;
+    } else {
+      // Add new company entry
+      importUtils.removeFalsyValues(companyData);
+
+      companies.push({
+        data: companyData,
+        action: existingCompany ? 'update' : 'create',
+        existingId: existingCompany?.id,
+        selected: true,
+      });
+    }
   }
 
   private processContactEntry(
     contactData: ContactImportData,
     contacts: ImportEntry<ContactImportData>[],
     existingCompanies: Map<string, { id: number; name: string }>,
-    currentRowCompanyId?: number,
+    currentRowCompanyData?: CompanyImportData,
     existingContactsByEmail?: Map<string, GetContactResponse>
   ) {
     const existingContact = existingContactsByEmail?.get(contactData.email);
     const { matchedCompany, companyId } = this.resolveContactCompany(
       contactData,
       existingCompanies,
-      currentRowCompanyId
+      currentRowCompanyData
     );
 
     importUtils.removeFalsyValues(contactData);
@@ -259,15 +277,24 @@ export class ImportService {
   private resolveContactCompany(
     contactData: ContactImportData,
     existingCompanies: Map<string, { id: number; name: string }>,
-    currentRowCompanyId?: number
+    currentRowCompanyData?: CompanyImportData
   ): { matchedCompany?: { id: number; name: string }; companyId?: number } {
-    // Priority 1: Use company from the same row (existing company)
-    if (currentRowCompanyId) {
-      const company = [...existingCompanies.values()].find(c => c.id === currentRowCompanyId);
-      if (company) {
+    // Priority 1: Use company from the same row
+    if (currentRowCompanyData) {
+      const companyNameLower = importUtils.normalizeCompanyName(currentRowCompanyData.name);
+      const existingCompany = existingCompanies.get(companyNameLower);
+
+      if (existingCompany) {
+        // Company exists, use its ID
         return {
-          matchedCompany: { id: company.id, name: company.name },
-          companyId: currentRowCompanyId,
+          matchedCompany: { id: existingCompany.id, name: existingCompany.name },
+          companyId: existingCompany.id,
+        };
+      } else {
+        // Company will be created, use a placeholder that indicates same-row company
+        return {
+          matchedCompany: { id: -1, name: currentRowCompanyData.name },
+          companyId: -1, // Placeholder for same-row new company
         };
       }
     }
@@ -392,24 +419,24 @@ export class ImportService {
       }
     }
 
-    // Validate and parse data, throwing errors for invalid data
+    // Validate and parse data, skipping invalid entries
     let validCompanyData: CompanyImportData | undefined;
     let validContactData: ContactImportData | undefined;
 
     if (Object.keys(companyData).length > 0) {
       const companyResult = companyImportDataSchema.safeParse(companyData);
-      if (!companyResult.success) {
-        throw new BadRequestException(`Company validation error: ${companyResult.error.errors[0].message}`);
+      if (companyResult.success) {
+        validCompanyData = companyResult.data;
       }
-      validCompanyData = companyResult.data;
+      // Skip invalid company data - do not throw error
     }
 
     if (Object.keys(contactData).length > 0) {
       const contactResult = contactImportDataSchema.safeParse(contactData);
-      if (!contactResult.success) {
-        throw new BadRequestException(`Contact validation error: ${contactResult.error.errors[0].message}`);
+      if (contactResult.success) {
+        validContactData = contactResult.data;
       }
-      validContactData = contactResult.data;
+      // Skip invalid contact data - do not throw error
     }
 
     return {
@@ -614,6 +641,14 @@ export class ImportService {
     contactEntry: ImportEntry<ContactImportData>,
     companiesByName: Map<string, { id: number; name: string }>
   ): number | undefined {
+    // Handle same-row company placeholder
+    if (contactEntry.companyId === -1 && contactEntry.matchedCompany) {
+      // This is a same-row company, look it up in the created companies map
+      const companyKey = importUtils.normalizeCompanyName(contactEntry.matchedCompany.name);
+      const company = companiesByName.get(companyKey);
+      return company?.id;
+    }
+
     // First check if we have a real companyId from the contact entry
     if (contactEntry.companyId && contactEntry.companyId > 0) {
       return contactEntry.companyId;
@@ -627,5 +662,77 @@ export class ImportService {
     }
 
     return undefined;
+  }
+
+  private async validateUniqueNames(companies: ImportEntry<CompanyImportData>[]): Promise<DuplicateNameError[]> {
+    const companyNameMap = this.collectNamesFromEntries(companies);
+
+    // Fetch existing companies with these names
+    const existingCompaniesArray = await this.companyService.findCompaniesByNames([...companyNameMap.keys()]);
+
+    // Convert to map for efficient lookup
+    const existingCompanies = new Map<string, any>();
+    for (const company of existingCompaniesArray) {
+      existingCompanies.set(company.name.toLowerCase(), company);
+    }
+
+    return this.findDuplicatesInNameMap(companyNameMap, existingCompanies, companies);
+  }
+
+  private collectNamesFromEntries(entries: ImportEntry<CompanyImportData>[]): Map<string, number[]> {
+    const nameMap = new Map<string, number[]>();
+
+    for (const [index, entry] of entries.entries()) {
+      if (entry.existingId) continue;
+      if (!entry.data.name) continue;
+
+      const normalizedName = entry.data.name.toLowerCase().trim();
+      if (normalizedName) {
+        if (!nameMap.has(normalizedName)) {
+          nameMap.set(normalizedName, []);
+        }
+        nameMap.get(normalizedName)!.push(index + 1);
+      }
+    }
+
+    return nameMap;
+  }
+
+  private findDuplicatesInNameMap(
+    nameMap: Map<string, number[]>,
+    existingEntities: Map<string, any>,
+    companies: ImportEntry<CompanyImportData>[]
+  ): DuplicateNameError[] {
+    const duplicateErrors: DuplicateNameError[] = [];
+
+    for (const [name, rows] of nameMap.entries()) {
+      // Check if name exists in database
+      const existingEntity = existingEntities.get(name);
+
+      if (existingEntity) {
+        // Check if any of the companies with this name are intended to be created (not updated)
+        const hasCreateAction = companies.some(
+          company => company.data.name.toLowerCase() === name && company.action === 'create'
+        );
+
+        // Only report as duplicate if there are companies intended to be created with existing names
+        if (hasCreateAction) {
+          duplicateErrors.push({
+            name,
+            type: 'company',
+            rows,
+            existingEntity: {
+              id: existingEntity.id,
+              name: existingEntity.name,
+            },
+          });
+        }
+      } else if (rows.length > 1) {
+        // Name appears multiple times in import data
+        duplicateErrors.push({ name, type: 'company', rows });
+      }
+    }
+
+    return duplicateErrors;
   }
 }

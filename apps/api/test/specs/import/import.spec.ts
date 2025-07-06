@@ -1,7 +1,7 @@
 import { ImportFieldMappings } from '@tradelink/shared';
 import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
-import { createCompany, getCompany } from '../../helpers/company/company.helper';
-import { createContact, getContact } from '../../helpers/contact/contact.helper';
+import { createCompany, getAllCompanies, getCompany } from '../../helpers/company/company.helper';
+import { createContact, getAllContacts, getContact } from '../../helpers/contact/contact.helper';
 import { executeImport, importFixtures, processImport } from '../../helpers/import/import.helper';
 import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
 
@@ -403,14 +403,12 @@ New Company,info@new.com,Bob,Johnson,bob.johnson@example.com,Developer`;
 
       const response = await processImport(authToken, csvData, fieldMappings, 'mixed');
 
-      // Should have 3 companies (1 update, 2 create) - each row creates a company
-      expect(response.companies.length).toBe(3);
+      // Should have 2 companies (1 update, 1 create) - duplicate companies are merged
+      expect(response.companies.length).toBe(2);
       expect(response.companies[0].action).toBe('update');
       expect(response.companies[0].existingId).toBe(existingCompany.id);
       expect(response.companies[1].action).toBe('create');
       expect(response.companies[1].data.name).toBe('New Company');
-      expect(response.companies[2].action).toBe('create');
-      expect(response.companies[2].data.name).toBe('New Company');
 
       // Should have 3 contacts (all create)
       expect(response.contacts.length).toBe(3);
@@ -420,6 +418,56 @@ New Company,info@new.com,Bob,Johnson,bob.johnson@example.com,Developer`;
       expect(response.contacts[0].data.companyName).toBe('Existing Corp');
       expect(response.contacts[1].data.companyName).toBe('New Company');
       expect(response.contacts[2].data.companyName).toBe('New Company');
+    });
+
+    it('should assign multiple contacts to the same company during processing', async () => {
+      const csvData = `Company Name,Email,First Name,Last Name,Contact Email,Job Title
+Tech Innovations,info@techinnovations.com,Alice,Johnson,alice.johnson@example.com,Senior Developer
+Tech Innovations,info@techinnovations.com,Bob,Wilson,bob.wilson@example.com,Product Manager
+Tech Innovations,info@techinnovations.com,Charlie,Brown,charlie.brown@example.com,UX Designer`;
+
+      const fieldMappings: ImportFieldMappings = {
+        companyMappings: [
+          { csvColumnIndex: 0, targetField: 'name' },
+          { csvColumnIndex: 1, targetField: 'email' },
+        ],
+        contactMappings: [
+          { csvColumnIndex: 2, targetField: 'firstName' },
+          { csvColumnIndex: 3, targetField: 'lastName' },
+          { csvColumnIndex: 4, targetField: 'email' },
+          { csvColumnIndex: 5, targetField: 'jobTitle' },
+          { csvColumnIndex: 0, targetField: 'companyName' },
+        ],
+      };
+
+      const response = await processImport(authToken, csvData, fieldMappings, 'mixed');
+
+      expect(response.duplicateEmailErrors).toHaveLength(0);
+      expect(response.duplicateNameErrors).toHaveLength(0);
+
+      // Should have 1 company (update since company already exists)
+      expect(response.companies.length).toBe(1);
+      expect(response.companies[0].action).toBe('create');
+
+      // Should have 3 contacts (all create)
+      expect(response.contacts.length).toBe(3);
+      expect(response.contacts.every(c => c.action === 'create')).toBe(true);
+
+      // All contacts should reference the same company
+      expect(response.contacts.every(c => c.data.companyName === 'Tech Innovations')).toBe(true);
+
+      // Verify specific contact details
+      const alice = response.contacts.find(c => c.data.firstName === 'Alice');
+      expect(alice?.data.jobTitle).toBe('Senior Developer');
+      expect(alice?.data.email).toBe('alice.johnson@example.com');
+
+      const bob = response.contacts.find(c => c.data.firstName === 'Bob');
+      expect(bob?.data.jobTitle).toBe('Product Manager');
+      expect(bob?.data.email).toBe('bob.wilson@example.com');
+
+      const charlie = response.contacts.find(c => c.data.firstName === 'Charlie');
+      expect(charlie?.data.jobTitle).toBe('UX Designer');
+      expect(charlie?.data.email).toBe('charlie.brown@example.com');
     });
   });
 
@@ -672,6 +720,74 @@ Bob,Johnson,bob.johnson@example.com,Developer,Acme Corp`;
       expect(response.stats.contacts).toBe(3);
       expect(response.stats.totalRecords).toBe(5);
       expect(response.stats.errors).toBe(0);
+    });
+
+    it('should assign multiple contacts to the same company', async () => {
+      const companyCsvData = `Company Name,Email
+Tech Innovations,info@techinnovations.com`;
+
+      const contactCsvData = `First Name,Last Name,Email,Job Title,Company Name
+Alice,Johnson,alice.johnson@example.com,Senior Developer,Tech Innovations
+Bob,Wilson,bob.wilson@example.com,Product Manager,Tech Innovations
+Charlie,Brown,charlie.brown@example.com,UX Designer,Tech Innovations`;
+
+      const fieldMappings: ImportFieldMappings = {
+        companyMappings: [
+          { csvColumnIndex: 0, targetField: 'name' },
+          { csvColumnIndex: 1, targetField: 'email' },
+        ],
+        contactMappings: [
+          { csvColumnIndex: 0, targetField: 'firstName' },
+          { csvColumnIndex: 1, targetField: 'lastName' },
+          { csvColumnIndex: 2, targetField: 'email' },
+          { csvColumnIndex: 3, targetField: 'jobTitle' },
+          { csvColumnIndex: 4, targetField: 'companyName' },
+        ],
+      };
+
+      const response = await executeImport(
+        authToken,
+        fieldMappings,
+        'mixed',
+        undefined,
+        undefined,
+        companyCsvData,
+        contactCsvData
+      );
+
+      expect(response.success).toBe(true);
+      expect(response.stats.companies).toBe(1);
+      expect(response.stats.contacts).toBe(3);
+      expect(response.stats.totalRecords).toBe(4);
+      expect(response.stats.errors).toBe(0);
+
+      // Verify the company was created
+      const companies = await getAllCompanies();
+      const techInnovationsCompany = companies.find(c => c.name === 'Tech Innovations');
+      expect(techInnovationsCompany).toBeDefined();
+      expect(techInnovationsCompany?.email).toBe('info@techinnovations.com');
+
+      // Verify all contacts were created and linked to the same company
+      const contacts = await getAllContacts();
+      const techInnovationsContacts = contacts.filter(c => c.companyId === techInnovationsCompany?.id);
+
+      expect(techInnovationsContacts).toHaveLength(3);
+
+      const contactNames = techInnovationsContacts.map(c => c.firstName).sort();
+      expect(contactNames).toEqual(['Alice', 'Bob', 'Charlie']);
+
+      // Verify specific contact details
+      const alice = techInnovationsContacts.find(c => c.firstName === 'Alice');
+      expect(alice?.jobTitle).toBe('Senior Developer');
+      expect(alice?.email).toBe('alice.johnson@example.com');
+
+      const bob = techInnovationsContacts.find(c => c.firstName === 'Bob');
+      expect(bob?.jobTitle).toBe('Product Manager');
+      expect(bob?.email).toBe('bob.wilson@example.com');
+
+      const charlie = techInnovationsContacts.find(c => c.firstName === 'Charlie');
+      expect(charlie?.jobTitle).toBe('UX Designer');
+      expect(charlie?.email).toBe('charlie.brown@example.com');
     });
   });
 });

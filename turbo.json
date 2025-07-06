@@ -21,11 +21,13 @@
       "interruptible": true
     },
     "db:generate": {
-      "cache": true
+      "cache": true,
+      "inputs": ["prisma/schema.prisma"],
+      "env": ["DATABASE_URL"]
     },
     "db:migrate": {
       "cache": true,
-      "inputs": ["prisma/schema.prisma", "prisma/migrations/**"],
+      "inputs": ["prisma/migrations/**"],
       "env": ["DATABASE_URL"]
     },
     "db:deploy": {
