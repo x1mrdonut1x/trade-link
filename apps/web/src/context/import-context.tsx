@@ -63,16 +63,16 @@ interface ImportProviderProps {
 }
 
 export function ImportProvider({ children }: ImportProviderProps) {
-  const [selectedRawFile, setSelectedRawFile] = useState<File>();
-  const [csvFile, setCsvFile] = useState<Blob>();
-  const [csvColumns, setCsvColumns] = useState<CsvColumn[]>([]);
-  const [importType, setImportType] = useState<ImportType>('mixed');
-  const [fieldMappings, setFieldMappings] = useState<ImportFieldMappings>({
+  const [selectedRawFile, setSelectedRawFile] = useState<ImportContextValue['selectedRawFile']>();
+  const [csvFile, setCsvFile] = useState<ImportContextValue['csvFile']>();
+  const [csvColumns, setCsvColumns] = useState<ImportContextValue['csvColumns']>([]);
+  const [importType, setImportType] = useState<ImportContextValue['importType']>('mixed');
+  const [fieldMappings, setFieldMappings] = useState<ImportContextValue['fieldMappings']>({
     companyMappings: [],
     contactMappings: [],
   });
-  const [previewData, setPreviewData] = useState<ImportPreviewResponse>();
-  const [importStats, setImportStats] = useState<ImportExecuteResponse['stats']>();
+  const [previewData, setPreviewData] = useState<ImportContextValue['previewData']>();
+  const [importStats, setImportStats] = useState<ImportContextValue['importStats']>();
 
   const clearImportData = () => {
     setCsvFile(undefined);

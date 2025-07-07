@@ -1,142 +1,142 @@
+import { Link } from '@tanstack/react-router';
+import type { TaskWithRelationsDto } from '@tradelink/shared';
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Checkbox } from '@tradelink/ui/components/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
-import { AlertCircle, Bell, Building2, Calendar, CheckSquare, Clock, Edit, MoreHorizontal, Trash2, User } from '@tradelink/ui/icons';
-
-export interface Task {
-  id: number;
-  title: string;
-  description: string;
-  type: 'todo' | 'reminder';
-  priority: 'low' | 'medium' | 'high';
-  status: 'pending' | 'completed' | 'overdue';
-  dueDate: string;
-  relatedTo: {
-    type: 'company' | 'contact' | 'event';
-    id: number;
-    name: string;
-  };
-  createdAt: string;
-  completed?: boolean;
-}
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
+import { Building2, Calendar, CheckSquare, Edit, MoreHorizontal, Trash2, User } from '@tradelink/ui/icons';
 
 interface TaskCardProps {
-  task: Task;
-  onToggleCompletion: (taskId: number) => void;
+  task: TaskWithRelationsDto;
+  onToggleResolved: (task: TaskWithRelationsDto) => void;
+  onEdit: (task: TaskWithRelationsDto) => void;
+  onDelete: (task: TaskWithRelationsDto) => void;
 }
 
-export const TaskCard = ({ task, onToggleCompletion }: TaskCardProps) => {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': {
-        return 'bg-red-100 text-red-800';
-      }
-      case 'medium': {
-        return 'bg-yellow-100 text-yellow-800';
-      }
-      case 'low': {
-        return 'bg-green-100 text-green-800';
-      }
-      default: {
-        return 'bg-gray-100 text-gray-800';
-      }
+export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardProps) => {
+  const getPriorityColor = (isOverdue: boolean, resolved: boolean) => {
+    if (resolved) return 'bg-green-100 text-green-800';
+    if (isOverdue) return 'bg-red-100 text-red-800';
+    return 'bg-blue-100 text-blue-800';
+  };
+
+  const getRelatedIcon = (task: TaskWithRelationsDto) => {
+    if (task.company) return Building2;
+    if (task.contact) return User;
+    return CheckSquare;
+  };
+
+  const formatDate = (date?: string | Date | null) => {
+    if (!date) return { text: 'No Date', isOverdue: false };
+
+    const taskDate = new Date(date);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    if (taskDate < today) {
+      return { text: 'Overdue', isOverdue: true };
+    } else if (taskDate.getTime() === today.getTime()) {
+      return { text: 'Today', isOverdue: false };
+    } else {
+      return { text: taskDate.toLocaleDateString(), isOverdue: false };
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': {
-        return 'bg-blue-100 text-blue-800';
-      }
-      case 'completed': {
-        return 'bg-green-100 text-green-800';
-      }
-      case 'overdue': {
-        return 'bg-red-100 text-red-800';
-      }
-      default: {
-        return 'bg-gray-100 text-gray-800';
-      }
-    }
-  };
-
-  const getRelatedIcon = (type: string) => {
-    switch (type) {
-      case 'company': {
-        return Building2;
-      }
-      case 'contact': {
-        return User;
-      }
-      case 'event': {
-        return Calendar;
-      }
-      default: {
-        return CheckSquare;
-      }
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const isOverdue = (dueDate: string, status: string) => {
-    return status !== 'completed' && new Date(dueDate) < new Date();
-  };
-
-  const RelatedIcon = getRelatedIcon(task.relatedTo.type);
+  const dateInfo = formatDate(task.reminderDate);
+  const RelatedIcon = getRelatedIcon(task);
 
   return (
-    <div className="p-4 border rounded-lg bg-card hover:shadow-sm transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-3 flex-1">
-          <Checkbox checked={task.completed} onCheckedChange={() => onToggleCompletion(task.id)} className="mt-1" />
+    <div className={`p-4 border rounded-lg bg-white shadow-sm ${task.resolved ? 'opacity-75' : ''}`}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3 flex-1">
+          <Checkbox checked={task.resolved} onCheckedChange={() => onToggleResolved(task)} className="mt-1" />
+
           <div className="flex-1 space-y-2">
-            <div className="flex items-start justify-between">
-              <h3 className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>{task.title}</h3>
-              <div className="flex items-center space-x-2">
-                <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
-                <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
+            <div className="flex items-center gap-2">
+              <h3 className={`font-medium ${task.resolved ? 'line-through text-muted-foreground' : ''}`}>
+                {task.title}
+              </h3>
+              <div className="flex items-center gap-1">
+                <Badge variant="secondary" className={`text-xs ${getPriorityColor(dateInfo.isOverdue, task.resolved)}`}>
+                  {task.resolved ? 'Completed' : dateInfo.isOverdue ? 'Overdue' : 'Pending'}
+                </Badge>
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground">{task.description}</p>
+            {task.description && (
+              <p
+                className={`text-sm ${task.resolved ? 'line-through text-muted-foreground' : 'text-muted-foreground'}`}
+              >
+                {task.description}
+              </p>
+            )}
 
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span className={dateInfo.isOverdue && !task.resolved ? 'text-red-600 font-medium' : ''}>
+                  {dateInfo.text}
+                </span>
+              </div>
+
+              {task.contact && (
+                <div className="flex items-center gap-1">
                   <RelatedIcon className="h-4 w-4" />
-                  <span>{task.relatedTo.name}</span>
+                  <Link
+                    className="hover:underline"
+                    to="/contacts/$contactId"
+                    params={{ contactId: task.contact?.id?.toString() }}
+                  >
+                    {`${task.contact.firstName} ${task.contact.lastName}`}
+                  </Link>
                 </div>
-                <div className="flex items-center space-x-1">
-                  {task.type === 'reminder' ? <Bell className="h-4 w-4" /> : <CheckSquare className="h-4 w-4" />}
-                  <span className="capitalize">{task.type}</span>
+              )}
+              {task.company && (
+                <div className="flex items-center gap-1">
+                  <Building2 className="h-4 w-4" />
+                  <Link
+                    className="hover:underline"
+                    to="/companies/$companyId"
+                    params={{ companyId: task.company?.id?.toString() }}
+                  >
+                    {task.company.name}
+                  </Link>
                 </div>
-              </div>
+              )}
 
-              <div className="flex items-center space-x-2">
-                {isOverdue(task.dueDate, task.status) && <AlertCircle className="h-4 w-4 text-red-500" />}
-                <Clock className="h-4 w-4" />
-                <span>Due: {formatDate(task.dueDate)}</span>
-              </div>
+              {task.user && (
+                <div className="flex items-center gap-1">
+                  <User className="h-4 w-4" />
+                  <span>
+                    Created by {task.user.firstName} {task.user.lastName}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="icon" className="h-8 w-8">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit(task)}>
               <Edit className="h-4 w-4 mr-2" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
+            <DropdownMenuItem onClick={() => onToggleResolved(task)}>
+              <CheckSquare className="h-4 w-4 mr-2" />
+              {task.resolved ? 'Mark as Pending' : 'Mark as Completed'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(task)} className="text-red-600">
               <Trash2 className="h-4 w-4 mr-2" />
               Delete
             </DropdownMenuItem>

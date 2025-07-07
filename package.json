@@ -13,6 +13,7 @@
     "test": "turbo test",
     "test:watch": "pnpm --filter api test:watch",
     "test:e2e": "pnpm --filter api test:e2e",
+    "db:generate": "pnpm --filter api db:generate",
     "db:migrate": "pnpm --filter api db:migrate",
     "db:deploy": "pnpm --filter api db:deploy",
     "ui": "pnpm --filter @tradelink/ui ui"

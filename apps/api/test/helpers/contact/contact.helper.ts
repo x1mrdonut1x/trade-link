@@ -1,4 +1,13 @@
-import type { CreateContactRequest, UpdateContactRequest } from '@tradelink/shared';
+import {
+  CreateContactRequest,
+  GetAllContactsResponse,
+  GetContactResponse,
+  UpdateContactRequest,
+  type CreateContactResponse,
+  type DeleteContactResponse,
+  type GetAllContactsQuery,
+  type UpdateContactResponse,
+} from '@tradelink/shared';
 import { authRequest } from '../request.helper';
 
 export interface ContactFixtures {
@@ -40,23 +49,22 @@ export const contactFixtures: ContactFixtures = {
   },
 };
 
-export const getAllContacts = async (query?: Record<string, string>) => {
-  const url = query ? `/contacts?${new URLSearchParams(query).toString()}` : '/contacts';
-  return authRequest().get(url);
+export const getAllContacts = async (query?: GetAllContactsQuery) => {
+  return authRequest().get<GetAllContactsResponse>('/contacts', query);
 };
 
 export const getContact = async (id: number) => {
-  return authRequest().get(`/contacts/${id}`);
+  return authRequest().get<GetContactResponse>(`/contacts/${id}`);
 };
 
 export const createContact = async (contactData: CreateContactRequest) => {
-  return authRequest().post('/contacts', contactData);
+  return authRequest().post<CreateContactResponse>('/contacts', contactData);
 };
 
 export const updateContact = async (id: number, contactData: UpdateContactRequest) => {
-  return authRequest().put(`/contacts/${id}`, contactData);
+  return authRequest().put<UpdateContactResponse>(`/contacts/${id}`, contactData);
 };
 
 export const deleteContact = async (id: number) => {
-  return authRequest().delete(`/contacts/${id}`);
+  return authRequest().delete<DeleteContactResponse>(`/contacts/${id}`);
 };

@@ -73,7 +73,7 @@ export default [
       'sonarjs/prefer-read-only-props': 'off',
       'sonarjs/function-return-type': 'off',
       'sonarjs/no-nested-conditional': 'off',
-      'sonarjs/todo-tag': 'warn',
+      'sonarjs/task-tag': 'warn',
       'sonarjs/no-commented-code': 'warn',
       'sonarjs/updated-loop-counter': 'off',
       'sonarjs/no-nested-functions': 'off',

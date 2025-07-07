@@ -1,4 +1,12 @@
-import type { CreateNoteRequest, UpdateNoteRequest } from '@tradelink/shared';
+import {
+  CreateNoteRequest,
+  CreateNoteResponse,
+  GetAllNotesResponse,
+  GetNoteResponse,
+  type DeleteNoteResponse,
+  type UpdateNoteRequest,
+  type UpdateNoteResponse,
+} from '@tradelink/shared';
 import { authRequest } from '../request.helper';
 
 export interface NoteFixtures {
@@ -39,29 +47,29 @@ export const noteFixtures: NoteFixtures = {
 };
 
 export const getAllNotes = async () => {
-  return authRequest().get('/notes');
+  return authRequest().get<GetAllNotesResponse>('/notes');
 };
 
 export const getNote = async (id: number) => {
-  return authRequest().get(`/notes/${id}`);
+  return authRequest().get<GetNoteResponse>(`/notes/${id}`);
 };
 
 export const createNote = async (data: CreateNoteRequest) => {
-  return authRequest().post('/notes', data);
+  return authRequest().post<CreateNoteResponse>('/notes', data);
 };
 
 export const updateNote = async (id: number, data: UpdateNoteRequest) => {
-  return authRequest().patch(`/notes/${id}`, data);
+  return authRequest().patch<UpdateNoteResponse>(`/notes/${id}`, data);
 };
 
 export const deleteNote = async (id: number) => {
-  return authRequest().delete(`/notes/${id}`);
+  return authRequest().delete<DeleteNoteResponse>(`/notes/${id}`);
 };
 
 export const getNotesByContactId = async (contactId: number) => {
-  return authRequest().get(`/notes/contact/${contactId}`);
+  return authRequest().get<GetAllNotesResponse>(`/notes/contact/${contactId}`);
 };
 
 export const getNotesByCompanyId = async (companyId: number) => {
-  return authRequest().get(`/notes/company/${companyId}`);
+  return authRequest().get<GetAllNotesResponse>(`/notes/company/${companyId}`);
 };

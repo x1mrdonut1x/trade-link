@@ -12,19 +12,29 @@ export const clearAuthToken = () => {
 };
 
 interface RequestHelper {
-  get: (url: string) => Promise<any>;
-  post: (url: string, data?: any) => Promise<any>;
-  put: (url: string, data?: any) => Promise<any>;
-  delete: (url: string) => Promise<any>;
-  patch: (url: string, data?: any) => Promise<any>;
+  get: <T>(url: string, query?: Record<string, unknown>) => Promise<T>;
+  post: <T>(url: string, data?: any) => Promise<T>;
+  put: <T>(url: string, data?: any) => Promise<T>;
+  delete: <T>(url: string) => Promise<T>;
+  patch: <T>(url: string, data?: any) => Promise<T>;
 }
 
 export const authRequest = (): RequestHelper => {
   const app = getTestApp();
   const baseRequest = request(app.getHttpServer());
 
-  const makeRequest = async (method: string, url: string, data?: any): Promise<any> => {
+  const makeRequest = async (
+    method: string,
+    url: string,
+    data?: any,
+    query?: Record<string, unknown>
+  ): Promise<any> => {
     let req = baseRequest[method.toLowerCase()](url);
+
+    if (query) {
+      const search = new URLSearchParams(query as any).toString();
+      req = req.query(search);
+    }
 
     if (globalAuthToken) {
       req = req.set('Authorization', `Bearer ${globalAuthToken}`);
@@ -50,7 +60,7 @@ export const authRequest = (): RequestHelper => {
   };
 
   return {
-    get: (url: string) => makeRequest('GET', url),
+    get: (url: string, query?: Record<string, unknown>) => makeRequest('GET', url, undefined, query),
     post: (url: string, data?: any) => makeRequest('POST', url, data),
     put: (url: string, data?: any) => makeRequest('PUT', url, data),
     delete: (url: string) => makeRequest('DELETE', url),

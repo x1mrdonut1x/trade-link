@@ -4,9 +4,10 @@ import { Building2, Calendar, CheckSquare, PlusCircle, Users } from '@tradelink/
 import { PageHeader } from 'components/page-header/PageHeader';
 import { dashboardApi } from '../../api/dashboard';
 
+import { TasksCard } from 'components/tasks';
 import { StatCard } from './-components/StatCard';
 import { UpcomingEvents } from './-components/UpcomingEvents';
-import { UpcomingTodos } from './-components/UpcomingTodos';
+import { UpcomingTasks } from './-components/UpcomingTasks';
 
 function Dashboard() {
   // Fetch real dashboard data
@@ -19,13 +20,7 @@ function Dashboard() {
     queryFn: dashboardApi.getStats,
   });
 
-  // Mock data for components that don't have real endpoints yet
-  const upcomingTodos = [
-    { id: 1, title: 'Follow up with Grand Hotels Corp', type: 'company', dueDate: '2025-06-27' },
-    { id: 2, title: 'Meeting with Agent Sarah Johnson', type: 'contact', dueDate: '2025-06-28' },
-    { id: 3, title: 'Prepare for Hotel Trade Show 2025', type: 'event', dueDate: '2025-06-29' },
-  ];
-
+  // Mock data for events (can be replaced with real API later)
   const upcomingEvents = [
     { id: 1, name: 'Hotel Trade Show 2025', date: '2025-07-15', location: 'Berlin' },
     { id: 2, name: 'Hospitality Sales Expo', date: '2025-08-22', location: 'Munich' },
@@ -43,7 +38,7 @@ function Dashboard() {
           <StatCard title="Companies" value={0} subtitle="Loading..." icon={Building2} />
           <StatCard title="Total Contacts" value={0} subtitle="Loading..." icon={Users} />
           <StatCard title="Upcoming Events" value={3} subtitle="Next: July 15th" icon={Calendar} />
-          <StatCard title="Pending Tasks" value={12} subtitle="5 due today" icon={CheckSquare} />
+          <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
         </div>
       </>
     );
@@ -61,7 +56,7 @@ function Dashboard() {
           <StatCard title="Companies" value={0} subtitle="Error loading data" icon={Building2} />
           <StatCard title="Total Contacts" value={0} subtitle="Error loading data" icon={Users} />
           <StatCard title="Upcoming Events" value={3} subtitle="Next: July 15th" icon={Calendar} />
-          <StatCard title="Pending Tasks" value={12} subtitle="5 due today" icon={CheckSquare} />
+          <StatCard title="Pending Tasks" value={0} subtitle="Error loading data" icon={CheckSquare} />
         </div>
       </>
     );
@@ -88,12 +83,13 @@ function Dashboard() {
           icon={Users}
         />
         <StatCard title="Upcoming Events" value={upcomingEvents.length} subtitle="Next: July 15th" icon={Calendar} />
-        <StatCard title="Pending Tasks" value={upcomingTodos.length} subtitle="5 due today" icon={CheckSquare} />
+        <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 mt-6">
-        <UpcomingTodos todos={upcomingTodos} />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
+        <UpcomingTasks />
         <UpcomingEvents events={upcomingEvents} />
+        <TasksCard title="Quick Tasks" />
       </div>
     </>
   );

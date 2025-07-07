@@ -15,8 +15,8 @@ export interface NoteDto {
   contactId?: number | null;
   companyId?: number | null;
   createdBy: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type NoteWithRelationsDto = NoteDto & {

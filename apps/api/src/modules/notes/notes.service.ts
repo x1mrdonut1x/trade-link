@@ -5,6 +5,7 @@ import type {
   DeleteNoteResponse,
   GetAllNotesResponse,
   GetNoteResponse,
+  PrismaRawResponse,
   UpdateNoteRequest,
   UpdateNoteResponse,
 } from '@tradelink/shared';
@@ -14,7 +15,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class NotesService {
   constructor(private prisma: PrismaService) {}
 
-  async createNote(data: CreateNoteRequest & { createdBy: number }): Promise<CreateNoteResponse> {
+  async createNote(data: CreateNoteRequest & { createdBy: number }): Promise<PrismaRawResponse<CreateNoteResponse>> {
     const note = await this.prisma.note.create({
       data,
       include: {
@@ -34,7 +35,7 @@ export class NotesService {
     return note;
   }
 
-  async getAllNotes(): Promise<GetAllNotesResponse> {
+  async getAllNotes(): Promise<PrismaRawResponse<GetAllNotesResponse>> {
     const notes = await this.prisma.note.findMany({
       include: {
         contact: true,
@@ -56,7 +57,7 @@ export class NotesService {
     return notes;
   }
 
-  async getNoteById(id: number): Promise<GetNoteResponse> {
+  async getNoteById(id: number): Promise<PrismaRawResponse<GetNoteResponse>> {
     const note = await this.prisma.note.findUniqueOrThrow({
       where: { id },
       include: {
@@ -76,7 +77,7 @@ export class NotesService {
     return note;
   }
 
-  async updateNote(id: number, data: UpdateNoteRequest): Promise<UpdateNoteResponse> {
+  async updateNote(id: number, data: UpdateNoteRequest): Promise<PrismaRawResponse<UpdateNoteResponse>> {
     const note = await this.prisma.note.update({
       where: { id },
       data,
@@ -97,7 +98,7 @@ export class NotesService {
     return note;
   }
 
-  async deleteNote(id: number): Promise<DeleteNoteResponse> {
+  async deleteNote(id: number): Promise<PrismaRawResponse<DeleteNoteResponse>> {
     const note = await this.prisma.note.delete({
       where: { id },
     });
@@ -105,7 +106,7 @@ export class NotesService {
     return { id: note.id };
   }
 
-  async getNotesByContactId(contactId: number): Promise<GetAllNotesResponse> {
+  async getNotesByContactId(contactId: number): Promise<PrismaRawResponse<GetAllNotesResponse>> {
     const notes = await this.prisma.note.findMany({
       where: { contactId },
       include: {
@@ -128,7 +129,7 @@ export class NotesService {
     return notes;
   }
 
-  async getNotesByCompanyId(companyId: number): Promise<GetAllNotesResponse> {
+  async getNotesByCompanyId(companyId: number): Promise<PrismaRawResponse<GetAllNotesResponse>> {
     const notes = await this.prisma.note.findMany({
       where: { companyId },
       include: {

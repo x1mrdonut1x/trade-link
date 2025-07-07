@@ -98,13 +98,11 @@ function ImportDataPage() {
         fieldMappings
       );
 
-      console.log(' updatedFieldMappings:', updatedFieldMappings);
       const processResponse = await importAPI.processImport({
         csvFile: filteredCsvFile,
         fieldMappings: updatedFieldMappings,
         importType,
       });
-      console.log(' processResponse:', processResponse.duplicateNameErrors);
 
       importContext.setPreviewData(processResponse);
       navigate({ to: '/import/review' });

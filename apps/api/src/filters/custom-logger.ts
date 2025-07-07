@@ -10,6 +10,7 @@ export class CustomLogger extends ConsoleLogger {
   }
 
   error(message: any, stack?: string, context?: string) {
+    console.log(' message:', message);
     // Skip logging Prisma errors in test environment
     if (this.isPrismaError(message, stack, context)) {
       return;

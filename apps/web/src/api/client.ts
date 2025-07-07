@@ -46,10 +46,6 @@ export async function myFetch<T = unknown>(
     queryString.stringify(data?.query || {}, { skipEmptyString: true, skipNull: true })
   ).toString();
 
-  if (data?.method !== 'GET') {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
-
   const response = await fetch(parsedUrl, { ...data, headers, body: parsedBody });
 
   if (!response.ok) {
