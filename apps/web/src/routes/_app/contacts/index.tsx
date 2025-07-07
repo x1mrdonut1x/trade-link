@@ -14,6 +14,7 @@ import {
 import { Pagination } from '@tradelink/ui/components/pagination';
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteContact, useGetAllContacts } from 'api/contact/hooks';
+import { TagFilter } from 'components/filters';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { TagBadge } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
@@ -25,24 +26,30 @@ export const Route = createFileRoute('/_app/contacts/')({
 });
 
 export function Contacts() {
-  const { search, page, size } = Route.useSearch();
+  const { search, page, size, tagIds } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
   useBreadcrumbSetup([{ title: 'Contacts', href: '/contacts', isActive: true }]);
 
   const [searchQuery, setSearchQuery] = useState(search);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(tagIds || []);
 
   useEffect(() => {
-    if (searchQuery === search) return;
-
     const timer = setTimeout(() => {
-      navigate({ search: { search: searchQuery, page, size } });
+      navigate({
+        search: { search: searchQuery, page, size, tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined },
+      });
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, navigate, page, size, search]);
+  }, [selectedTagIds, navigate, searchQuery, page, size]);
 
-  const { data: contacts, isLoading } = useGetAllContacts({ search, page, size });
+  const { data: contacts, isLoading } = useGetAllContacts({
+    search,
+    page,
+    size,
+    tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+  });
   const deleteContact = useDeleteContact();
 
   const handleRowClick = (contact: ContactWithCompanyDto) => {
@@ -60,7 +67,26 @@ export function Contacts() {
   };
 
   const handlePageChange = (newPage: number) => {
-    navigate({ search: { search: searchQuery, page: newPage, size } });
+    navigate({
+      search: {
+        search: searchQuery,
+        page: newPage,
+        size,
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+      },
+    });
+  };
+
+  const handleTagSelect = (tagId: number) => {
+    setSelectedTagIds(prev => [...prev, tagId]);
+  };
+
+  const handleTagDeselect = (tagId: number) => {
+    setSelectedTagIds(prev => prev.filter(id => id !== tagId));
+  };
+
+  const handleClearAllTags = () => {
+    setSelectedTagIds([]);
   };
 
   const columns: Column<ContactWithCompanyDto>[] = [
@@ -196,6 +222,15 @@ export function Contacts() {
           },
         ]}
       />
+
+      <div className="mb-4">
+        <TagFilter
+          selectedTagIds={selectedTagIds}
+          onTagSelect={handleTagSelect}
+          onTagDeselect={handleTagDeselect}
+          onClearAll={handleClearAllTags}
+        />
+      </div>
 
       <Card>
         <CardContent>
