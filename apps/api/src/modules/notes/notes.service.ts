@@ -3,6 +3,7 @@ import type {
   CreateNoteRequest,
   CreateNoteResponse,
   DeleteNoteResponse,
+  GetAllNotesRequest,
   GetAllNotesResponse,
   GetNoteResponse,
   PrismaRawResponse,
@@ -21,33 +22,23 @@ export class NotesService {
       include: {
         contact: true,
         company: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
       },
     });
 
     return note;
   }
 
-  async getAllNotes(): Promise<PrismaRawResponse<GetAllNotesResponse>> {
+  async getAllNotes(data?: GetAllNotesRequest): Promise<PrismaRawResponse<GetAllNotesResponse>> {
     const notes = await this.prisma.note.findMany({
+      where: {
+        companyId: data?.companyId,
+        contactId: data?.contactId,
+      },
       include: {
         contact: true,
         company: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
       },
       orderBy: {
         createdAt: 'desc',
@@ -63,14 +54,7 @@ export class NotesService {
       include: {
         contact: true,
         company: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
       },
     });
 
@@ -84,14 +68,7 @@ export class NotesService {
       include: {
         contact: true,
         company: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
       },
     });
 
@@ -104,51 +81,5 @@ export class NotesService {
     });
 
     return { id: note.id };
-  }
-
-  async getNotesByContactId(contactId: number): Promise<PrismaRawResponse<GetAllNotesResponse>> {
-    const notes = await this.prisma.note.findMany({
-      where: { contactId },
-      include: {
-        contact: true,
-        company: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return notes;
-  }
-
-  async getNotesByCompanyId(companyId: number): Promise<PrismaRawResponse<GetAllNotesResponse>> {
-    const notes = await this.prisma.note.findMany({
-      where: { companyId },
-      include: {
-        contact: true,
-        company: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return notes;
   }
 }

@@ -3,6 +3,7 @@ import { Button } from '@tradelink/ui/components/button';
 import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from '@tradelink/ui/icons';
 import { useGetCompany } from 'api/company/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { EntityTagsCard } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
 import { NotesCard } from 'components/notes';
@@ -91,6 +92,7 @@ function CompanyDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          <EntityTagsCard entityType="company" entityId={Number(companyId)} tags={company.tags || []} />
           {/* <QuickStatsCard agentsCount={company.agentsCount} eventsCount={company.eventsCount} lastContact={company.lastContact} /> */}
           <QuickActionsCard />
         </div>

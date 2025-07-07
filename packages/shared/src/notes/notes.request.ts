@@ -13,6 +13,11 @@ export const updateNoteSchema = z.object({
   description: z.string().max(5000).optional().nullable(),
 });
 
+const getAllNotesQuerySchema = z.object({
+  contactId: z.coerce.number().int().positive().optional(),
+  companyId: z.coerce.number().int().positive().optional(),
+});
+
 export const noteSchema = {
   create: createNoteSchema,
   update: updateNoteSchema,
@@ -20,6 +25,7 @@ export const noteSchema = {
 
 export class CreateNoteRequest extends createZodDto(createNoteSchema) {}
 export class UpdateNoteRequest extends createZodDto(updateNoteSchema) {}
+export class GetAllNotesRequest extends createZodDto(getAllNotesQuerySchema) {}
 
 export type CreateNoteDto = z.infer<typeof createNoteSchema>;
 export type UpdateNoteDto = z.infer<typeof updateNoteSchema>;

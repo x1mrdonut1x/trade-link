@@ -1,4 +1,6 @@
-export default {
+import type { Config } from 'jest';
+
+const config: Config = {
   displayName: 'api',
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: './',
@@ -6,12 +8,20 @@ export default {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
+  transformIgnorePatterns: ['node_modules/(?!(query-string|decode-uri-component|split-on-first|filter-obj)/)'],
   collectCoverageFrom: ['**/*.(t|j)s', '!**/*.spec.ts', '!**/node_modules/**'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
-  // setupFiles: ['<rootDir>/test/setupFiles.ts'],
   globalSetup: '<rootDir>/test/globalSetup.ts',
   setupFilesAfterEnv: ['<rootDir>/test/setupFilesAfterEnv.ts'],
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   testTimeout: 30_000,
+  globals: {
+    'ts-jest': {
+      isolatedModules: true, // Helps with certain ESM interop issues
+      tsconfig: 'tsconfig.json',
+    },
+  },
 };
+
+export default config;

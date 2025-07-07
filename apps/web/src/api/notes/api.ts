@@ -4,6 +4,7 @@ import type {
   CreateNoteRequest,
   CreateNoteResponse,
   DeleteNoteResponse,
+  GetAllNotesRequest,
   GetAllNotesResponse,
   GetNoteResponse,
   UpdateNoteRequest,
@@ -11,8 +12,8 @@ import type {
 } from '@tradelink/shared';
 
 export const notesApi = {
-  getAllNotes: () => {
-    return myFetch<GetAllNotesResponse>('notes');
+  getAllNotes: (query?: GetAllNotesRequest) => {
+    return myFetch<GetAllNotesResponse>('notes', { query });
   },
 
   getNote: (id: number | string) => {

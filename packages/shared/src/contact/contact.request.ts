@@ -30,6 +30,15 @@ export class UpdateContactRequest extends createZodDto(updateContactSchema) {}
 
 export const getAllContactsQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
+  tagIds: z
+    .union([z.string(), z.array(z.number())])
+    .optional()
+    .transform(val => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return val.split(',').map(Number);
+    })
+    .refine(arr => arr.every(num => !isNaN(num)), 'All tag IDs must be valid numbers'),
 });
 
 export class GetAllContactsQuery extends createZodDto(getAllContactsQuerySchema) {}

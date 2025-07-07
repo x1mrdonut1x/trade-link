@@ -14,7 +14,9 @@ import {
 import { Pagination } from '@tradelink/ui/components/pagination';
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteCompany, useGetAllCompanies } from 'api/company';
+import { TagFilter } from 'components/filters';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { TagBadge } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
 
@@ -24,9 +26,10 @@ export const Route = createFileRoute('/_app/companies/')({
 });
 
 function Companies() {
-  const { search, page, size, sortBy, sortOrder } = Route.useSearch();
+  const { search, page, size, sortBy, sortOrder, tagIds } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [searchQuery, setSearchQuery] = useState(search);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(tagIds || []);
 
   useBreadcrumbSetup([{ title: 'Companies', href: '/companies', isActive: true }]);
 
@@ -34,13 +37,29 @@ function Companies() {
     if (searchQuery === search) return;
 
     const timer = setTimeout(() => {
-      navigate({ search: { search: searchQuery, page, size, sortBy, sortOrder } });
+      navigate({
+        search: {
+          search: searchQuery,
+          page,
+          size,
+          sortBy,
+          sortOrder,
+          tagIds: selectedTagIds.length > 0 ? selectedTagIds.join(',') : undefined,
+        },
+      });
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, navigate, search, page, size, sortBy, sortOrder]);
+  }, [searchQuery, navigate, search, page, size, sortBy, sortOrder, selectedTagIds]);
 
-  const { data: companies, isLoading } = useGetAllCompanies({ search, page, size, sortBy, sortOrder });
+  const { data: companies, isLoading } = useGetAllCompanies({
+    search,
+    page,
+    size,
+    sortBy,
+    sortOrder,
+    tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+  });
   const deleteCompany = useDeleteCompany();
 
   const handleRowClick = (company: GetAllCompaniesResponse[0]) => {
@@ -58,7 +77,24 @@ function Companies() {
   };
 
   const handlePageChange = (newPage: number) => {
-    navigate({ search: { search: searchQuery, page: newPage, size, sortBy, sortOrder } });
+    navigate({
+      search: {
+        search: searchQuery,
+        page: newPage,
+        size,
+        sortBy,
+        sortOrder,
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds.join(',') : undefined,
+      },
+    });
+  };
+
+  const handleTagSelect = (tagId: number) => {
+    setSelectedTagIds(prev => [...prev, tagId]);
+  };
+
+  const handleTagDeselect = (tagId: number) => {
+    setSelectedTagIds(prev => prev.filter(id => id !== tagId));
   };
 
   const handleSort = (field: string) => {
@@ -70,6 +106,7 @@ function Companies() {
         size,
         sortBy: field as any,
         sortOrder: newSortOrder,
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds.join(',') : undefined,
       },
     });
   };
@@ -166,6 +203,18 @@ function Companies() {
         ),
     },
     {
+      title: 'Tags',
+      render: company => (
+        <div className="flex gap-1 flex-wrap">
+          {company.tags && company.tags.length > 0 ? (
+            company.tags.map(tag => <TagBadge key={tag.id} tag={tag} />)
+          ) : (
+            <span className="text-muted-foreground">-</span>
+          )}
+        </div>
+      ),
+    },
+    {
       title: 'Actions',
       align: 'right',
       render: company => (
@@ -217,6 +266,10 @@ function Companies() {
           },
         ]}
       />
+
+      <div className="mb-4">
+        <TagFilter selectedTagIds={selectedTagIds} onTagSelect={handleTagSelect} onTagDeselect={handleTagDeselect} />
+      </div>
 
       <Card>
         <CardContent>

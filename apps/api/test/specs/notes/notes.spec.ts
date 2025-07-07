@@ -6,8 +6,6 @@ import {
   deleteNote,
   getAllNotes,
   getNote,
-  getNotesByCompanyId,
-  getNotesByContactId,
   noteFixtures,
   updateNote,
 } from '../../helpers/notes/notes.helper';
@@ -317,7 +315,7 @@ describe('Notes Controller (e2e)', () => {
         companyId: null,
       });
 
-      const response = await getNotesByContactId(contact1.id);
+      const response = await getAllNotes({ contactId: contact1.id });
 
       expect(Array.isArray(response)).toBe(true);
       expect(response.length).toBe(2);
@@ -335,7 +333,7 @@ describe('Notes Controller (e2e)', () => {
         email: 'john.doe@example.com',
       });
 
-      const response = await getNotesByContactId(contactResponse.id);
+      const response = await getAllNotes({ contactId: contactResponse.id });
 
       expect(Array.isArray(response)).toBe(true);
       expect(response.length).toBe(0);
@@ -376,7 +374,7 @@ describe('Notes Controller (e2e)', () => {
         companyId: company2.id,
       });
 
-      const response = await getNotesByCompanyId(company1.id);
+      const response = await getAllNotes({ companyId: company1.id });
 
       expect(Array.isArray(response)).toBe(true);
       expect(response.length).toBe(2);
@@ -393,7 +391,7 @@ describe('Notes Controller (e2e)', () => {
         email: 'test@company.com',
       });
 
-      const response = await getNotesByCompanyId(companyResponse.id);
+      const response = await getAllNotes({ companyId: companyResponse.id });
 
       expect(Array.isArray(response)).toBe(true);
       expect(response.length).toBe(0);

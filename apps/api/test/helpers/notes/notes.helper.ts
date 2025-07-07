@@ -4,6 +4,7 @@ import {
   GetAllNotesResponse,
   GetNoteResponse,
   type DeleteNoteResponse,
+  type GetAllNotesRequest,
   type UpdateNoteRequest,
   type UpdateNoteResponse,
 } from '@tradelink/shared';
@@ -46,8 +47,8 @@ export const noteFixtures: NoteFixtures = {
   },
 };
 
-export const getAllNotes = async () => {
-  return authRequest().get<GetAllNotesResponse>('/notes');
+export const getAllNotes = async (query?: GetAllNotesRequest) => {
+  return authRequest().get<GetAllNotesResponse>('/notes', query);
 };
 
 export const getNote = async (id: number) => {
@@ -64,12 +65,4 @@ export const updateNote = async (id: number, data: UpdateNoteRequest) => {
 
 export const deleteNote = async (id: number) => {
   return authRequest().delete<DeleteNoteResponse>(`/notes/${id}`);
-};
-
-export const getNotesByContactId = async (contactId: number) => {
-  return authRequest().get<GetAllNotesResponse>(`/notes/contact/${contactId}`);
-};
-
-export const getNotesByCompanyId = async (companyId: number) => {
-  return authRequest().get<GetAllNotesResponse>(`/notes/company/${companyId}`);
 };

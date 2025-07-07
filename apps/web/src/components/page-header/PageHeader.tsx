@@ -61,7 +61,12 @@ export function PageHeader({
         {actions.length > 0 && (
           <div className="flex gap-2 flex-wrap justify-end">
             {actions.map((action, index) => (
-              <Button key={index} variant={action.variant || 'default'} onClick={action.onClick} asChild={Boolean(action.link)}>
+              <Button
+                key={index}
+                variant={action.variant || 'default'}
+                onClick={action.onClick}
+                asChild={Boolean(action.link)}
+              >
                 {action.link ? (
                   <Link {...action.link}>
                     {action.icon && <action.icon className="h-4 w-4 mr-2" />}
@@ -80,7 +85,7 @@ export function PageHeader({
       </div>
       {/* Search and Filters */}
       {(showSearch || filters.length > 0) && (
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 mb-3">
           {showSearch && (
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />

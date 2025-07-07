@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppSettingsRouteRouteImport } from './routes/_app/settings/route'
 import { Route as AppImportRouteRouteImport } from './routes/_app/import/route'
 import { Route as AppTasksIndexRouteImport } from './routes/_app/tasks/index'
 import { Route as AppEventsIndexRouteImport } from './routes/_app/events/index'
@@ -30,6 +31,11 @@ import { Route as AppCompaniesCompanyIdEditIndexRouteImport } from './routes/_ap
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/_app/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppSettingsRouteRoute = AppSettingsRouteRouteImport.update({
+  id: '/_app/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppImportRouteRoute = AppImportRouteRouteImport.update({
@@ -119,6 +125,7 @@ const AppCompaniesCompanyIdEditIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/import': typeof AppImportRouteRouteWithChildren
+  '/settings': typeof AppSettingsRouteRoute
   '/': typeof AppIndexRoute
   '/companies': typeof AppCompaniesIndexRoute
   '/contacts': typeof AppContactsIndexRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/import': typeof AppImportRouteRouteWithChildren
+  '/settings': typeof AppSettingsRouteRoute
   '/': typeof AppIndexRoute
   '/companies': typeof AppCompaniesIndexRoute
   '/contacts': typeof AppContactsIndexRoute
@@ -158,6 +166,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app/import': typeof AppImportRouteRouteWithChildren
+  '/_app/settings': typeof AppSettingsRouteRoute
   '/_app/': typeof AppIndexRoute
   '/_app/companies/': typeof AppCompaniesIndexRoute
   '/_app/contacts/': typeof AppContactsIndexRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/import'
+    | '/settings'
     | '/'
     | '/companies'
     | '/contacts'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/import'
+    | '/settings'
     | '/'
     | '/companies'
     | '/contacts'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app/import'
+    | '/_app/settings'
     | '/_app/'
     | '/_app/companies/'
     | '/_app/contacts/'
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppImportRouteRoute: typeof AppImportRouteRouteWithChildren
+  AppSettingsRouteRoute: typeof AppSettingsRouteRoute
   AppIndexRoute: typeof AppIndexRoute
   AppCompaniesIndexRoute: typeof AppCompaniesIndexRoute
   AppContactsIndexRoute: typeof AppContactsIndexRoute
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/import': {
@@ -395,6 +415,7 @@ const AppImportRouteRouteWithChildren = AppImportRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AppImportRouteRoute: AppImportRouteRouteWithChildren,
+  AppSettingsRouteRoute: AppSettingsRouteRoute,
   AppIndexRoute: AppIndexRoute,
   AppCompaniesIndexRoute: AppCompaniesIndexRoute,
   AppContactsIndexRoute: AppContactsIndexRoute,

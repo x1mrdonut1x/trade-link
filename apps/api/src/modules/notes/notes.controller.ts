@@ -1,7 +1,19 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
-import { CreateNoteRequest, UpdateNoteRequest } from '@tradelink/shared';
-import { NotesService } from './notes.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { CreateNoteRequest, GetAllNotesRequest, UpdateNoteRequest } from '@tradelink/shared';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { NotesService } from './notes.service';
 
 @Controller('notes')
 @UseGuards(JwtAuthGuard)
@@ -17,18 +29,8 @@ export class NotesController {
   }
 
   @Get()
-  findAll() {
-    return this.notesService.getAllNotes();
-  }
-
-  @Get('contact/:contactId')
-  findByContactId(@Param('contactId', ParseIntPipe) contactId: number) {
-    return this.notesService.getNotesByContactId(contactId);
-  }
-
-  @Get('company/:companyId')
-  findByCompanyId(@Param('companyId', ParseIntPipe) companyId: number) {
-    return this.notesService.getNotesByCompanyId(companyId);
+  findAll(@Query() query: GetAllNotesRequest) {
+    return this.notesService.getAllNotes(query);
   }
 
   @Get(':id')

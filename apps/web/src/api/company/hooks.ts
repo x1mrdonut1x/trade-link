@@ -2,8 +2,14 @@ import { useMutation, useQuery, useQueryClient, type MutationOptions } from '@ta
 
 import { companyApi } from './api';
 
-import type { CreateCompanyRequest, CreateCompanyResponse, UpdateCompanyRequest, UpdateCompanyResponse } from '@tradelink/shared';
+import type {
+  CreateCompanyRequest,
+  CreateCompanyResponse,
+  UpdateCompanyRequest,
+  UpdateCompanyResponse,
+} from '@tradelink/shared';
 import type { GetAllCompaniesQuery } from '@tradelink/shared/company';
+import type { ApiError } from '../client';
 
 const COMPANIES_QUERY_KEY = 'companies';
 
@@ -22,7 +28,7 @@ export function useGetCompany(id: number | string) {
   });
 }
 
-export function useCreateCompany(options?: MutationOptions<CreateCompanyResponse, Error, CreateCompanyRequest>) {
+export function useCreateCompany(options?: MutationOptions<CreateCompanyResponse, ApiError, CreateCompanyRequest>) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -35,7 +41,9 @@ export function useCreateCompany(options?: MutationOptions<CreateCompanyResponse
   });
 }
 
-export function useUpdateCompany(options?: MutationOptions<UpdateCompanyResponse, Error, { id: number; data: UpdateCompanyRequest }>) {
+export function useUpdateCompany(
+  options?: MutationOptions<UpdateCompanyResponse, ApiError, { id: number; data: UpdateCompanyRequest }>
+) {
   const queryClient = useQueryClient();
 
   return useMutation({

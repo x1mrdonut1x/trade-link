@@ -1,4 +1,5 @@
 import type { CompanyDto } from '../company';
+import type { TagDto } from '../tags';
 
 export interface ContactDto {
   id: number;
@@ -13,6 +14,7 @@ export interface ContactDto {
   country?: string | null;
   postCode?: string | null;
   companyId?: number | null;
+  tags?: TagDto[];
 }
 
 export type ContactWithCompanyDto = ContactDto & {

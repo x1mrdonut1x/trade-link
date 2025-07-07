@@ -5,6 +5,7 @@ import {
   type CreateTaskRequest,
   type DeleteTaskResponse,
   type GetAllTasksQueryRequest,
+  type UpdateTaskRequest,
   type UpdateTaskResponse,
 } from '@tradelink/shared';
 import { authRequest } from '../request.helper';
@@ -57,7 +58,7 @@ export const tasksHelper = {
     return authRequest().patch<UpdateTaskResponse>(`/tasks/${id}/unresolve`);
   },
 
-  async update(id: number, data: Partial<TaskData>) {
+  async update(id: number, data: UpdateTaskRequest) {
     return authRequest().patch<UpdateTaskResponse>(`/tasks/${id}`, data);
   },
 

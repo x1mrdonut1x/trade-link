@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@tradelink/ui/components/sidebar';
-import { Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard } from '@tradelink/ui/icons';
+import { Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
 import * as React from 'react';
 import { TeamSwitcher } from './TeamSwitcher';
 import { NavUser } from './User';
@@ -51,14 +51,19 @@ const data = {
       icon: Calendar,
     },
     {
+      name: 'Tasks',
+      url: '/tasks',
+      icon: CheckSquare,
+    },
+    {
       name: 'Import Data',
       url: '/import',
       icon: FileUp,
     },
     {
-      name: 'Tasks & Reminders',
-      url: '/tasks',
-      icon: CheckSquare,
+      name: 'Settings',
+      url: '/settings',
+      icon: Settings,
     },
   ],
 };

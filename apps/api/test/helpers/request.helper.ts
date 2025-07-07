@@ -19,7 +19,7 @@ interface RequestHelper {
   patch: <T>(url: string, data?: any) => Promise<T>;
 }
 
-export const authRequest = (): RequestHelper => {
+export const authRequest = (token: string): RequestHelper => {
   const app = getTestApp();
   const baseRequest = request(app.getHttpServer());
 
@@ -36,9 +36,7 @@ export const authRequest = (): RequestHelper => {
       req = req.query(search);
     }
 
-    if (globalAuthToken) {
-      req = req.set('Authorization', `Bearer ${globalAuthToken}`);
-    }
+    req = req.set('Authorization', `Bearer ${token || globalAuthToken}`);
 
     if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
       req = req.send(data);
@@ -48,12 +46,7 @@ export const authRequest = (): RequestHelper => {
 
     // Check if the response indicates an error
     if (response.status >= 400) {
-      const error = new Error(
-        `HTTP ${response.status}: ${response.body?.message || response.body?.error || 'Request failed'}`
-      );
-      (error as any).status = response.status;
-      (error as any).response = response.body;
-      throw error;
+      throw new Error(response.body);
     }
 
     return response.body;
@@ -61,46 +54,6 @@ export const authRequest = (): RequestHelper => {
 
   return {
     get: (url: string, query?: Record<string, unknown>) => makeRequest('GET', url, undefined, query),
-    post: (url: string, data?: any) => makeRequest('POST', url, data),
-    put: (url: string, data?: any) => makeRequest('PUT', url, data),
-    delete: (url: string) => makeRequest('DELETE', url),
-    patch: (url: string, data?: any) => makeRequest('PATCH', url, data),
-  };
-};
-
-// For requests that need specific tokens or no auth
-export const requestWithToken = (token: string): RequestHelper => {
-  const app = getTestApp();
-  const baseRequest = request(app.getHttpServer());
-
-  const makeRequest = async (method: string, url: string, data?: any): Promise<any> => {
-    let req = baseRequest[method.toLowerCase()](url);
-
-    if (token) {
-      req = req.set('Authorization', `Bearer ${token}`);
-    }
-
-    if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-      req = req.send(data);
-    }
-
-    const response = await req;
-
-    // Check if the response indicates an error
-    if (response.status >= 400) {
-      const error = new Error(
-        `HTTP ${response.status}: ${response.body?.message || response.body?.error || 'Request failed'}`
-      );
-      (error as any).status = response.status;
-      (error as any).response = response.body;
-      throw error;
-    }
-
-    return response.body;
-  };
-
-  return {
-    get: (url: string) => makeRequest('GET', url),
     post: (url: string, data?: any) => makeRequest('POST', url, data),
     put: (url: string, data?: any) => makeRequest('PUT', url, data),
     delete: (url: string) => makeRequest('DELETE', url),
