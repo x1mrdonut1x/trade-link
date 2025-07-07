@@ -4,7 +4,7 @@ import { Button } from '@tradelink/ui/components/button';
 import { Card } from '@tradelink/ui/components/card';
 import { Separator } from '@tradelink/ui/components/separator';
 import { Edit, MessageSquare, Plus, Trash2 } from '@tradelink/ui/icons';
-import { useDeleteNote, useGetNotesByCompanyId, useGetNotesByContactId } from 'api/notes';
+import { useDeleteNote, useGetAllNotes } from 'api/notes';
 import { useState } from 'react';
 
 import { NoteDialog } from './NoteDialog';
@@ -20,13 +20,7 @@ export function NotesCard({ contactId, companyId, title = 'Notes', showTag = fal
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<NoteWithRelationsDto>();
 
-  // Always call both hooks but disable the one we don't need
-  const contactNotesQuery = useGetNotesByContactId(contactId || 0);
-  const companyNotesQuery = useGetNotesByCompanyId(companyId || 0);
-
-  // Use the appropriate query based on what ID was provided
-  const notesQuery = contactId ? contactNotesQuery : companyNotesQuery;
-  const { data: notes = [], isLoading, error } = notesQuery;
+  const { data: notes = [], isLoading, error } = useGetAllNotes({ contactId, companyId });
 
   const deleteNoteMutation = useDeleteNote({
     onSuccess: () => {

@@ -6,16 +6,17 @@ import type {
   CreateNoteRequest,
   CreateNoteResponse,
   DeleteNoteResponse,
+  GetAllNotesRequest,
   UpdateNoteRequest,
   UpdateNoteResponse,
 } from '@tradelink/shared';
 
 const NOTES_QUERY_KEY = 'notes';
 
-export function useGetAllNotes() {
+export function useGetAllNotes(query?: GetAllNotesRequest) {
   return useQuery({
-    queryKey: [NOTES_QUERY_KEY],
-    queryFn: () => notesApi.getAllNotes(),
+    queryKey: [NOTES_QUERY_KEY, query],
+    queryFn: () => notesApi.getAllNotes(query),
   });
 }
 
@@ -24,22 +25,6 @@ export function useGetNote(id: number | string) {
     queryKey: [NOTES_QUERY_KEY, id],
     queryFn: () => notesApi.getNote(id),
     enabled: !!id,
-  });
-}
-
-export function useGetNotesByContactId(contactId: number | string) {
-  return useQuery({
-    queryKey: [NOTES_QUERY_KEY, 'contact', contactId],
-    queryFn: () => notesApi.getNotesByContactId(contactId),
-    enabled: !!contactId,
-  });
-}
-
-export function useGetNotesByCompanyId(companyId: number | string) {
-  return useQuery({
-    queryKey: [NOTES_QUERY_KEY, 'company', companyId],
-    queryFn: () => notesApi.getNotesByCompanyId(companyId),
-    enabled: !!companyId,
   });
 }
 
