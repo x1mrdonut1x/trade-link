@@ -8,7 +8,7 @@ import type {
   UpdateTagRequest,
   UpdateTagResponse,
 } from '@tradelink/shared';
-import type { NormalizedErrorResponse } from '@tradelink/shared/common';
+import type { ApiError } from '@tradelink/shared/common';
 import { tagApi } from './api';
 
 export function useGetAllTags(query?: GetAllTagsQuery) {
@@ -26,9 +26,7 @@ export function useGetTag(id: number | string) {
   });
 }
 
-export function useCreateTag(
-  options?: UseMutationOptions<CreateTagResponse, NormalizedErrorResponse, CreateTagRequest>
-) {
+export function useCreateTag(options?: UseMutationOptions<CreateTagResponse, ApiError, CreateTagRequest>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateTagRequest) => tagApi.createTag(data),
@@ -40,9 +38,7 @@ export function useCreateTag(
   });
 }
 
-export function useUpdateTag(
-  options?: UseMutationOptions<UpdateTagResponse, NormalizedErrorResponse, UpdateTagRequest>
-) {
+export function useUpdateTag(options?: UseMutationOptions<UpdateTagResponse, ApiError, UpdateTagRequest>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, ...data }: { id: number | string } & UpdateTagRequest) => tagApi.updateTag(id, data),

@@ -1,7 +1,6 @@
-export interface NormalizedErrorResponse {
+export interface ApiError {
   statusCode: number;
   message: string;
-  error: string;
-  timestamp: string;
-  path: string;
+  title: string;
+  errors?: { path: string; message: string }[]; // Validation errors
 }

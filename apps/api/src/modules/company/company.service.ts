@@ -101,6 +101,7 @@ export class CompanyService {
 
   async getAllCompanies(query: GetAllCompaniesQuery): Promise<GetAllCompaniesResponse> {
     const { search, page, size, sortBy, sortOrder, tagIds } = query;
+
     const whereClause: Prisma.companyWhereInput = {
       AND: [
         search
@@ -112,15 +113,15 @@ export class CompanyService {
               ],
             }
           : {},
-        tagIds && tagIds.length > 0
+        tagIds?.length
           ? {
-              tags: {
-                some: {
-                  id: {
-                    in: tagIds,
+              AND: tagIds.map(tagId => ({
+                tags: {
+                  some: {
+                    id: tagId,
                   },
                 },
-              },
+              })),
             }
           : {},
       ],

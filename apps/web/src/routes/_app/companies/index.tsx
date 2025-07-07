@@ -44,7 +44,7 @@ function Companies() {
           size,
           sortBy,
           sortOrder,
-          tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+          tagIds: selectedTagIds.length > 0 ? selectedTagIds.join(',') : undefined,
         },
       });
     }, 300);
@@ -84,7 +84,7 @@ function Companies() {
         size,
         sortBy,
         sortOrder,
-        tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds.join(',') : undefined,
       },
     });
   };
@@ -97,10 +97,6 @@ function Companies() {
     setSelectedTagIds(prev => prev.filter(id => id !== tagId));
   };
 
-  const handleClearAllTags = () => {
-    setSelectedTagIds([]);
-  };
-
   const handleSort = (field: string) => {
     const newSortOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc';
     navigate({
@@ -110,7 +106,7 @@ function Companies() {
         size,
         sortBy: field as any,
         sortOrder: newSortOrder,
-        tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds.join(',') : undefined,
       },
     });
   };
@@ -272,12 +268,7 @@ function Companies() {
       />
 
       <div className="mb-4">
-        <TagFilter
-          selectedTagIds={selectedTagIds}
-          onTagSelect={handleTagSelect}
-          onTagDeselect={handleTagDeselect}
-          onClearAll={handleClearAllTags}
-        />
+        <TagFilter selectedTagIds={selectedTagIds} onTagSelect={handleTagSelect} onTagDeselect={handleTagDeselect} />
       </div>
 
       <Card>

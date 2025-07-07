@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { GetAllCompaniesQuery } from '@tradelink/shared';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { CompanyService } from './company.service';
 
-import type {
+import {
   AssignTagsRequest,
   CompanyDto,
   CreateCompanyRequest,
   DeleteCompanyResponse,
+  GetAllCompaniesQuery,
   GetAllCompaniesResponse,
   GetCompanyResponse,
   UnassignTagsRequest,

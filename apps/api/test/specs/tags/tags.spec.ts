@@ -1,5 +1,5 @@
 import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
-import { companyFixtures, createCompany } from '../../helpers/company/company.helper';
+import { companyFixtures, createCompany, getAllCompanies } from '../../helpers/company/company.helper';
 import { contactFixtures, createContact } from '../../helpers/contact/contact.helper';
 import {
   assignTagsToCompany,
@@ -147,6 +147,47 @@ describe('Tags', () => {
 
     it('should return 404 for non-existent company', async () => {
       await expect(assignTagsToCompany(99_999, [createdTagId])).rejects.toThrow();
+    });
+  });
+
+  describe('Filter Companies by Tags', () => {
+    it('should filter companies by tags', async () => {
+      // Create additional companies and tags for filtering
+      const secondCompany = await createCompany({
+        ...companyFixtures.validCompany,
+        email: '123@test.com',
+        name: 'Second Company',
+      });
+      const thirdCompany = await createCompany({
+        ...companyFixtures.validCompany,
+        email: '456@test.com',
+        name: 'Third Company',
+      });
+      const secondTag = await createTag({ ...tagFixtures.validTag, name: 'Prospect' });
+
+      // Assign tags to companies
+      await assignTagsToCompany(createdCompanyId, [createdTagId]); // First company gets first tag
+      await assignTagsToCompany(secondCompany.id, [secondTag.id]); // Second company gets second tag
+      await assignTagsToCompany(thirdCompany.id, [createdTagId, secondTag.id]); // Third company gets both tags
+
+      // Test filtering by first tag
+      const firstTagFilter = await getAllCompanies({ page: 1, size: 50, tagIds: [createdTagId] });
+      expect(firstTagFilter).toHaveLength(2); // First and third companies
+      expect(firstTagFilter.map(c => c.id)).toEqual(expect.arrayContaining([createdCompanyId, thirdCompany.id]));
+
+      // Test filtering by second tag
+      const secondTagFilter = await getAllCompanies({ page: 1, size: 50, tagIds: [secondTag.id] });
+      expect(secondTagFilter).toHaveLength(2); // Second and third companies
+      expect(secondTagFilter.map(c => c.id)).toEqual(expect.arrayContaining([secondCompany.id, thirdCompany.id]));
+
+      // Test filtering by both tags (should return only third company)
+      const bothTagsFilter = await getAllCompanies({ page: 1, size: 50, tagIds: [createdTagId, secondTag.id] });
+      expect(bothTagsFilter).toHaveLength(1); // Only third company
+      expect(bothTagsFilter[0].id).toBe(thirdCompany.id);
+
+      // Test filtering by non-existent tag
+      const nonExistentTagFilter = await getAllCompanies({ page: 1, size: 50, tagIds: [99_999] });
+      expect(nonExistentTagFilter).toHaveLength(0);
     });
   });
 

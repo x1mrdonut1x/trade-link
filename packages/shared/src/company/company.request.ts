@@ -32,7 +32,15 @@ export const getAllCompaniesQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
   sortBy: z.enum(['name', 'email', 'phoneNumber', 'city', 'contacts', 'website']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
-  tagIds: z.array(z.number()).optional(),
+  tagIds: z
+    .union([z.string(), z.array(z.number())])
+    .optional()
+    .transform(val => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return val.split(',').map(Number);
+    })
+    .refine(arr => arr.every(num => !isNaN(num)), 'All tag IDs must be valid numbers'),
 });
 
 export class GetAllCompaniesQuery extends createZodDto(getAllCompaniesQuerySchema) {}

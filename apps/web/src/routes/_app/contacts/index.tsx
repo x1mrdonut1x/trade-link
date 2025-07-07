@@ -85,10 +85,6 @@ export function Contacts() {
     setSelectedTagIds(prev => prev.filter(id => id !== tagId));
   };
 
-  const handleClearAllTags = () => {
-    setSelectedTagIds([]);
-  };
-
   const columns: Column<ContactWithCompanyDto>[] = [
     {
       title: 'Name',
@@ -224,12 +220,7 @@ export function Contacts() {
       />
 
       <div className="mb-4">
-        <TagFilter
-          selectedTagIds={selectedTagIds}
-          onTagSelect={handleTagSelect}
-          onTagDeselect={handleTagDeselect}
-          onClearAll={handleClearAllTags}
-        />
+        <TagFilter selectedTagIds={selectedTagIds} onTagSelect={handleTagSelect} onTagDeselect={handleTagDeselect} />
       </div>
 
       <Card>

@@ -43,7 +43,11 @@ export async function myFetch<T = unknown>(
   const parsedUrl = new URL(`${baseUrl}/${url}`);
 
   parsedUrl.search = new URLSearchParams(
-    queryString.stringify(data?.query || {}, { skipEmptyString: true, skipNull: true })
+    queryString.stringify(data?.query || {}, {
+      skipEmptyString: true,
+      skipNull: true,
+      arrayFormat: 'comma',
+    })
   ).toString();
 
   const response = await fetch(parsedUrl, { ...data, headers, body: parsedBody });

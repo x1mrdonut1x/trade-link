@@ -11,17 +11,10 @@ interface TagFilterProps {
   selectedTagIds: number[];
   onTagSelect: (tagId: number) => void;
   onTagDeselect: (tagId: number) => void;
-  onClearAll: () => void;
   disabled?: boolean;
 }
 
-export function TagFilter({
-  selectedTagIds,
-  onTagSelect,
-  onTagDeselect,
-  onClearAll,
-  disabled = false,
-}: TagFilterProps) {
+export function TagFilter({ selectedTagIds, onTagSelect, onTagDeselect, disabled = false }: TagFilterProps) {
   const [open, setOpen] = useState(false);
   const { data: allTags = [] } = useGetAllTags();
 
