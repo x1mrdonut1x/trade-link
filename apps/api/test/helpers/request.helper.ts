@@ -1,4 +1,3 @@
-import queryString from 'query-string';
 import request from 'supertest';
 import { getTestApp } from '../setupFilesAfterEnv';
 
@@ -33,7 +32,7 @@ export const authRequest = (token: string): RequestHelper => {
     let req = baseRequest[method.toLowerCase()](url);
 
     if (query) {
-      const search = queryString.stringify(query, { arrayFormat: 'comma' });
+      const search = new URLSearchParams(query as any).toString();
       req = req.query(search);
     }
 
