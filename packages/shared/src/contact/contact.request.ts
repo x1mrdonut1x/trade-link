@@ -30,6 +30,7 @@ export class UpdateContactRequest extends createZodDto(updateContactSchema) {}
 
 export const getAllContactsQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
+  tagIds: z.array(z.number()).optional(),
 });
 
 export class GetAllContactsQuery extends createZodDto(getAllContactsQuerySchema) {}

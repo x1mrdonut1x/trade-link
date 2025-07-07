@@ -3,6 +3,7 @@ import { Button } from '@tradelink/ui/components/button';
 import { ArrowLeft, Edit, Loader2, User } from '@tradelink/ui/icons';
 import { useGetContact } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { EntityTagsCard } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
 import { NotesCard } from 'components/notes';
@@ -94,6 +95,7 @@ function ContactDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          <EntityTagsCard entityType="contact" entityId={Number(contactId)} tags={contact.tags || []} />
           <QuickActionsCard />
           {/* Future: Add back when we have metrics data */}
           {/* <PerformanceMetricsCard metrics={contact.metrics} /> */}

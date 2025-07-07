@@ -15,6 +15,7 @@ import { Pagination } from '@tradelink/ui/components/pagination';
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteContact, useGetAllContacts } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { TagBadge } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
 
@@ -125,6 +126,23 @@ export function Contacts() {
           <span className="text-muted-foreground">-</span>
         );
       },
+    },
+    {
+      title: 'Tags',
+      render: contact => (
+        <div className="flex flex-wrap gap-1">
+          {contact.tags && contact.tags.length > 0 ? (
+            contact.tags.slice(0, 2).map(tag => <TagBadge key={tag.id} tag={tag} />)
+          ) : (
+            <span className="text-muted-foreground text-sm">-</span>
+          )}
+          {contact.tags && contact.tags.length > 2 && (
+            <Badge variant="outline" className="text-xs">
+              +{contact.tags.length - 2}
+            </Badge>
+          )}
+        </div>
+      ),
     },
     {
       title: 'Actions',

@@ -16,8 +16,6 @@ const createCompanyRequestSchema = z.object({
   city: z.string().optional().nullable(),
   country: z.string().optional().nullable(),
   postCode: z.string().optional().nullable(),
-  //extra
-  tags: z.array(z.string()).optional().nullable(),
 });
 
 const updateCompanySchema = createCompanyRequestSchema.partial();
@@ -34,6 +32,7 @@ export const getAllCompaniesQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
   sortBy: z.enum(['name', 'email', 'phoneNumber', 'city', 'contacts', 'website']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
+  tagIds: z.array(z.number()).optional(),
 });
 
 export class GetAllCompaniesQuery extends createZodDto(getAllCompaniesQuerySchema) {}

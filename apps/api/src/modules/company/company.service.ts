@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 import type {
+  CompanyDto,
   CreateCompanyRequest,
   CreateCompanyResponse,
   DeleteCompanyResponse,
@@ -31,7 +32,7 @@ export class CompanyService {
             jobTitle: true,
           },
         },
-        company_type_tag: true,
+        tags: true,
       },
     });
 
@@ -51,7 +52,7 @@ export class CompanyService {
       where: { id },
       data,
       include: {
-        company_type_tag: true,
+        tags: true,
       },
     });
 
@@ -66,17 +67,64 @@ export class CompanyService {
     return { success: true, message: 'Company deleted successfully' };
   }
 
+  async assignTags(id: number, tagIds: number[]): Promise<CompanyDto> {
+    const company = await this.prisma.company.update({
+      where: { id },
+      data: {
+        tags: {
+          connect: tagIds.map(tagId => ({ id: tagId })),
+        },
+      },
+      include: {
+        tags: true,
+      },
+    });
+
+    return company;
+  }
+
+  async unassignTags(id: number, tagIds: number[]): Promise<CompanyDto> {
+    const company = await this.prisma.company.update({
+      where: { id },
+      data: {
+        tags: {
+          disconnect: tagIds.map(tagId => ({ id: tagId })),
+        },
+      },
+      include: {
+        tags: true,
+      },
+    });
+
+    return company;
+  }
+
   async getAllCompanies(query: GetAllCompaniesQuery): Promise<GetAllCompaniesResponse> {
-    const { search, page, size, sortBy, sortOrder } = query;
-    const whereClause: Prisma.companyWhereInput = search
-      ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { email: { contains: search, mode: 'insensitive' } },
-            { phoneNumber: { contains: search, mode: 'insensitive' } },
-          ],
-        }
-      : {};
+    const { search, page, size, sortBy, sortOrder, tagIds } = query;
+    const whereClause: Prisma.companyWhereInput = {
+      AND: [
+        search
+          ? {
+              OR: [
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { phoneNumber: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {},
+        tagIds && tagIds.length > 0
+          ? {
+              tags: {
+                some: {
+                  id: {
+                    in: tagIds,
+                  },
+                },
+              },
+            }
+          : {},
+      ],
+    };
 
     let orderBy: Prisma.companyOrderByWithRelationInput = {};
 
@@ -92,7 +140,10 @@ export class CompanyService {
 
     const companies = await this.prisma.company.findMany({
       where: whereClause,
-      include: { contact: { select: { id: true } } },
+      include: {
+        contact: { select: { id: true } },
+        tags: true,
+      },
       orderBy,
       take: size,
       skip: (page - 1) * size,

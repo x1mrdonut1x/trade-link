@@ -1,8 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
 import type {
+  ContactWithCompanyDto,
   CreateContactRequest,
   CreateContactResponse,
   DeleteContactResponse,
@@ -23,6 +24,7 @@ export class ContactService {
       where: { id },
       include: {
         company: true,
+        tags: true,
       },
     });
 
@@ -30,79 +32,68 @@ export class ContactService {
   }
 
   async createContact(data: CreateContactRequest): Promise<CreateContactResponse> {
-    try {
-      const contact = await this.prisma.contact.create({
-        data,
-        include: {
-          company: true,
-        },
-      });
+    const contact = await this.prisma.contact.create({
+      data,
+      include: {
+        company: true,
+        tags: true,
+      },
+    });
 
-      return contact;
-    } catch (error: any) {
-      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        throw new ConflictException('A contact with this email already exists');
-      }
-      // Handle Prisma validation errors
-      if (error.clientVersion) {
-        throw new BadRequestException('Invalid contact data provided');
-      }
-      throw error;
-    }
+    return contact;
   }
 
   async updateContact(id: number, data: UpdateContactRequest): Promise<UpdateContactResponse> {
-    try {
-      const contact = await this.prisma.contact.update({
-        where: { id },
-        data,
-        include: {
-          company: true,
-        },
-      });
+    const contact = await this.prisma.contact.update({
+      where: { id },
+      data,
+      include: {
+        company: true,
+        tags: true,
+      },
+    });
 
-      return contact;
-    } catch (error: any) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Contact with ID ${id} not found`);
-      }
-      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        throw new ConflictException('A contact with this email already exists');
-      }
-      throw error;
-    }
+    return contact;
   }
 
   async deleteContact(id: number): Promise<DeleteContactResponse> {
-    try {
-      await this.prisma.contact.delete({
-        where: { id },
-      });
+    await this.prisma.contact.delete({
+      where: { id },
+    });
 
-      return { success: true, message: 'Contact deleted successfully' };
-    } catch (error: any) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Contact with ID ${id} not found`);
-      }
-      throw error;
-    }
+    return { success: true, message: 'Contact deleted successfully' };
   }
 
   async getAllContacts(query: GetAllContactsQuery): Promise<GetAllContactsResponse> {
-    const { search, page, size } = query;
+    const { search, page, size, tagIds } = query;
 
-    const whereClause: Prisma.contactWhereInput = query?.search
-      ? {
-          OR: [
-            { firstName: { contains: search, mode: 'insensitive' } },
-            { lastName: { contains: search, mode: 'insensitive' } },
-            { phoneNumber: { contains: search, mode: 'insensitive' } },
-            { email: { contains: search, mode: 'insensitive' } },
-            { jobTitle: { contains: search, mode: 'insensitive' } },
-            { company: { name: { contains: search, mode: 'insensitive' } } },
-          ],
-        }
-      : {};
+    const whereClause: Prisma.contactWhereInput = {
+      AND: [
+        search
+          ? {
+              OR: [
+                { firstName: { contains: search, mode: 'insensitive' } },
+                { lastName: { contains: search, mode: 'insensitive' } },
+                { phoneNumber: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+                { jobTitle: { contains: search, mode: 'insensitive' } },
+                { company: { name: { contains: search, mode: 'insensitive' } } },
+              ],
+            }
+          : {},
+        tagIds && tagIds.length > 0
+          ? {
+              tags: {
+                some: {
+                  id: {
+                    in: tagIds,
+                  },
+                },
+              },
+            }
+          : {},
+      ],
+    };
 
     const contacts = await this.prisma.contact.findMany({
       where: whereClause,
@@ -116,6 +107,7 @@ export class ContactService {
             email: true,
           },
         },
+        tags: true,
       },
       take: size,
       skip: (page - 1) * size,
@@ -185,5 +177,39 @@ export class ContactService {
         })
       )
     );
+  }
+
+  async assignTags(id: number, tagIds: number[]): Promise<ContactWithCompanyDto> {
+    const contact = await this.prisma.contact.update({
+      where: { id },
+      data: {
+        tags: {
+          connect: tagIds.map(tagId => ({ id: tagId })),
+        },
+      },
+      include: {
+        company: true,
+        tags: true,
+      },
+    });
+
+    return contact;
+  }
+
+  async unassignTags(id: number, tagIds: number[]): Promise<ContactWithCompanyDto> {
+    const contact = await this.prisma.contact.update({
+      where: { id },
+      data: {
+        tags: {
+          disconnect: tagIds.map(tagId => ({ id: tagId })),
+        },
+      },
+      include: {
+        company: true,
+        tags: true,
+      },
+    });
+
+    return contact;
   }
 }

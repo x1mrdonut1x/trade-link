@@ -5,6 +5,7 @@ export * from './contact';
 export * from './dashboard';
 export * from './import';
 export * from './notes';
+export * from './tags';
 export * from './tasks';
 export * from './user';
 

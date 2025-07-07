@@ -15,6 +15,7 @@ import { Pagination } from '@tradelink/ui/components/pagination';
 import { Ellipsis, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteCompany, useGetAllCompanies } from 'api/company';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { TagBadge } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useEffect, useState } from 'react';
 
@@ -164,6 +165,18 @@ function Companies() {
         ) : (
           <span className="text-muted-foreground">-</span>
         ),
+    },
+    {
+      title: 'Tags',
+      render: company => (
+        <div className="flex gap-1 flex-wrap">
+          {company.tags && company.tags.length > 0 ? (
+            company.tags.map(tag => <TagBadge key={tag.id} tag={tag} />)
+          ) : (
+            <span className="text-muted-foreground">-</span>
+          )}
+        </div>
+      ),
     },
     {
       title: 'Actions',

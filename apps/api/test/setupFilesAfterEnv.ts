@@ -75,7 +75,7 @@ async function cleanDatabase() {
   await prisma.task.deleteMany();
   await prisma.membership.deleteMany();
   await prisma.contact.deleteMany();
-  await prisma.company_type_tag.deleteMany();
+  await prisma.tag.deleteMany();
   await prisma.company.deleteMany();
   await prisma.user.deleteMany();
   await prisma.tenant.deleteMany();
@@ -85,7 +85,7 @@ async function cleanDatabase() {
   await prisma.$executeRaw`ALTER SEQUENCE task_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE membership_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE contact_id_seq RESTART WITH 1;`;
-  await prisma.$executeRaw`ALTER SEQUENCE company_type_tag_id_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE tag_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE company_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE user_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE tenant_id_seq RESTART WITH 1;`;
