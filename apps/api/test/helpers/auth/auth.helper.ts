@@ -1,3 +1,4 @@
+import { LoginResponse, type AuthenticatedUser } from '@tradelink/shared';
 import { requestWithToken } from '../request.helper';
 
 export interface AuthFixtures {
@@ -31,15 +32,15 @@ export const authFixtures: AuthFixtures = {
 };
 
 export const registerUser = async (userData: typeof authFixtures.testUser) => {
-  return requestWithToken('').post('/auth/register', userData);
+  return requestWithToken('').post<LoginResponse>('/auth/register', userData);
 };
 
 export const loginUser = async (email: string, password: string) => {
-  return requestWithToken('').post('/auth/login', { email, password });
+  return requestWithToken('').post<LoginResponse>('/auth/login', { email, password });
 };
 
 export const getProfile = async (token: string) => {
-  return requestWithToken(token).get('/auth/profile');
+  return requestWithToken(token).get<AuthenticatedUser>('/auth/profile');
 };
 
 export const createAuthenticatedUser = async (userData = authFixtures.testUser) => {

@@ -72,7 +72,7 @@ async function runMigrations() {
 async function cleanDatabase() {
   // Delete all records in the correct order (respecting foreign keys)
   await prisma.note.deleteMany();
-  await prisma.todo.deleteMany();
+  await prisma.task.deleteMany();
   await prisma.membership.deleteMany();
   await prisma.contact.deleteMany();
   await prisma.company_type_tag.deleteMany();
@@ -82,7 +82,7 @@ async function cleanDatabase() {
 
   // Reset sequences
   await prisma.$executeRaw`ALTER SEQUENCE note_id_seq RESTART WITH 1;`;
-  await prisma.$executeRaw`ALTER SEQUENCE todo_id_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE task_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE membership_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE contact_id_seq RESTART WITH 1;`;
   await prisma.$executeRaw`ALTER SEQUENCE company_type_tag_id_seq RESTART WITH 1;`;

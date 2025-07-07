@@ -6,7 +6,7 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
 import { NotesCard } from 'components/notes';
-import { TodosCard } from 'components/todos';
+import { TasksCard } from 'components/tasks';
 import { ContactDetailsCard } from './-components/ContactDetailsCard';
 import { ContactInfoCard } from './-components/ContactInfoCard';
 import { QuickActionsCard } from './-components/QuickActionsCard';
@@ -85,7 +85,7 @@ function ContactDetail() {
           <ContactInfoCard contact={contact} />
           <ContactDetailsCard contact={contact} />
           <NotesCard contactId={Number(contactId)} title="Contact Notes" />
-          <TodosCard contactId={Number(contactId)} title="Contact TODOs" />
+          <TasksCard contactId={Number(contactId)} title="Contact Tasks" />
           {/* Future: Add back these components when we have the data structure for them */}
           {/* <AdditionalDetailsCard customFields={contact.customFields} />
           <RecentActivitiesCard activities={contact.recentActivities} />

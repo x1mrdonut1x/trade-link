@@ -1,10 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
+import type { TaskWithRelationsDto } from '@tradelink/shared';
 import { PlusCircle } from '@tradelink/ui/icons';
+import { useDeleteTask, useGetAllTasks, useResolveTask, useUnresolveTask } from 'api/tasks';
 import { PageHeader } from 'components/page-header/PageHeader';
+import { TaskDialog } from 'components/tasks';
 import { useState } from 'react';
 
-import { mockTasks } from './-components/mockData';
-import { TaskCard, type Task } from './-components/TaskCard';
+import { TaskCard } from './-components/TaskCard';
 import { TaskFilters } from './-components/TaskFilters';
 import { TaskStats } from './-components/TaskStats';
 
@@ -13,69 +15,95 @@ export const Route = createFileRoute('/_app/tasks/')({
 });
 
 function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskWithRelationsDto>();
 
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch =
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.relatedTo.name.toLowerCase().includes(searchTerm.toLowerCase());
+  const { data: tasks = [], isLoading } = useGetAllTasks({});
 
-    const matchesStatus = selectedStatus === 'all' || task.status === selectedStatus;
-    const matchesType = selectedType === 'all' || task.type === selectedType;
+  // Mutations
+  const resolveTaskMutation = useResolveTask();
+  const unresolveTaskMutation = useUnresolveTask();
+  const deleteTaskMutation = useDeleteTask();
 
-    return matchesSearch && matchesStatus && matchesType;
-  });
+  const handleToggleResolved = async (task: TaskWithRelationsDto) => {
+    if (task.resolved) {
+      unresolveTaskMutation.mutate(task.id);
+    } else {
+      resolveTaskMutation.mutate(task.id);
+    }
+  };
 
-  const toggleTaskCompletion = (taskId: number) => {
-    setTasks(
-      tasks.map(task =>
-        task.id === taskId ? { ...task, completed: !task.completed, status: task.completed ? 'pending' : 'completed' } : task
-      )
-    );
+  const handleEditTask = (task: TaskWithRelationsDto) => {
+    setEditingTask(task);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteTask = async (task: TaskWithRelationsDto) => {
+    if (confirm('Are you sure you want to delete this task?')) {
+      deleteTaskMutation.mutate(task.id);
+    }
+  };
+
+  const handleCreateTask = () => {
+    setEditingTask(undefined);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setEditingTask(undefined);
   };
 
   const taskStats = {
     total: tasks.length,
-    pending: tasks.filter(t => t.status === 'pending').length,
-    completed: tasks.filter(t => t.status === 'completed').length,
-    overdue: tasks.filter(t => t.status === 'overdue').length,
+    pending: tasks.filter(t => !t.resolved).length,
+    completed: tasks.filter(t => t.resolved).length,
+    overdue: tasks.filter(t => !t.resolved && new Date(t.reminderDate || '') < new Date()).length,
   };
 
   return (
     <>
-      <PageHeader
-        title="Tasks & Reminders"
-        actions={[
-          {
-            label: 'Add Task',
-            icon: PlusCircle,
-            variant: 'default',
-          },
-        ]}
-      />
+      <div className="space-y-4 pb-4">
+        <PageHeader
+          title="Tasks & Reminders"
+          actions={[
+            {
+              label: 'Add Task',
+              icon: PlusCircle,
+              variant: 'default',
+              onClick: handleCreateTask,
+            },
+          ]}
+        />
 
-      <TaskStats stats={taskStats} />
+        <TaskStats stats={taskStats} />
 
-      <TaskFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
-        selectedType={selectedType}
-        onTypeChange={setSelectedType}
-      />
-
+        <TaskFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+        />
+      </div>
       <div className="space-y-4">
-        {filteredTasks.map(task => (
-          <TaskCard key={task.id} task={task} onToggleCompletion={toggleTaskCompletion} />
-        ))}
+        {isLoading ? (
+          <div className="text-center py-12">Loading tasks...</div>
+        ) : (
+          tasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onToggleResolved={handleToggleResolved}
+              onEdit={handleEditTask}
+              onDelete={handleDeleteTask}
+            />
+          ))
+        )}
       </div>
 
-      {filteredTasks.length === 0 && (
+      {!isLoading && tasks.length === 0 && (
         <div className="text-center py-12">
           <h3 className="text-lg font-medium mb-2">No tasks found</h3>
           <p className="text-muted-foreground mb-4">
@@ -83,6 +111,8 @@ function TasksPage() {
           </p>
         </div>
       )}
+
+      <TaskDialog open={isDialogOpen} onClose={handleCloseDialog} task={editingTask} />
     </>
   );
 }

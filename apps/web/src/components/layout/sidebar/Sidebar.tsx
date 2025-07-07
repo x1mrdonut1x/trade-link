@@ -60,11 +60,6 @@ const data = {
       url: '/tasks',
       icon: CheckSquare,
     },
-    {
-      name: 'TODOs',
-      url: '/todos',
-      icon: CheckSquare,
-    },
   ],
 };
 

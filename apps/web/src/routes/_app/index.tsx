@@ -4,10 +4,10 @@ import { Building2, Calendar, CheckSquare, PlusCircle, Users } from '@tradelink/
 import { PageHeader } from 'components/page-header/PageHeader';
 import { dashboardApi } from '../../api/dashboard';
 
-import { TodosCard } from 'components/todos';
+import { TasksCard } from 'components/tasks';
 import { StatCard } from './-components/StatCard';
 import { UpcomingEvents } from './-components/UpcomingEvents';
-import { UpcomingTodos } from './-components/UpcomingTodos';
+import { UpcomingTasks } from './-components/UpcomingTasks';
 
 function Dashboard() {
   // Fetch real dashboard data
@@ -83,13 +83,13 @@ function Dashboard() {
           icon={Users}
         />
         <StatCard title="Upcoming Events" value={upcomingEvents.length} subtitle="Next: July 15th" icon={Calendar} />
-        <StatCard title="Pending TODOs" value={0} subtitle="Loading..." icon={CheckSquare} />
+        <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
-        <UpcomingTodos />
+        <UpcomingTasks />
         <UpcomingEvents events={upcomingEvents} />
-        <TodosCard title="Quick TODOs" />
+        <TasksCard title="Quick Tasks" />
       </div>
     </>
   );

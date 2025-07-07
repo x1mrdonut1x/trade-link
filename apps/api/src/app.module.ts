@@ -9,7 +9,7 @@ import { ContactModule } from './modules/contact/contact.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ImportModule } from './modules/import/import.module';
 import { NotesModule } from './modules/notes/notes.module';
-import { TodosModule } from './modules/todos/todos.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -22,7 +22,7 @@ import { UserModule } from './modules/user/user.module';
     DashboardModule,
     ImportModule,
     NotesModule,
-    TodosModule,
+    TasksModule,
   ],
   providers: [
     {

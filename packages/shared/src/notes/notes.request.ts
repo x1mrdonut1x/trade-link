@@ -1,14 +1,14 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-const createNoteSchema = z.object({
+export const createNoteSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().max(5000).optional().nullable(),
   contactId: z.number().int().positive().optional().nullable(),
   companyId: z.number().int().positive().optional().nullable(),
 });
 
-const updateNoteSchema = z.object({
+export const updateNoteSchema = z.object({
   title: z.string().min(1).max(255).optional(),
   description: z.string().max(5000).optional().nullable(),
 });

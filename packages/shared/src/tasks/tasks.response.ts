@@ -2,33 +2,33 @@ import type { CompanyDto } from '../company';
 import type { ContactDto } from '../contact';
 import type { UserMinimalDto } from '../notes';
 
-export interface TodoDto {
+export interface TaskDto {
   id: number;
   title: string;
   description?: string | null;
-  reminderDate: Date;
+  reminderDate?: string | null;
   resolved: boolean;
   contactId?: number | null;
   companyId?: number | null;
   createdBy: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type TodoWithRelationsDto = TodoDto & {
+export type TaskWithRelationsDto = TaskDto & {
   contact?: ContactDto | null;
   company?: CompanyDto | null;
   user?: UserMinimalDto | null;
 };
 
-export type GetTodoResponse = TodoWithRelationsDto;
+export type GetTaskResponse = TaskWithRelationsDto;
 
-export type GetAllTodosResponse = TodoWithRelationsDto[];
+export type GetAllTasksResponse = TaskWithRelationsDto[];
 
-export type CreateTodoResponse = TodoWithRelationsDto;
+export type CreateTaskResponse = TaskWithRelationsDto;
 
-export type UpdateTodoResponse = TodoWithRelationsDto;
+export type UpdateTaskResponse = TaskWithRelationsDto;
 
-export type DeleteTodoResponse = {
+export type DeleteTaskResponse = {
   id: number;
 };

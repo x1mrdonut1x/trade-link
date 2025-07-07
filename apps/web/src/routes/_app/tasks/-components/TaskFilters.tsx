@@ -1,5 +1,10 @@
 import { Button } from '@tradelink/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
 import { Input } from '@tradelink/ui/components/input';
 import { Filter, Search } from '@tradelink/ui/icons';
 
@@ -8,18 +13,9 @@ interface TaskFiltersProps {
   onSearchChange: (value: string) => void;
   selectedStatus: string;
   onStatusChange: (value: string) => void;
-  selectedType: string;
-  onTypeChange: (value: string) => void;
 }
 
-export const TaskFilters = ({
-  searchTerm,
-  onSearchChange,
-  selectedStatus,
-  onStatusChange,
-  selectedType,
-  onTypeChange,
-}: TaskFiltersProps) => {
+export const TaskFilters = ({ searchTerm, onSearchChange, selectedStatus, onStatusChange }: TaskFiltersProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       <div className="relative flex-1">
@@ -45,20 +41,6 @@ export const TaskFilters = ({
             <DropdownMenuItem onSelect={() => onStatusChange('pending')}>Pending</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => onStatusChange('completed')}>Completed</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => onStatusChange('overdue')}>Overdue</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Type: {selectedType === 'all' ? 'All' : selectedType}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => onTypeChange('all')}>All Types</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onTypeChange('todo')}>To-Do</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onTypeChange('reminder')}>Reminder</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -18,7 +18,7 @@ interface NotesCardProps {
 
 export function NotesCard({ contactId, companyId, title = 'Notes', showTag = false }: NotesCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingNote, setEditingNote] = useState<NoteWithRelationsDto | null>(null);
+  const [editingNote, setEditingNote] = useState<NoteWithRelationsDto>();
 
   // Always call both hooks but disable the one we don't need
   const contactNotesQuery = useGetNotesByContactId(contactId || 0);
@@ -46,16 +46,16 @@ export function NotesCard({ contactId, companyId, title = 'Notes', showTag = fal
   };
 
   const handleCreateNote = () => {
-    setEditingNote(null);
+    setEditingNote(undefined);
     setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    setEditingNote(null);
+    setEditingNote(undefined);
   };
 
-  const formatTimeAgo = (date: string | Date) => {
+  const formatTimeAgo = (date: string) => {
     const now = new Date();
     const noteDate = new Date(date);
     const diffInMinutes = Math.floor((now.getTime() - noteDate.getTime()) / (1000 * 60));
@@ -121,7 +121,7 @@ export function NotesCard({ contactId, companyId, title = 'Notes', showTag = fal
             <MessageSquare className="h-5 w-5 mr-2" />
             {title}
           </h3>
-          <Button size="sm" onClick={handleCreateNote}>
+          <Button size="sm" variant="outline" onClick={handleCreateNote}>
             <Plus className="h-4 w-4 mr-2" />
             Add Note
           </Button>
@@ -132,10 +132,6 @@ export function NotesCard({ contactId, companyId, title = 'Notes', showTag = fal
             <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h4 className="text-lg font-medium mb-2">No notes yet</h4>
             <p className="text-muted-foreground mb-4">Start by adding your first note.</p>
-            <Button onClick={handleCreateNote}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Note
-            </Button>
           </div>
         ) : (
           <div className="space-y-4">

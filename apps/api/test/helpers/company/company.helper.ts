@@ -1,4 +1,13 @@
-import type { CreateCompanyRequest, UpdateCompanyRequest } from '@tradelink/shared';
+import {
+  GetAllCompaniesResponse,
+  type CreateCompanyRequest,
+  type CreateCompanyResponse,
+  type DeleteCompanyResponse,
+  type GetAllCompaniesQuery,
+  type GetCompanyResponse,
+  type UpdateCompanyRequest,
+  type UpdateCompanyResponse,
+} from '@tradelink/shared';
 import { authRequest } from '../request.helper';
 
 export interface CompanyFixtures {
@@ -41,23 +50,22 @@ export const companyFixtures: CompanyFixtures = {
   },
 };
 
-export const getAllCompanies = async (query?: Record<string, string>) => {
-  const url = query ? `/companies?${new URLSearchParams(query).toString()}` : '/companies';
-  return authRequest().get(url);
+export const getAllCompanies = async (query?: GetAllCompaniesQuery) => {
+  return authRequest().get<GetAllCompaniesResponse>('/companies', query);
 };
 
 export const getCompany = async (id: number) => {
-  return authRequest().get(`/companies/${id}`);
+  return authRequest().get<GetCompanyResponse>(`/companies/${id}`);
 };
 
 export const createCompany = async (companyData: CreateCompanyRequest) => {
-  return authRequest().post('/companies', companyData);
+  return authRequest().post<CreateCompanyResponse>('/companies', companyData);
 };
 
 export const updateCompany = async (id: number, companyData: UpdateCompanyRequest) => {
-  return authRequest().put(`/companies/${id}`, companyData);
+  return authRequest().put<UpdateCompanyResponse>(`/companies/${id}`, companyData);
 };
 
 export const deleteCompany = async (id: number) => {
-  return authRequest().delete(`/companies/${id}`);
+  return authRequest().delete<DeleteCompanyResponse>(`/companies/${id}`);
 };

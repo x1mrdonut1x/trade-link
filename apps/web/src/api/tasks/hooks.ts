@@ -1,54 +1,38 @@
 import { useMutation, useQuery, useQueryClient, type MutationOptions } from '@tanstack/react-query';
 
-import { todosApi } from './api';
+import { tasksApi } from './api';
 
 import type {
-  CreateTodoRequest,
-  CreateTodoResponse,
-  DeleteTodoResponse,
-  GetAllTodosQueryDto,
-  UpdateTodoRequest,
-  UpdateTodoResponse,
+  CreateTaskRequest,
+  CreateTaskResponse,
+  DeleteTaskResponse,
+  GetAllTasksQueryDto,
+  UpdateTaskRequest,
+  UpdateTaskResponse,
 } from '@tradelink/shared';
 
-const TODOS_QUERY_KEY = 'todos';
+const TODOS_QUERY_KEY = 'tasks';
 
-export function useGetAllTodos(query?: GetAllTodosQueryDto) {
+export function useGetAllTasks(query?: GetAllTasksQueryDto) {
   return useQuery({
     queryKey: [TODOS_QUERY_KEY, query],
-    queryFn: () => todosApi.getAllTodos(query),
+    queryFn: () => tasksApi.getAllTasks(query),
   });
 }
 
-export function useGetTodo(id: number | string) {
+export function useGetTask(id: number | string) {
   return useQuery({
     queryKey: [TODOS_QUERY_KEY, id],
-    queryFn: () => todosApi.getTodo(id),
+    queryFn: () => tasksApi.getTask(id),
     enabled: !!id,
   });
 }
 
-export function useGetTodosByContactId(contactId: number | string) {
-  return useQuery({
-    queryKey: [TODOS_QUERY_KEY, 'contact', contactId],
-    queryFn: () => todosApi.getTodosByContactId(contactId),
-    enabled: !!contactId,
-  });
-}
-
-export function useGetTodosByCompanyId(companyId: number | string) {
-  return useQuery({
-    queryKey: [TODOS_QUERY_KEY, 'company', companyId],
-    queryFn: () => todosApi.getTodosByCompanyId(companyId),
-    enabled: !!companyId,
-  });
-}
-
-export function useCreateTodo(options?: MutationOptions<CreateTodoResponse, Error, CreateTodoRequest>) {
+export function useCreateTask(options?: MutationOptions<CreateTaskResponse, Error, CreateTaskRequest>) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.createTodo,
+    mutationFn: tasksApi.createTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -63,13 +47,13 @@ export function useCreateTodo(options?: MutationOptions<CreateTodoResponse, Erro
   });
 }
 
-export function useUpdateTodo(
-  options?: MutationOptions<UpdateTodoResponse, Error, { id: number; data: UpdateTodoRequest }>
+export function useUpdateTask(
+  options?: MutationOptions<UpdateTaskResponse, Error, { id: number; data: UpdateTaskRequest }>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateTodoRequest }) => todosApi.updateTodo(id, data),
+    mutationFn: ({ id, data }: { id: number; data: UpdateTaskRequest }) => tasksApi.updateTask(id, data),
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -85,11 +69,11 @@ export function useUpdateTodo(
   });
 }
 
-export function useResolveTodo(options?: MutationOptions<UpdateTodoResponse, Error, number>) {
+export function useResolveTask(options?: MutationOptions<UpdateTaskResponse, Error, number>) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.resolveTodo,
+    mutationFn: tasksApi.resolveTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -99,11 +83,11 @@ export function useResolveTodo(options?: MutationOptions<UpdateTodoResponse, Err
   });
 }
 
-export function useUnresolveTodo(options?: MutationOptions<UpdateTodoResponse, Error, number>) {
+export function useUnresolveTask(options?: MutationOptions<UpdateTaskResponse, Error, number>) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.unresolveTodo,
+    mutationFn: tasksApi.unresolveTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -113,11 +97,11 @@ export function useUnresolveTodo(options?: MutationOptions<UpdateTodoResponse, E
   });
 }
 
-export function useDeleteTodo(options?: MutationOptions<DeleteTodoResponse, Error, number>) {
+export function useDeleteTask(options?: MutationOptions<DeleteTaskResponse, Error, number>) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.deleteTodo,
+    mutationFn: tasksApi.deleteTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);

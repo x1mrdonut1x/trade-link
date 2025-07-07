@@ -25,7 +25,7 @@ model contact {
   company     company? @relation(fields: [companyId], references: [id])
   companyId   Int?
   notes       note[]
-  todos       todo[]
+  tasks       task[]
 }
 
 model company {
@@ -47,7 +47,7 @@ model company {
   company_type_tag company_type_tag[]
   contact          contact[]
   notes            note[]
-  todos            todo[]
+  tasks            task[]
 }
 
 model company_type_tag {
@@ -71,20 +71,20 @@ model note {
   user        user     @relation(fields: [createdBy], references: [id])
 }
 
-model todo {
-  id           Int      @id @unique @default(autoincrement())
+model task {
+  id           Int       @id @unique @default(autoincrement())
   title        String
   description  String?
-  reminderDate DateTime
-  resolved     Boolean  @default(false)
+  reminderDate DateTime? @db.Date
+  resolved     Boolean   @default(false)
   contactId    Int?
   companyId    Int?
   createdBy    Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  contact      contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  company      company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  user         user     @relation(fields: [createdBy], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  contact      contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  company      company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user         user      @relation(fields: [createdBy], references: [id])
 }
 
 model user {
@@ -96,7 +96,7 @@ model user {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   note       note[]
-  todos      todo[]
+  tasks      task[]
   membership membership[]
 }
 
