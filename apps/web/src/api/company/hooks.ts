@@ -9,8 +9,8 @@ import type {
   UpdateCompanyResponse,
 } from '@tradelink/shared';
 import type { GetAllCompaniesQuery } from '@tradelink/shared/company';
+import type { ApiError } from 'api/client.util';
 import { useTenantParam } from 'hooks/use-tenant-param';
-import type { ApiError } from '../client';
 
 const COMPANIES_QUERY_KEY = 'companies';
 

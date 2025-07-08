@@ -7,6 +7,7 @@ export * from './import';
 export * from './notes';
 export * from './tags';
 export * from './tasks';
+export * from './tenant';
 export * from './user';
 
 type Ignore = 'createdAt' | 'updatedAt' | 'reminderDate';

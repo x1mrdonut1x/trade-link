@@ -10,11 +10,10 @@ import {
 } from '@tradelink/ui/components/sidebar';
 import { Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
 import * as React from 'react';
-import { TeamSwitcher } from './TeamSwitcher';
+import { TenantSwitcher } from './TenantSwitcher';
 import { NavUser } from './User';
 
 import { useTenantParam } from 'hooks/use-tenant-param';
-import logo from '../../../assets/logo.svg?react';
 
 // This is sample data.
 const data = {
@@ -23,13 +22,6 @@ const data = {
     email: 'alex@niznik.info',
     avatar: '/avatars/shadcn.jpg',
   },
-  teams: [
-    {
-      name: 'Trade Link CRM',
-      logo: logo,
-      plan: '',
-    },
-  ],
   projects: [
     {
       name: 'Dashboard',
@@ -76,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TenantSwitcher />
         <SidebarMenu>
           {data.projects.map(item => (
             <SidebarMenuItem key={item.name}>

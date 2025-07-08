@@ -13,10 +13,12 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tradelink/ui/components/sidebar';
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from '@tradelink/ui/icons';
 
+import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../../../context/auth-context';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
   const auth = useAuth();
 
   return (
@@ -84,7 +86,12 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => auth.logout()}>
+            <DropdownMenuItem
+              onClick={async () => {
+                await auth.logout();
+                navigate({ to: '/' });
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>

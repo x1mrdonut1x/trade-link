@@ -472,8 +472,8 @@ export class ImportService {
     const { companiesToCreate, companiesToUpdate } = importUtils.separateCompaniesForBatch(companies);
 
     try {
-      await this.batchCreateCompanies(companiesToCreate, stats, createdCompanies, tx);
-      await this.batchUpdateCompanies(companiesToUpdate, stats, createdCompanies, tx);
+      await this.batchCreateCompanies(companiesToCreate, stats, createdCompanies, 1, tx); // TODO: Pass actual tenantId
+      await this.batchUpdateCompanies(companiesToUpdate, stats, createdCompanies, 1, tx); // TODO: Pass actual tenantId
     } catch (error) {
       stats.errors++;
       errors?.push({
@@ -488,12 +488,13 @@ export class ImportService {
     companiesToCreate: ImportEntry<CompanyImportData>[],
     stats: ImportExecuteResponse['stats'],
     createdCompanies: Map<string, { id: number; name: string }>,
+    tenantId: number, // TODO: Pass from main import execution
     tx: Prisma.TransactionClient
   ) {
     if (companiesToCreate.length === 0) return;
 
     const createData = companiesToCreate.map(entry => entry.data);
-    const createdCompanyList = await this.companyService.createManyCompanies(createData, tx);
+    const createdCompanyList = await this.companyService.createManyCompanies(createData, tenantId, tx);
 
     // Map created companies by name for later lookup
     for (const [index, createdCompany] of createdCompanyList.entries()) {
@@ -512,6 +513,7 @@ export class ImportService {
     companiesToUpdate: ImportEntry<CompanyImportData>[],
     stats: ImportExecuteResponse['stats'],
     createdCompanies: Map<string, { id: number; name: string }>,
+    tenantId: number, // TODO: Pass from main import execution
     tx: Prisma.TransactionClient
   ) {
     if (companiesToUpdate.length === 0) return;
@@ -524,7 +526,7 @@ export class ImportService {
         data: c.data,
       }));
 
-    await this.companyService.bulkUpdateCompanies(updates, tx);
+    await this.companyService.bulkUpdateCompanies(updates, tenantId, tx);
 
     // Update the lookup map with updated companies
     for (const entry of companiesToUpdate) {
@@ -603,7 +605,7 @@ export class ImportService {
       };
     });
 
-    await this.contactService.createManyContacts(createData, tx);
+    await this.contactService.createManyContacts(createData, 1, tx); // TODO: Pass actual tenantId
 
     stats.contacts += contactsToCreate.length;
   }

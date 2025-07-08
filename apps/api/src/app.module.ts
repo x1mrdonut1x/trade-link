@@ -13,6 +13,7 @@ import { ImportModule } from './modules/import/import.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { TenantModule } from './modules/tenant/tenant.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { UserModule } from './modules/user/user.module';
     NotesModule,
     TagsModule,
     TasksModule,
+    TenantModule,
   ],
   providers: [
     {

@@ -16,7 +16,9 @@ import { PrismaService } from '../prisma/prisma.service';
 export class NotesService {
   constructor(private prisma: PrismaService) {}
 
-  async createNote(data: CreateNoteRequest & { createdBy: number }): Promise<PrismaRawResponse<CreateNoteResponse>> {
+  async createNote(
+    data: CreateNoteRequest & { createdBy: number; tenantId: number }
+  ): Promise<PrismaRawResponse<CreateNoteResponse>> {
     const note = await this.prisma.note.create({
       data,
       include: {

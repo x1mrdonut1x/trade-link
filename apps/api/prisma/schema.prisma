@@ -15,24 +15,28 @@ model contact {
   jobTitle    String?
   phonePrefix String?
   phoneNumber String?
-  email       String   @unique
+  email       String
   address     String?
   city        String?
   country     String?
   postCode    String?
+  tenantId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   company     company? @relation(fields: [companyId], references: [id])
   companyId   Int?
+  tenant      tenant   @relation(fields: [tenantId], references: [id])
   notes       note[]
   tasks       task[]
-  tags        tag[]    @relation("ContactTags")
+  tags        tag[]    @relation("contactTags")
+
+  @@unique([email, tenantId])
 }
 
 model company {
   id          Int       @id @unique @default(autoincrement())
-  name        String    @unique
-  email       String?   @unique
+  name        String
+  email       String?
   description String?
   phonePrefix String?
   phoneNumber String?
@@ -43,24 +47,33 @@ model company {
   size        String?
   website     String?
   extraInfo   Json?
+  tenantId    Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  tags        tag[]     @relation("CompanyTags")
+  tenant      tenant    @relation(fields: [tenantId], references: [id])
+  tags        tag[]     @relation("companyTags")
   contact     contact[]
   notes       note[]
   tasks       task[]
+
+  @@unique([name, tenantId])
+  @@unique([email, tenantId])
 }
 
 model tag {
   id        Int       @id @unique @default(autoincrement())
-  name      String    @unique
+  name      String
   color     String
+  tenantId  Int
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      user      @relation(fields: [createdBy], references: [id])
   createdBy Int
-  contacts  contact[] @relation("ContactTags")
-  companies company[] @relation("CompanyTags")
+  tenant    tenant    @relation(fields: [tenantId], references: [id])
+  contacts  contact[] @relation("contactTags")
+  companies company[] @relation("companyTags")
+
+  @@unique([name, tenantId])
 }
 
 model note {
@@ -70,11 +83,13 @@ model note {
   contactId   Int?
   companyId   Int?
   createdBy   Int
+  tenantId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   contact     contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
   company     company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user        user     @relation(fields: [createdBy], references: [id])
+  tenant      tenant   @relation(fields: [tenantId], references: [id])
 }
 
 model task {
@@ -86,25 +101,28 @@ model task {
   contactId    Int?
   companyId    Int?
   createdBy    Int
+  tenantId     Int
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   contact      contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   company      company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user         user      @relation(fields: [createdBy], references: [id])
+  tenant       tenant    @relation(fields: [tenantId], references: [id])
 }
 
 model user {
-  id         Int          @id @unique @default(autoincrement())
-  email      String       @unique
-  firstName  String
-  lastName   String
-  password   String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  note       note[]
-  tasks      task[]
-  membership membership[]
-  tag        tag[]
+  id           Int          @id @unique @default(autoincrement())
+  email        String       @unique
+  firstName    String
+  lastName     String
+  password     String
+  refreshToken String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  note         note[]
+  tasks        task[]
+  membership   membership[]
+  tag          tag[]
 }
 
 model tenant {
@@ -113,6 +131,11 @@ model tenant {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   membership membership[]
+  contacts   contact[]
+  companies  company[]
+  tags       tag[]
+  notes      note[]
+  tasks      task[]
 }
 
 model membership {

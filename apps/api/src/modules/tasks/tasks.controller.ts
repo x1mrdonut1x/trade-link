@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   ParseIntPipe,
   Patch,
@@ -13,18 +14,20 @@ import {
 } from '@nestjs/common';
 import { CreateTaskRequest, GetAllTasksQueryRequest, UpdateTaskRequest } from '@tradelink/shared';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { TenantAuthGuard } from '../../guards/tenant-auth.guard';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantAuthGuard)
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() data: CreateTaskRequest, @Request() req) {
+  create(@Headers('tenant-id') tenantId: string, @Body() data: CreateTaskRequest, @Request() req) {
     return this.tasksService.createTask({
       ...data,
       createdBy: req.user.id,
+      tenantId: Number.parseInt(tenantId),
     });
   }
 

@@ -31,9 +31,12 @@ export class ContactService {
     return contact;
   }
 
-  async createContact(data: CreateContactRequest): Promise<CreateContactResponse> {
+  async createContact(data: CreateContactRequest, tenantId: number): Promise<CreateContactResponse> {
     const contact = await this.prisma.contact.create({
-      data,
+      data: {
+        ...data,
+        tenantId,
+      },
       include: {
         company: true,
         tags: true,
@@ -119,12 +122,28 @@ export class ContactService {
     return contacts;
   }
 
-  async findContactByEmail(email: string): Promise<GetContactResponse | null> {
+  async findContactByEmail(email: string, tenantId?: number): Promise<GetContactResponse | null> {
     if (!email) {
       return null;
     }
+
+    if (!tenantId) {
+      // For backwards compatibility, but this should generally not be used
+      return this.prisma.contact.findFirst({
+        where: { email },
+        include: {
+          company: true,
+        },
+      });
+    }
+
     return this.prisma.contact.findUnique({
-      where: { email },
+      where: {
+        email_tenantId: {
+          email,
+          tenantId,
+        },
+      },
       include: {
         company: true,
       },
@@ -156,10 +175,15 @@ export class ContactService {
     return contactMap;
   }
 
-  async createManyContacts(contacts: CreateContactRequest[], tx?: Prisma.TransactionClient) {
+  async createManyContacts(contacts: CreateContactRequest[], tenantId: number, tx?: Prisma.TransactionClient) {
     const prismaClient = tx || this.prisma;
+    const contactsWithTenant = contacts.map(contact => ({
+      ...contact,
+      tenantId,
+    }));
+
     return prismaClient.contact.createManyAndReturn({
-      data: contacts,
+      data: contactsWithTenant,
       select: {
         id: true,
         email: true,

@@ -15,7 +15,9 @@ import { PrismaService } from '../prisma/prisma.service';
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  async createTask(data: CreateTaskRequest & { createdBy: number }): Promise<PrismaRawResponse<CreateTaskResponse>> {
+  async createTask(
+    data: CreateTaskRequest & { createdBy: number; tenantId: number }
+  ): Promise<PrismaRawResponse<CreateTaskResponse>> {
     const task = await this.prisma.task.create({
       data: {
         ...data,

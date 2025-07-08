@@ -11,6 +11,7 @@ CREATE TABLE "contact" (
     "city" TEXT,
     "country" TEXT,
     "postCode" TEXT,
+    "tenantId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "companyId" INTEGER,
@@ -33,6 +34,7 @@ CREATE TABLE "company" (
     "size" TEXT,
     "website" TEXT,
     "extraInfo" JSONB,
+    "tenantId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -40,12 +42,16 @@ CREATE TABLE "company" (
 );
 
 -- CreateTable
-CREATE TABLE "company_type_tag" (
+CREATE TABLE "tag" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "companyId" INTEGER,
+    "color" TEXT NOT NULL,
+    "tenantId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" INTEGER NOT NULL,
 
-    CONSTRAINT "company_type_tag_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "tag_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -56,6 +62,7 @@ CREATE TABLE "note" (
     "contactId" INTEGER,
     "companyId" INTEGER,
     "createdBy" INTEGER NOT NULL,
+    "tenantId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -72,6 +79,7 @@ CREATE TABLE "task" (
     "contactId" INTEGER,
     "companyId" INTEGER,
     "createdBy" INTEGER NOT NULL,
+    "tenantId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -85,6 +93,7 @@ CREATE TABLE "user" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "refreshToken" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -112,23 +121,42 @@ CREATE TABLE "membership" (
     CONSTRAINT "membership_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_contactTags" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_contactTags_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_companyTags" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_companyTags_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "contact_id_key" ON "contact"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "contact_email_key" ON "contact"("email");
+CREATE UNIQUE INDEX "contact_email_tenantId_key" ON "contact"("email", "tenantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "company_id_key" ON "company"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "company_name_key" ON "company"("name");
+CREATE UNIQUE INDEX "company_name_tenantId_key" ON "company"("name", "tenantId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "company_email_key" ON "company"("email");
+CREATE UNIQUE INDEX "company_email_tenantId_key" ON "company"("email", "tenantId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "company_type_tag_id_key" ON "company_type_tag"("id");
+CREATE UNIQUE INDEX "tag_id_key" ON "tag"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tag_name_tenantId_key" ON "tag"("name", "tenantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "note_id_key" ON "note"("id");
@@ -148,11 +176,26 @@ CREATE UNIQUE INDEX "tenant_id_key" ON "tenant"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "membership_id_key" ON "membership"("id");
 
+-- CreateIndex
+CREATE INDEX "_contactTags_B_index" ON "_contactTags"("B");
+
+-- CreateIndex
+CREATE INDEX "_companyTags_B_index" ON "_companyTags"("B");
+
 -- AddForeignKey
 ALTER TABLE "contact" ADD CONSTRAINT "contact_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "company_type_tag" ADD CONSTRAINT "company_type_tag_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "contact" ADD CONSTRAINT "contact_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "company" ADD CONSTRAINT "company_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tag" ADD CONSTRAINT "tag_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tag" ADD CONSTRAINT "tag_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "note" ADD CONSTRAINT "note_contactId_fkey" FOREIGN KEY ("contactId") REFERENCES "contact"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -164,6 +207,9 @@ ALTER TABLE "note" ADD CONSTRAINT "note_companyId_fkey" FOREIGN KEY ("companyId"
 ALTER TABLE "note" ADD CONSTRAINT "note_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "note" ADD CONSTRAINT "note_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "task" ADD CONSTRAINT "task_contactId_fkey" FOREIGN KEY ("contactId") REFERENCES "contact"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -173,7 +219,22 @@ ALTER TABLE "task" ADD CONSTRAINT "task_companyId_fkey" FOREIGN KEY ("companyId"
 ALTER TABLE "task" ADD CONSTRAINT "task_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "task" ADD CONSTRAINT "task_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "membership" ADD CONSTRAINT "membership_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "membership" ADD CONSTRAINT "membership_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_contactTags" ADD CONSTRAINT "_contactTags_A_fkey" FOREIGN KEY ("A") REFERENCES "contact"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_contactTags" ADD CONSTRAINT "_contactTags_B_fkey" FOREIGN KEY ("B") REFERENCES "tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_companyTags" ADD CONSTRAINT "_companyTags_A_fkey" FOREIGN KEY ("A") REFERENCES "company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_companyTags" ADD CONSTRAINT "_companyTags_B_fkey" FOREIGN KEY ("B") REFERENCES "tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;

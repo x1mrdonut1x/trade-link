@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Building2, Calendar, CheckSquare, PlusCircle, Users } from '@tradelink/ui/icons';
+import { TokenDebugPanel } from 'components/debug/TokenDebugPanel';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { dashboardApi } from '../../../api/dashboard/api';
 
@@ -98,6 +99,13 @@ function Dashboard() {
         <UpcomingEvents events={upcomingEvents} />
         <TasksCard title="Quick Tasks" />
       </div>
+
+      {/* Debug panel for development */}
+      {import.meta.env.DEV && (
+        <div className="mt-6">
+          <TokenDebugPanel />
+        </div>
+      )}
     </>
   );
 }

@@ -8,19 +8,14 @@ import {
 } from '@tradelink/ui/components/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@tradelink/ui/components/sidebar';
 import { ChevronsUpDown, Plus } from '@tradelink/ui/icons';
-import * as React from 'react';
+import { useAuth } from 'context';
+import { useState } from 'react';
+import Logo from '../../../assets/logo.svg?react';
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo?: React.ElementType;
-    plan: string;
-  }[];
-}) {
+export function TenantSwitcher() {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const { user } = useAuth();
+  const [activeTeam, setActiveTeam] = useState(user?.membership?.[0]);
 
   if (!activeTeam) {
     return null;
@@ -35,14 +30,11 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              {activeTeam.logo && (
-                <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <activeTeam.logo className="size-4 w-full h-full" />
-                </div>
-              )}
+              <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <Logo className="size-4 w-full h-full" />
+              </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{activeTeam.name}</span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -54,14 +46,12 @@ export function TeamSwitcher({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-muted-foreground text-xs">Teams</DropdownMenuLabel>
-            {teams.map(team => (
-              <DropdownMenuItem key={team.name} onClick={() => setActiveTeam(team)} className="gap-2 p-2">
-                {team.logo && (
-                  <div className="flex size-6 items-center justify-center rounded-md border">
-                    <team.logo className="size-3.5 shrink-0" />
-                  </div>
-                )}
-                {team.name}
+            {user?.membership?.map(tenant => (
+              <DropdownMenuItem key={tenant.name} onClick={() => setActiveTeam(tenant)} className="gap-2 p-2">
+                <div className="flex size-6 items-center justify-center rounded-md border">
+                  <Logo className="size-3.5 shrink-0" />
+                </div>
+                {tenant.name}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

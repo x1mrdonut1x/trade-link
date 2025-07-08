@@ -1,4 +1,4 @@
-import { LoginResponse, type AuthenticatedUser } from '@tradelink/shared';
+import { LoginResponse, type JWTToken } from '@tradelink/shared';
 import { authRequest } from '../request.helper';
 
 export interface AuthFixtures {
@@ -40,11 +40,19 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const getProfile = async (token: string) => {
-  return authRequest(token).get<AuthenticatedUser>('/auth/profile');
+  return authRequest(token).get<JWTToken>('/auth/profile');
 };
 
 export const createAuthenticatedUser = async (userData = authFixtures.testUser) => {
   await registerUser(userData);
   const loginResponse = await loginUser(userData.email, userData.password);
   return loginResponse.access_token;
+};
+
+export const refreshToken = async (refresh_token: string) => {
+  return authRequest('').post<LoginResponse>('/auth/refresh', { refresh_token });
+};
+
+export const logoutUser = async (token: string) => {
+  return authRequest(token).post('/auth/logout');
 };

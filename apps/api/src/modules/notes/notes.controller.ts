@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   ParseIntPipe,
   Patch,
@@ -13,18 +14,20 @@ import {
 } from '@nestjs/common';
 import { CreateNoteRequest, GetAllNotesRequest, UpdateNoteRequest } from '@tradelink/shared';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { TenantAuthGuard } from '../../guards/tenant-auth.guard';
 import { NotesService } from './notes.service';
 
 @Controller('notes')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantAuthGuard)
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
-  create(@Body() createNoteDto: CreateNoteRequest, @Request() req) {
+  create(@Headers('tenant-id') tenantId: string, @Body() createNoteDto: CreateNoteRequest, @Request() req) {
     return this.notesService.createNote({
       ...createNoteDto,
       createdBy: req.user.id,
+      tenantId: Number.parseInt(tenantId),
     });
   }
 

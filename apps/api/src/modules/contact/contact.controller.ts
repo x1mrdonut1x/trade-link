@@ -1,7 +1,21 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { GetAllContactsQuery } from '@tradelink/shared';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { TenantAuthGuard } from '../../guards/tenant-auth.guard';
 import { ContactService } from './contact.service';
 
 import type {
@@ -14,23 +28,32 @@ import type {
 } from '@tradelink/shared';
 
 @Controller('contacts')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantAuthGuard)
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Get()
-  async getAllContacts(@Query() query: GetAllContactsQuery): Promise<ContactWithCompanyDto[]> {
-    return this.contactService.getAllContacts(query);
+  async getAllContacts(
+    @Headers('tenant-id') tenantId: string,
+    @Query() query: GetAllContactsQuery
+  ): Promise<ContactWithCompanyDto[]> {
+    return this.contactService.getAllContacts(query); // TODO: Add tenant filtering
   }
 
   @Get(':id')
-  async getContact(@Param('id', ParseIntPipe) id: number): Promise<ContactWithCompanyDto> {
-    return this.contactService.getContact(id);
+  async getContact(
+    @Headers('tenant-id') tenantId: string,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<ContactWithCompanyDto> {
+    return this.contactService.getContact(id); // TODO: Add tenant filtering
   }
 
   @Post()
-  async createContact(@Body() createContactDto: CreateContactRequest): Promise<ContactWithCompanyDto> {
-    return this.contactService.createContact(createContactDto);
+  async createContact(
+    @Headers('tenant-id') tenantId: string,
+    @Body() createContactDto: CreateContactRequest
+  ): Promise<ContactWithCompanyDto> {
+    return this.contactService.createContact(createContactDto, Number.parseInt(tenantId));
   }
 
   @Put(':id')

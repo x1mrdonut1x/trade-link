@@ -39,11 +39,12 @@ export class TagsService {
     return tag;
   }
 
-  async createTag(data: CreateTagRequest, createdBy: number): Promise<CreateTagResponse> {
+  async createTag(data: CreateTagRequest, createdBy: number, tenantId: number): Promise<CreateTagResponse> {
     const tag = await this.prisma.tag.create({
       data: {
         ...data,
         createdBy,
+        tenantId,
       },
     });
 
