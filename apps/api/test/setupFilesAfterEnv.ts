@@ -7,7 +7,6 @@ import { spawn } from 'node:child_process';
 import { AppModule } from '../src/app.module';
 import { CustomLogger } from '../src/filters/custom-logger';
 import { PrismaService } from '../src/modules/prisma/prisma.service';
-import { clearAuthToken, setAuthToken } from './helpers/request.helper';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -94,12 +93,4 @@ async function cleanDatabase() {
 // Helper function to clean database between tests if needed
 export const resetDatabase = async () => {
   await cleanDatabase();
-};
-
-export const setTestAuthToken = (token: string) => {
-  setAuthToken(token);
-};
-
-export const clearTestAuthToken = () => {
-  clearAuthToken();
 };

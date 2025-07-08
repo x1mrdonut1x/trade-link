@@ -1,9 +1,11 @@
 import { ImportFieldMappings } from '@tradelink/shared';
+import { setTestAuthToken, setTestTenantId } from 'test/helpers/request.helper';
 import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
 import { createCompany, getAllCompanies, getCompany } from '../../helpers/company/company.helper';
 import { createContact, getAllContacts, getContact } from '../../helpers/contact/contact.helper';
 import { executeImport, importFixtures, processImport } from '../../helpers/import/import.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { tenantsHelper } from '../../helpers/tenant/tenant.helper';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Import Controller (e2e)', () => {
   let authToken: string;
@@ -12,6 +14,8 @@ describe('Import Controller (e2e)', () => {
     await resetDatabase();
     authToken = await createAuthenticatedUser();
     setTestAuthToken(authToken);
+    const response = await tenantsHelper.create(tenantsHelper.fixtures.create);
+    setTestTenantId(response.id);
   });
 
   describe('POST /import/process', () => {

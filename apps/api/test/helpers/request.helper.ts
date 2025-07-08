@@ -2,13 +2,22 @@ import request from 'supertest';
 import { getTestApp } from '../setupFilesAfterEnv';
 
 let globalAuthToken: string | null = null;
+let globalTenantId: number | null = null;
 
-export const setAuthToken = (token: string) => {
+export const setTestAuthToken = (token: string) => {
   globalAuthToken = token;
 };
 
-export const clearAuthToken = () => {
+export const clearTestAuthToken = () => {
   globalAuthToken = null;
+};
+
+export const setTestTenantId = (tenantId: number) => {
+  globalTenantId = tenantId;
+};
+
+export const clearTestTenantId = () => {
+  globalTenantId = null;
 };
 
 interface RequestHelper {
@@ -37,6 +46,7 @@ export const authRequest = (token?: string): RequestHelper => {
     }
 
     req = req.set('Authorization', `Bearer ${token || globalAuthToken}`);
+    if (globalTenantId) req = req.set('tenant-id', globalTenantId.toString());
 
     if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
       req = req.send(data);
@@ -46,7 +56,7 @@ export const authRequest = (token?: string): RequestHelper => {
 
     // Check if the response indicates an error
     if (response.status >= 400) {
-      throw new Error(response.body);
+      throw new Error(response.body.message || 'Request failed');
     }
 
     return response.body;

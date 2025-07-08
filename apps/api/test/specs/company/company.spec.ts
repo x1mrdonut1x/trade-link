@@ -1,4 +1,4 @@
-import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
+import { initClient } from '../../helpers/auth/auth.helper';
 import {
   companyFixtures,
   createCompany,
@@ -7,15 +7,14 @@ import {
   getCompany,
   updateCompany,
 } from '../../helpers/company/company.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Company Controller (e2e)', () => {
   let authToken: string;
 
   beforeEach(async () => {
     await resetDatabase();
-    authToken = await createAuthenticatedUser();
-    setTestAuthToken(authToken);
+    await initClient();
   });
 
   describe('POST /companies', () => {
