@@ -3,8 +3,8 @@ import { Response } from 'express';
 import { ZodValidationException } from 'nestjs-zod';
 
 @Catch(ZodValidationException)
-export class ZodValidationFilter implements ExceptionFilter {
-  private readonly logger = new Logger(ZodValidationFilter.name);
+export class ZodValidationExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(ZodValidationExceptionFilter.name);
 
   catch(exception: ZodValidationException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();

@@ -16,12 +16,6 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/test/setupFilesAfterEnv.ts'],
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   testTimeout: 30_000,
-  globals: {
-    'ts-jest': {
-      isolatedModules: true, // Helps with certain ESM interop issues
-      tsconfig: 'tsconfig.json',
-    },
-  },
 };
 
 export default config;

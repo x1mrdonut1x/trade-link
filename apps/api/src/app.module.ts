@@ -4,7 +4,7 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
 
 import { PrismaExceptionFilter } from './filters/prisma-exception.filter';
-import { ZodValidationFilter } from './filters/zod-validation.filter';
+import { ZodValidationExceptionFilter } from './filters/zod-validation-exception.filter';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompanyModule } from './modules/company/company.module';
 import { ContactModule } from './modules/contact/contact.module';
@@ -39,7 +39,7 @@ import { UserModule } from './modules/user/user.module';
     },
     {
       provide: APP_FILTER,
-      useClass: ZodValidationFilter,
+      useClass: ZodValidationExceptionFilter,
     },
   ],
 })
