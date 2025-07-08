@@ -1,6 +1,7 @@
 import type { ImportFieldMappings, ImportType } from '@tradelink/shared';
 import request from 'supertest';
 import { getTestApp } from '../../setupFilesAfterEnv';
+import { getGlobalTenantId } from '../request.helper';
 
 export interface ImportFixtures {
   validCsvData: string;
@@ -37,6 +38,7 @@ export const processImport = async (
   const response = await request(app.getHttpServer())
     .post('/import/process')
     .set('Authorization', `Bearer ${token}`)
+    .set('tenant-id', getGlobalTenantId()?.toString() || '')
     .attach('csvFile', csvBuffer, 'test.csv')
     .field('fieldMappings', JSON.stringify(fieldMappings))
     .field('importType', importType);
@@ -62,6 +64,7 @@ export const executeImport = async (
   const req = request(app.getHttpServer())
     .post('/import/execute')
     .set('Authorization', `Bearer ${token}`)
+    .set('tenant-id', getGlobalTenantId()?.toString() || '')
     .field('fieldMappings', JSON.stringify(fieldMappings))
     .field('importType', importType);
 

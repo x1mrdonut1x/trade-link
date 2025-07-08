@@ -16,6 +16,10 @@ export const setTestTenantId = (tenantId: number) => {
   globalTenantId = tenantId;
 };
 
+export const getGlobalTenantId = () => {
+  return globalTenantId;
+};
+
 export const clearTestTenantId = () => {
   globalTenantId = null;
 };
