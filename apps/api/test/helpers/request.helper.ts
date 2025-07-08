@@ -19,7 +19,7 @@ interface RequestHelper {
   patch: <T>(url: string, data?: any) => Promise<T>;
 }
 
-export const authRequest = (token: string): RequestHelper => {
+export const authRequest = (token?: string): RequestHelper => {
   const app = getTestApp();
   const baseRequest = request(app.getHttpServer());
 

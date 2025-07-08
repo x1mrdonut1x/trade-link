@@ -9,425 +9,440 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AppSettingsRouteRouteImport } from './routes/_app/settings/route'
-import { Route as AppImportRouteRouteImport } from './routes/_app/import/route'
-import { Route as AppTasksIndexRouteImport } from './routes/_app/tasks/index'
-import { Route as AppEventsIndexRouteImport } from './routes/_app/events/index'
-import { Route as AppContactsIndexRouteImport } from './routes/_app/contacts/index'
-import { Route as AppCompaniesIndexRouteImport } from './routes/_app/companies/index'
-import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app/events/$eventId/index'
-import { Route as AppContactsAddIndexRouteImport } from './routes/_app/contacts/add/index'
-import { Route as AppContactsContactIdIndexRouteImport } from './routes/_app/contacts/$contactId/index'
-import { Route as AppCompaniesAddIndexRouteImport } from './routes/_app/companies/add/index'
-import { Route as AppCompaniesCompanyIdIndexRouteImport } from './routes/_app/companies/$companyId/index'
-import { Route as AppImport4SuccessRouteImport } from './routes/_app/import/_4/success'
-import { Route as AppImport3ReviewRouteImport } from './routes/_app/import/_3/review'
-import { Route as AppImport2MapRouteImport } from './routes/_app/import/_2/map'
-import { Route as AppImport1UploadRouteImport } from './routes/_app/import/_1/upload'
-import { Route as AppContactsContactIdEditIndexRouteImport } from './routes/_app/contacts/$contactId/edit/index'
-import { Route as AppCompaniesCompanyIdEditIndexRouteImport } from './routes/_app/companies/$companyId/edit/index'
+import { Route as AppTenantIdIndexRouteImport } from './routes/_app/$tenantId/index'
+import { Route as AppTenantIdSettingsRouteRouteImport } from './routes/_app/$tenantId/settings/route'
+import { Route as AppTenantIdImportRouteRouteImport } from './routes/_app/$tenantId/import/route'
+import { Route as AppTenantIdTasksIndexRouteImport } from './routes/_app/$tenantId/tasks/index'
+import { Route as AppTenantIdEventsIndexRouteImport } from './routes/_app/$tenantId/events/index'
+import { Route as AppTenantIdContactsIndexRouteImport } from './routes/_app/$tenantId/contacts/index'
+import { Route as AppTenantIdCompaniesIndexRouteImport } from './routes/_app/$tenantId/companies/index'
+import { Route as AppTenantIdEventsEventIdIndexRouteImport } from './routes/_app/$tenantId/events/$eventId/index'
+import { Route as AppTenantIdContactsAddIndexRouteImport } from './routes/_app/$tenantId/contacts/add/index'
+import { Route as AppTenantIdContactsContactIdIndexRouteImport } from './routes/_app/$tenantId/contacts/$contactId/index'
+import { Route as AppTenantIdCompaniesAddIndexRouteImport } from './routes/_app/$tenantId/companies/add/index'
+import { Route as AppTenantIdCompaniesCompanyIdIndexRouteImport } from './routes/_app/$tenantId/companies/$companyId/index'
+import { Route as AppTenantIdImport4SuccessRouteImport } from './routes/_app/$tenantId/import/_4/success'
+import { Route as AppTenantIdImport3ReviewRouteImport } from './routes/_app/$tenantId/import/_3/review'
+import { Route as AppTenantIdImport2MapRouteImport } from './routes/_app/$tenantId/import/_2/map'
+import { Route as AppTenantIdImport1UploadRouteImport } from './routes/_app/$tenantId/import/_1/upload'
+import { Route as AppTenantIdContactsContactIdEditIndexRouteImport } from './routes/_app/$tenantId/contacts/$contactId/edit/index'
+import { Route as AppTenantIdCompaniesCompanyIdEditIndexRouteImport } from './routes/_app/$tenantId/companies/$companyId/edit/index'
 
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/_app/',
-  path: '/',
+const AppTenantIdIndexRoute = AppTenantIdIndexRouteImport.update({
+  id: '/_app/$tenantId/',
+  path: '/$tenantId/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppSettingsRouteRoute = AppSettingsRouteRouteImport.update({
-  id: '/_app/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppImportRouteRoute = AppImportRouteRouteImport.update({
-  id: '/_app/import',
-  path: '/import',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppTasksIndexRoute = AppTasksIndexRouteImport.update({
-  id: '/_app/tasks/',
-  path: '/tasks/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
-  id: '/_app/events/',
-  path: '/events/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppContactsIndexRoute = AppContactsIndexRouteImport.update({
-  id: '/_app/contacts/',
-  path: '/contacts/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppCompaniesIndexRoute = AppCompaniesIndexRouteImport.update({
-  id: '/_app/companies/',
-  path: '/companies/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppEventsEventIdIndexRoute = AppEventsEventIdIndexRouteImport.update({
-  id: '/_app/events/$eventId/',
-  path: '/events/$eventId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppContactsAddIndexRoute = AppContactsAddIndexRouteImport.update({
-  id: '/_app/contacts/add/',
-  path: '/contacts/add/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppContactsContactIdIndexRoute =
-  AppContactsContactIdIndexRouteImport.update({
-    id: '/_app/contacts/$contactId/',
-    path: '/contacts/$contactId/',
+const AppTenantIdSettingsRouteRoute =
+  AppTenantIdSettingsRouteRouteImport.update({
+    id: '/_app/$tenantId/settings',
+    path: '/$tenantId/settings',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AppCompaniesAddIndexRoute = AppCompaniesAddIndexRouteImport.update({
-  id: '/_app/companies/add/',
-  path: '/companies/add/',
+const AppTenantIdImportRouteRoute = AppTenantIdImportRouteRouteImport.update({
+  id: '/_app/$tenantId/import',
+  path: '/$tenantId/import',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppCompaniesCompanyIdIndexRoute =
-  AppCompaniesCompanyIdIndexRouteImport.update({
-    id: '/_app/companies/$companyId/',
-    path: '/companies/$companyId/',
+const AppTenantIdTasksIndexRoute = AppTenantIdTasksIndexRouteImport.update({
+  id: '/_app/$tenantId/tasks/',
+  path: '/$tenantId/tasks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTenantIdEventsIndexRoute = AppTenantIdEventsIndexRouteImport.update({
+  id: '/_app/$tenantId/events/',
+  path: '/$tenantId/events/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTenantIdContactsIndexRoute =
+  AppTenantIdContactsIndexRouteImport.update({
+    id: '/_app/$tenantId/contacts/',
+    path: '/$tenantId/contacts/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AppImport4SuccessRoute = AppImport4SuccessRouteImport.update({
-  id: '/_4/success',
-  path: '/success',
-  getParentRoute: () => AppImportRouteRoute,
-} as any)
-const AppImport3ReviewRoute = AppImport3ReviewRouteImport.update({
-  id: '/_3/review',
-  path: '/review',
-  getParentRoute: () => AppImportRouteRoute,
-} as any)
-const AppImport2MapRoute = AppImport2MapRouteImport.update({
+const AppTenantIdCompaniesIndexRoute =
+  AppTenantIdCompaniesIndexRouteImport.update({
+    id: '/_app/$tenantId/companies/',
+    path: '/$tenantId/companies/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppTenantIdEventsEventIdIndexRoute =
+  AppTenantIdEventsEventIdIndexRouteImport.update({
+    id: '/_app/$tenantId/events/$eventId/',
+    path: '/$tenantId/events/$eventId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppTenantIdContactsAddIndexRoute =
+  AppTenantIdContactsAddIndexRouteImport.update({
+    id: '/_app/$tenantId/contacts/add/',
+    path: '/$tenantId/contacts/add/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppTenantIdContactsContactIdIndexRoute =
+  AppTenantIdContactsContactIdIndexRouteImport.update({
+    id: '/_app/$tenantId/contacts/$contactId/',
+    path: '/$tenantId/contacts/$contactId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppTenantIdCompaniesAddIndexRoute =
+  AppTenantIdCompaniesAddIndexRouteImport.update({
+    id: '/_app/$tenantId/companies/add/',
+    path: '/$tenantId/companies/add/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppTenantIdCompaniesCompanyIdIndexRoute =
+  AppTenantIdCompaniesCompanyIdIndexRouteImport.update({
+    id: '/_app/$tenantId/companies/$companyId/',
+    path: '/$tenantId/companies/$companyId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppTenantIdImport4SuccessRoute =
+  AppTenantIdImport4SuccessRouteImport.update({
+    id: '/_4/success',
+    path: '/success',
+    getParentRoute: () => AppTenantIdImportRouteRoute,
+  } as any)
+const AppTenantIdImport3ReviewRoute =
+  AppTenantIdImport3ReviewRouteImport.update({
+    id: '/_3/review',
+    path: '/review',
+    getParentRoute: () => AppTenantIdImportRouteRoute,
+  } as any)
+const AppTenantIdImport2MapRoute = AppTenantIdImport2MapRouteImport.update({
   id: '/_2/map',
   path: '/map',
-  getParentRoute: () => AppImportRouteRoute,
+  getParentRoute: () => AppTenantIdImportRouteRoute,
 } as any)
-const AppImport1UploadRoute = AppImport1UploadRouteImport.update({
-  id: '/_1/upload',
-  path: '/upload',
-  getParentRoute: () => AppImportRouteRoute,
-} as any)
-const AppContactsContactIdEditIndexRoute =
-  AppContactsContactIdEditIndexRouteImport.update({
-    id: '/_app/contacts/$contactId/edit/',
-    path: '/contacts/$contactId/edit/',
+const AppTenantIdImport1UploadRoute =
+  AppTenantIdImport1UploadRouteImport.update({
+    id: '/_1/upload',
+    path: '/upload',
+    getParentRoute: () => AppTenantIdImportRouteRoute,
+  } as any)
+const AppTenantIdContactsContactIdEditIndexRoute =
+  AppTenantIdContactsContactIdEditIndexRouteImport.update({
+    id: '/_app/$tenantId/contacts/$contactId/edit/',
+    path: '/$tenantId/contacts/$contactId/edit/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AppCompaniesCompanyIdEditIndexRoute =
-  AppCompaniesCompanyIdEditIndexRouteImport.update({
-    id: '/_app/companies/$companyId/edit/',
-    path: '/companies/$companyId/edit/',
+const AppTenantIdCompaniesCompanyIdEditIndexRoute =
+  AppTenantIdCompaniesCompanyIdEditIndexRouteImport.update({
+    id: '/_app/$tenantId/companies/$companyId/edit/',
+    path: '/$tenantId/companies/$companyId/edit/',
     getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/import': typeof AppImportRouteRouteWithChildren
-  '/settings': typeof AppSettingsRouteRoute
-  '/': typeof AppIndexRoute
-  '/companies': typeof AppCompaniesIndexRoute
-  '/contacts': typeof AppContactsIndexRoute
-  '/events': typeof AppEventsIndexRoute
-  '/tasks': typeof AppTasksIndexRoute
-  '/import/upload': typeof AppImport1UploadRoute
-  '/import/map': typeof AppImport2MapRoute
-  '/import/review': typeof AppImport3ReviewRoute
-  '/import/success': typeof AppImport4SuccessRoute
-  '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
-  '/companies/add': typeof AppCompaniesAddIndexRoute
-  '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
-  '/contacts/add': typeof AppContactsAddIndexRoute
-  '/events/$eventId': typeof AppEventsEventIdIndexRoute
-  '/companies/$companyId/edit': typeof AppCompaniesCompanyIdEditIndexRoute
-  '/contacts/$contactId/edit': typeof AppContactsContactIdEditIndexRoute
+  '/$tenantId/import': typeof AppTenantIdImportRouteRouteWithChildren
+  '/$tenantId/settings': typeof AppTenantIdSettingsRouteRoute
+  '/$tenantId': typeof AppTenantIdIndexRoute
+  '/$tenantId/companies': typeof AppTenantIdCompaniesIndexRoute
+  '/$tenantId/contacts': typeof AppTenantIdContactsIndexRoute
+  '/$tenantId/events': typeof AppTenantIdEventsIndexRoute
+  '/$tenantId/tasks': typeof AppTenantIdTasksIndexRoute
+  '/$tenantId/import/upload': typeof AppTenantIdImport1UploadRoute
+  '/$tenantId/import/map': typeof AppTenantIdImport2MapRoute
+  '/$tenantId/import/review': typeof AppTenantIdImport3ReviewRoute
+  '/$tenantId/import/success': typeof AppTenantIdImport4SuccessRoute
+  '/$tenantId/companies/$companyId': typeof AppTenantIdCompaniesCompanyIdIndexRoute
+  '/$tenantId/companies/add': typeof AppTenantIdCompaniesAddIndexRoute
+  '/$tenantId/contacts/$contactId': typeof AppTenantIdContactsContactIdIndexRoute
+  '/$tenantId/contacts/add': typeof AppTenantIdContactsAddIndexRoute
+  '/$tenantId/events/$eventId': typeof AppTenantIdEventsEventIdIndexRoute
+  '/$tenantId/companies/$companyId/edit': typeof AppTenantIdCompaniesCompanyIdEditIndexRoute
+  '/$tenantId/contacts/$contactId/edit': typeof AppTenantIdContactsContactIdEditIndexRoute
 }
 export interface FileRoutesByTo {
-  '/import': typeof AppImportRouteRouteWithChildren
-  '/settings': typeof AppSettingsRouteRoute
-  '/': typeof AppIndexRoute
-  '/companies': typeof AppCompaniesIndexRoute
-  '/contacts': typeof AppContactsIndexRoute
-  '/events': typeof AppEventsIndexRoute
-  '/tasks': typeof AppTasksIndexRoute
-  '/import/upload': typeof AppImport1UploadRoute
-  '/import/map': typeof AppImport2MapRoute
-  '/import/review': typeof AppImport3ReviewRoute
-  '/import/success': typeof AppImport4SuccessRoute
-  '/companies/$companyId': typeof AppCompaniesCompanyIdIndexRoute
-  '/companies/add': typeof AppCompaniesAddIndexRoute
-  '/contacts/$contactId': typeof AppContactsContactIdIndexRoute
-  '/contacts/add': typeof AppContactsAddIndexRoute
-  '/events/$eventId': typeof AppEventsEventIdIndexRoute
-  '/companies/$companyId/edit': typeof AppCompaniesCompanyIdEditIndexRoute
-  '/contacts/$contactId/edit': typeof AppContactsContactIdEditIndexRoute
+  '/$tenantId/import': typeof AppTenantIdImportRouteRouteWithChildren
+  '/$tenantId/settings': typeof AppTenantIdSettingsRouteRoute
+  '/$tenantId': typeof AppTenantIdIndexRoute
+  '/$tenantId/companies': typeof AppTenantIdCompaniesIndexRoute
+  '/$tenantId/contacts': typeof AppTenantIdContactsIndexRoute
+  '/$tenantId/events': typeof AppTenantIdEventsIndexRoute
+  '/$tenantId/tasks': typeof AppTenantIdTasksIndexRoute
+  '/$tenantId/import/upload': typeof AppTenantIdImport1UploadRoute
+  '/$tenantId/import/map': typeof AppTenantIdImport2MapRoute
+  '/$tenantId/import/review': typeof AppTenantIdImport3ReviewRoute
+  '/$tenantId/import/success': typeof AppTenantIdImport4SuccessRoute
+  '/$tenantId/companies/$companyId': typeof AppTenantIdCompaniesCompanyIdIndexRoute
+  '/$tenantId/companies/add': typeof AppTenantIdCompaniesAddIndexRoute
+  '/$tenantId/contacts/$contactId': typeof AppTenantIdContactsContactIdIndexRoute
+  '/$tenantId/contacts/add': typeof AppTenantIdContactsAddIndexRoute
+  '/$tenantId/events/$eventId': typeof AppTenantIdEventsEventIdIndexRoute
+  '/$tenantId/companies/$companyId/edit': typeof AppTenantIdCompaniesCompanyIdEditIndexRoute
+  '/$tenantId/contacts/$contactId/edit': typeof AppTenantIdContactsContactIdEditIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_app/import': typeof AppImportRouteRouteWithChildren
-  '/_app/settings': typeof AppSettingsRouteRoute
-  '/_app/': typeof AppIndexRoute
-  '/_app/companies/': typeof AppCompaniesIndexRoute
-  '/_app/contacts/': typeof AppContactsIndexRoute
-  '/_app/events/': typeof AppEventsIndexRoute
-  '/_app/tasks/': typeof AppTasksIndexRoute
-  '/_app/import/_1/upload': typeof AppImport1UploadRoute
-  '/_app/import/_2/map': typeof AppImport2MapRoute
-  '/_app/import/_3/review': typeof AppImport3ReviewRoute
-  '/_app/import/_4/success': typeof AppImport4SuccessRoute
-  '/_app/companies/$companyId/': typeof AppCompaniesCompanyIdIndexRoute
-  '/_app/companies/add/': typeof AppCompaniesAddIndexRoute
-  '/_app/contacts/$contactId/': typeof AppContactsContactIdIndexRoute
-  '/_app/contacts/add/': typeof AppContactsAddIndexRoute
-  '/_app/events/$eventId/': typeof AppEventsEventIdIndexRoute
-  '/_app/companies/$companyId/edit/': typeof AppCompaniesCompanyIdEditIndexRoute
-  '/_app/contacts/$contactId/edit/': typeof AppContactsContactIdEditIndexRoute
+  '/_app/$tenantId/import': typeof AppTenantIdImportRouteRouteWithChildren
+  '/_app/$tenantId/settings': typeof AppTenantIdSettingsRouteRoute
+  '/_app/$tenantId/': typeof AppTenantIdIndexRoute
+  '/_app/$tenantId/companies/': typeof AppTenantIdCompaniesIndexRoute
+  '/_app/$tenantId/contacts/': typeof AppTenantIdContactsIndexRoute
+  '/_app/$tenantId/events/': typeof AppTenantIdEventsIndexRoute
+  '/_app/$tenantId/tasks/': typeof AppTenantIdTasksIndexRoute
+  '/_app/$tenantId/import/_1/upload': typeof AppTenantIdImport1UploadRoute
+  '/_app/$tenantId/import/_2/map': typeof AppTenantIdImport2MapRoute
+  '/_app/$tenantId/import/_3/review': typeof AppTenantIdImport3ReviewRoute
+  '/_app/$tenantId/import/_4/success': typeof AppTenantIdImport4SuccessRoute
+  '/_app/$tenantId/companies/$companyId/': typeof AppTenantIdCompaniesCompanyIdIndexRoute
+  '/_app/$tenantId/companies/add/': typeof AppTenantIdCompaniesAddIndexRoute
+  '/_app/$tenantId/contacts/$contactId/': typeof AppTenantIdContactsContactIdIndexRoute
+  '/_app/$tenantId/contacts/add/': typeof AppTenantIdContactsAddIndexRoute
+  '/_app/$tenantId/events/$eventId/': typeof AppTenantIdEventsEventIdIndexRoute
+  '/_app/$tenantId/companies/$companyId/edit/': typeof AppTenantIdCompaniesCompanyIdEditIndexRoute
+  '/_app/$tenantId/contacts/$contactId/edit/': typeof AppTenantIdContactsContactIdEditIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/import'
-    | '/settings'
-    | '/'
-    | '/companies'
-    | '/contacts'
-    | '/events'
-    | '/tasks'
-    | '/import/upload'
-    | '/import/map'
-    | '/import/review'
-    | '/import/success'
-    | '/companies/$companyId'
-    | '/companies/add'
-    | '/contacts/$contactId'
-    | '/contacts/add'
-    | '/events/$eventId'
-    | '/companies/$companyId/edit'
-    | '/contacts/$contactId/edit'
+    | '/$tenantId/import'
+    | '/$tenantId/settings'
+    | '/$tenantId'
+    | '/$tenantId/companies'
+    | '/$tenantId/contacts'
+    | '/$tenantId/events'
+    | '/$tenantId/tasks'
+    | '/$tenantId/import/upload'
+    | '/$tenantId/import/map'
+    | '/$tenantId/import/review'
+    | '/$tenantId/import/success'
+    | '/$tenantId/companies/$companyId'
+    | '/$tenantId/companies/add'
+    | '/$tenantId/contacts/$contactId'
+    | '/$tenantId/contacts/add'
+    | '/$tenantId/events/$eventId'
+    | '/$tenantId/companies/$companyId/edit'
+    | '/$tenantId/contacts/$contactId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/import'
-    | '/settings'
-    | '/'
-    | '/companies'
-    | '/contacts'
-    | '/events'
-    | '/tasks'
-    | '/import/upload'
-    | '/import/map'
-    | '/import/review'
-    | '/import/success'
-    | '/companies/$companyId'
-    | '/companies/add'
-    | '/contacts/$contactId'
-    | '/contacts/add'
-    | '/events/$eventId'
-    | '/companies/$companyId/edit'
-    | '/contacts/$contactId/edit'
+    | '/$tenantId/import'
+    | '/$tenantId/settings'
+    | '/$tenantId'
+    | '/$tenantId/companies'
+    | '/$tenantId/contacts'
+    | '/$tenantId/events'
+    | '/$tenantId/tasks'
+    | '/$tenantId/import/upload'
+    | '/$tenantId/import/map'
+    | '/$tenantId/import/review'
+    | '/$tenantId/import/success'
+    | '/$tenantId/companies/$companyId'
+    | '/$tenantId/companies/add'
+    | '/$tenantId/contacts/$contactId'
+    | '/$tenantId/contacts/add'
+    | '/$tenantId/events/$eventId'
+    | '/$tenantId/companies/$companyId/edit'
+    | '/$tenantId/contacts/$contactId/edit'
   id:
     | '__root__'
-    | '/_app/import'
-    | '/_app/settings'
-    | '/_app/'
-    | '/_app/companies/'
-    | '/_app/contacts/'
-    | '/_app/events/'
-    | '/_app/tasks/'
-    | '/_app/import/_1/upload'
-    | '/_app/import/_2/map'
-    | '/_app/import/_3/review'
-    | '/_app/import/_4/success'
-    | '/_app/companies/$companyId/'
-    | '/_app/companies/add/'
-    | '/_app/contacts/$contactId/'
-    | '/_app/contacts/add/'
-    | '/_app/events/$eventId/'
-    | '/_app/companies/$companyId/edit/'
-    | '/_app/contacts/$contactId/edit/'
+    | '/_app/$tenantId/import'
+    | '/_app/$tenantId/settings'
+    | '/_app/$tenantId/'
+    | '/_app/$tenantId/companies/'
+    | '/_app/$tenantId/contacts/'
+    | '/_app/$tenantId/events/'
+    | '/_app/$tenantId/tasks/'
+    | '/_app/$tenantId/import/_1/upload'
+    | '/_app/$tenantId/import/_2/map'
+    | '/_app/$tenantId/import/_3/review'
+    | '/_app/$tenantId/import/_4/success'
+    | '/_app/$tenantId/companies/$companyId/'
+    | '/_app/$tenantId/companies/add/'
+    | '/_app/$tenantId/contacts/$contactId/'
+    | '/_app/$tenantId/contacts/add/'
+    | '/_app/$tenantId/events/$eventId/'
+    | '/_app/$tenantId/companies/$companyId/edit/'
+    | '/_app/$tenantId/contacts/$contactId/edit/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AppImportRouteRoute: typeof AppImportRouteRouteWithChildren
-  AppSettingsRouteRoute: typeof AppSettingsRouteRoute
-  AppIndexRoute: typeof AppIndexRoute
-  AppCompaniesIndexRoute: typeof AppCompaniesIndexRoute
-  AppContactsIndexRoute: typeof AppContactsIndexRoute
-  AppEventsIndexRoute: typeof AppEventsIndexRoute
-  AppTasksIndexRoute: typeof AppTasksIndexRoute
-  AppCompaniesCompanyIdIndexRoute: typeof AppCompaniesCompanyIdIndexRoute
-  AppCompaniesAddIndexRoute: typeof AppCompaniesAddIndexRoute
-  AppContactsContactIdIndexRoute: typeof AppContactsContactIdIndexRoute
-  AppContactsAddIndexRoute: typeof AppContactsAddIndexRoute
-  AppEventsEventIdIndexRoute: typeof AppEventsEventIdIndexRoute
-  AppCompaniesCompanyIdEditIndexRoute: typeof AppCompaniesCompanyIdEditIndexRoute
-  AppContactsContactIdEditIndexRoute: typeof AppContactsContactIdEditIndexRoute
+  AppTenantIdImportRouteRoute: typeof AppTenantIdImportRouteRouteWithChildren
+  AppTenantIdSettingsRouteRoute: typeof AppTenantIdSettingsRouteRoute
+  AppTenantIdIndexRoute: typeof AppTenantIdIndexRoute
+  AppTenantIdCompaniesIndexRoute: typeof AppTenantIdCompaniesIndexRoute
+  AppTenantIdContactsIndexRoute: typeof AppTenantIdContactsIndexRoute
+  AppTenantIdEventsIndexRoute: typeof AppTenantIdEventsIndexRoute
+  AppTenantIdTasksIndexRoute: typeof AppTenantIdTasksIndexRoute
+  AppTenantIdCompaniesCompanyIdIndexRoute: typeof AppTenantIdCompaniesCompanyIdIndexRoute
+  AppTenantIdCompaniesAddIndexRoute: typeof AppTenantIdCompaniesAddIndexRoute
+  AppTenantIdContactsContactIdIndexRoute: typeof AppTenantIdContactsContactIdIndexRoute
+  AppTenantIdContactsAddIndexRoute: typeof AppTenantIdContactsAddIndexRoute
+  AppTenantIdEventsEventIdIndexRoute: typeof AppTenantIdEventsEventIdIndexRoute
+  AppTenantIdCompaniesCompanyIdEditIndexRoute: typeof AppTenantIdCompaniesCompanyIdEditIndexRoute
+  AppTenantIdContactsContactIdEditIndexRoute: typeof AppTenantIdContactsContactIdEditIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_app/': {
-      id: '/_app/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AppIndexRouteImport
+    '/_app/$tenantId/': {
+      id: '/_app/$tenantId/'
+      path: '/$tenantId'
+      fullPath: '/$tenantId'
+      preLoaderRoute: typeof AppTenantIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/settings': {
-      id: '/_app/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AppSettingsRouteRouteImport
+    '/_app/$tenantId/settings': {
+      id: '/_app/$tenantId/settings'
+      path: '/$tenantId/settings'
+      fullPath: '/$tenantId/settings'
+      preLoaderRoute: typeof AppTenantIdSettingsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/import': {
-      id: '/_app/import'
-      path: '/import'
-      fullPath: '/import'
-      preLoaderRoute: typeof AppImportRouteRouteImport
+    '/_app/$tenantId/import': {
+      id: '/_app/$tenantId/import'
+      path: '/$tenantId/import'
+      fullPath: '/$tenantId/import'
+      preLoaderRoute: typeof AppTenantIdImportRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/tasks/': {
-      id: '/_app/tasks/'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof AppTasksIndexRouteImport
+    '/_app/$tenantId/tasks/': {
+      id: '/_app/$tenantId/tasks/'
+      path: '/$tenantId/tasks'
+      fullPath: '/$tenantId/tasks'
+      preLoaderRoute: typeof AppTenantIdTasksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/events/': {
-      id: '/_app/events/'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof AppEventsIndexRouteImport
+    '/_app/$tenantId/events/': {
+      id: '/_app/$tenantId/events/'
+      path: '/$tenantId/events'
+      fullPath: '/$tenantId/events'
+      preLoaderRoute: typeof AppTenantIdEventsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/contacts/': {
-      id: '/_app/contacts/'
-      path: '/contacts'
-      fullPath: '/contacts'
-      preLoaderRoute: typeof AppContactsIndexRouteImport
+    '/_app/$tenantId/contacts/': {
+      id: '/_app/$tenantId/contacts/'
+      path: '/$tenantId/contacts'
+      fullPath: '/$tenantId/contacts'
+      preLoaderRoute: typeof AppTenantIdContactsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/companies/': {
-      id: '/_app/companies/'
-      path: '/companies'
-      fullPath: '/companies'
-      preLoaderRoute: typeof AppCompaniesIndexRouteImport
+    '/_app/$tenantId/companies/': {
+      id: '/_app/$tenantId/companies/'
+      path: '/$tenantId/companies'
+      fullPath: '/$tenantId/companies'
+      preLoaderRoute: typeof AppTenantIdCompaniesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/events/$eventId/': {
-      id: '/_app/events/$eventId/'
-      path: '/events/$eventId'
-      fullPath: '/events/$eventId'
-      preLoaderRoute: typeof AppEventsEventIdIndexRouteImport
+    '/_app/$tenantId/events/$eventId/': {
+      id: '/_app/$tenantId/events/$eventId/'
+      path: '/$tenantId/events/$eventId'
+      fullPath: '/$tenantId/events/$eventId'
+      preLoaderRoute: typeof AppTenantIdEventsEventIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/contacts/add/': {
-      id: '/_app/contacts/add/'
-      path: '/contacts/add'
-      fullPath: '/contacts/add'
-      preLoaderRoute: typeof AppContactsAddIndexRouteImport
+    '/_app/$tenantId/contacts/add/': {
+      id: '/_app/$tenantId/contacts/add/'
+      path: '/$tenantId/contacts/add'
+      fullPath: '/$tenantId/contacts/add'
+      preLoaderRoute: typeof AppTenantIdContactsAddIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/contacts/$contactId/': {
-      id: '/_app/contacts/$contactId/'
-      path: '/contacts/$contactId'
-      fullPath: '/contacts/$contactId'
-      preLoaderRoute: typeof AppContactsContactIdIndexRouteImport
+    '/_app/$tenantId/contacts/$contactId/': {
+      id: '/_app/$tenantId/contacts/$contactId/'
+      path: '/$tenantId/contacts/$contactId'
+      fullPath: '/$tenantId/contacts/$contactId'
+      preLoaderRoute: typeof AppTenantIdContactsContactIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/companies/add/': {
-      id: '/_app/companies/add/'
-      path: '/companies/add'
-      fullPath: '/companies/add'
-      preLoaderRoute: typeof AppCompaniesAddIndexRouteImport
+    '/_app/$tenantId/companies/add/': {
+      id: '/_app/$tenantId/companies/add/'
+      path: '/$tenantId/companies/add'
+      fullPath: '/$tenantId/companies/add'
+      preLoaderRoute: typeof AppTenantIdCompaniesAddIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/companies/$companyId/': {
-      id: '/_app/companies/$companyId/'
-      path: '/companies/$companyId'
-      fullPath: '/companies/$companyId'
-      preLoaderRoute: typeof AppCompaniesCompanyIdIndexRouteImport
+    '/_app/$tenantId/companies/$companyId/': {
+      id: '/_app/$tenantId/companies/$companyId/'
+      path: '/$tenantId/companies/$companyId'
+      fullPath: '/$tenantId/companies/$companyId'
+      preLoaderRoute: typeof AppTenantIdCompaniesCompanyIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/import/_4/success': {
-      id: '/_app/import/_4/success'
+    '/_app/$tenantId/import/_4/success': {
+      id: '/_app/$tenantId/import/_4/success'
       path: '/success'
-      fullPath: '/import/success'
-      preLoaderRoute: typeof AppImport4SuccessRouteImport
-      parentRoute: typeof AppImportRouteRoute
+      fullPath: '/$tenantId/import/success'
+      preLoaderRoute: typeof AppTenantIdImport4SuccessRouteImport
+      parentRoute: typeof AppTenantIdImportRouteRoute
     }
-    '/_app/import/_3/review': {
-      id: '/_app/import/_3/review'
+    '/_app/$tenantId/import/_3/review': {
+      id: '/_app/$tenantId/import/_3/review'
       path: '/review'
-      fullPath: '/import/review'
-      preLoaderRoute: typeof AppImport3ReviewRouteImport
-      parentRoute: typeof AppImportRouteRoute
+      fullPath: '/$tenantId/import/review'
+      preLoaderRoute: typeof AppTenantIdImport3ReviewRouteImport
+      parentRoute: typeof AppTenantIdImportRouteRoute
     }
-    '/_app/import/_2/map': {
-      id: '/_app/import/_2/map'
+    '/_app/$tenantId/import/_2/map': {
+      id: '/_app/$tenantId/import/_2/map'
       path: '/map'
-      fullPath: '/import/map'
-      preLoaderRoute: typeof AppImport2MapRouteImport
-      parentRoute: typeof AppImportRouteRoute
+      fullPath: '/$tenantId/import/map'
+      preLoaderRoute: typeof AppTenantIdImport2MapRouteImport
+      parentRoute: typeof AppTenantIdImportRouteRoute
     }
-    '/_app/import/_1/upload': {
-      id: '/_app/import/_1/upload'
+    '/_app/$tenantId/import/_1/upload': {
+      id: '/_app/$tenantId/import/_1/upload'
       path: '/upload'
-      fullPath: '/import/upload'
-      preLoaderRoute: typeof AppImport1UploadRouteImport
-      parentRoute: typeof AppImportRouteRoute
+      fullPath: '/$tenantId/import/upload'
+      preLoaderRoute: typeof AppTenantIdImport1UploadRouteImport
+      parentRoute: typeof AppTenantIdImportRouteRoute
     }
-    '/_app/contacts/$contactId/edit/': {
-      id: '/_app/contacts/$contactId/edit/'
-      path: '/contacts/$contactId/edit'
-      fullPath: '/contacts/$contactId/edit'
-      preLoaderRoute: typeof AppContactsContactIdEditIndexRouteImport
+    '/_app/$tenantId/contacts/$contactId/edit/': {
+      id: '/_app/$tenantId/contacts/$contactId/edit/'
+      path: '/$tenantId/contacts/$contactId/edit'
+      fullPath: '/$tenantId/contacts/$contactId/edit'
+      preLoaderRoute: typeof AppTenantIdContactsContactIdEditIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/companies/$companyId/edit/': {
-      id: '/_app/companies/$companyId/edit/'
-      path: '/companies/$companyId/edit'
-      fullPath: '/companies/$companyId/edit'
-      preLoaderRoute: typeof AppCompaniesCompanyIdEditIndexRouteImport
+    '/_app/$tenantId/companies/$companyId/edit/': {
+      id: '/_app/$tenantId/companies/$companyId/edit/'
+      path: '/$tenantId/companies/$companyId/edit'
+      fullPath: '/$tenantId/companies/$companyId/edit'
+      preLoaderRoute: typeof AppTenantIdCompaniesCompanyIdEditIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AppImportRouteRouteChildren {
-  AppImport1UploadRoute: typeof AppImport1UploadRoute
-  AppImport2MapRoute: typeof AppImport2MapRoute
-  AppImport3ReviewRoute: typeof AppImport3ReviewRoute
-  AppImport4SuccessRoute: typeof AppImport4SuccessRoute
+interface AppTenantIdImportRouteRouteChildren {
+  AppTenantIdImport1UploadRoute: typeof AppTenantIdImport1UploadRoute
+  AppTenantIdImport2MapRoute: typeof AppTenantIdImport2MapRoute
+  AppTenantIdImport3ReviewRoute: typeof AppTenantIdImport3ReviewRoute
+  AppTenantIdImport4SuccessRoute: typeof AppTenantIdImport4SuccessRoute
 }
 
-const AppImportRouteRouteChildren: AppImportRouteRouteChildren = {
-  AppImport1UploadRoute: AppImport1UploadRoute,
-  AppImport2MapRoute: AppImport2MapRoute,
-  AppImport3ReviewRoute: AppImport3ReviewRoute,
-  AppImport4SuccessRoute: AppImport4SuccessRoute,
-}
+const AppTenantIdImportRouteRouteChildren: AppTenantIdImportRouteRouteChildren =
+  {
+    AppTenantIdImport1UploadRoute: AppTenantIdImport1UploadRoute,
+    AppTenantIdImport2MapRoute: AppTenantIdImport2MapRoute,
+    AppTenantIdImport3ReviewRoute: AppTenantIdImport3ReviewRoute,
+    AppTenantIdImport4SuccessRoute: AppTenantIdImport4SuccessRoute,
+  }
 
-const AppImportRouteRouteWithChildren = AppImportRouteRoute._addFileChildren(
-  AppImportRouteRouteChildren,
-)
+const AppTenantIdImportRouteRouteWithChildren =
+  AppTenantIdImportRouteRoute._addFileChildren(
+    AppTenantIdImportRouteRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
-  AppImportRouteRoute: AppImportRouteRouteWithChildren,
-  AppSettingsRouteRoute: AppSettingsRouteRoute,
-  AppIndexRoute: AppIndexRoute,
-  AppCompaniesIndexRoute: AppCompaniesIndexRoute,
-  AppContactsIndexRoute: AppContactsIndexRoute,
-  AppEventsIndexRoute: AppEventsIndexRoute,
-  AppTasksIndexRoute: AppTasksIndexRoute,
-  AppCompaniesCompanyIdIndexRoute: AppCompaniesCompanyIdIndexRoute,
-  AppCompaniesAddIndexRoute: AppCompaniesAddIndexRoute,
-  AppContactsContactIdIndexRoute: AppContactsContactIdIndexRoute,
-  AppContactsAddIndexRoute: AppContactsAddIndexRoute,
-  AppEventsEventIdIndexRoute: AppEventsEventIdIndexRoute,
-  AppCompaniesCompanyIdEditIndexRoute: AppCompaniesCompanyIdEditIndexRoute,
-  AppContactsContactIdEditIndexRoute: AppContactsContactIdEditIndexRoute,
+  AppTenantIdImportRouteRoute: AppTenantIdImportRouteRouteWithChildren,
+  AppTenantIdSettingsRouteRoute: AppTenantIdSettingsRouteRoute,
+  AppTenantIdIndexRoute: AppTenantIdIndexRoute,
+  AppTenantIdCompaniesIndexRoute: AppTenantIdCompaniesIndexRoute,
+  AppTenantIdContactsIndexRoute: AppTenantIdContactsIndexRoute,
+  AppTenantIdEventsIndexRoute: AppTenantIdEventsIndexRoute,
+  AppTenantIdTasksIndexRoute: AppTenantIdTasksIndexRoute,
+  AppTenantIdCompaniesCompanyIdIndexRoute:
+    AppTenantIdCompaniesCompanyIdIndexRoute,
+  AppTenantIdCompaniesAddIndexRoute: AppTenantIdCompaniesAddIndexRoute,
+  AppTenantIdContactsContactIdIndexRoute:
+    AppTenantIdContactsContactIdIndexRoute,
+  AppTenantIdContactsAddIndexRoute: AppTenantIdContactsAddIndexRoute,
+  AppTenantIdEventsEventIdIndexRoute: AppTenantIdEventsEventIdIndexRoute,
+  AppTenantIdCompaniesCompanyIdEditIndexRoute:
+    AppTenantIdCompaniesCompanyIdEditIndexRoute,
+  AppTenantIdContactsContactIdEditIndexRoute:
+    AppTenantIdContactsContactIdEditIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
