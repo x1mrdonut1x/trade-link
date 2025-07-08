@@ -10,29 +10,35 @@ import type {
   UpdateNoteRequest,
   UpdateNoteResponse,
 } from '@tradelink/shared';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 const NOTES_QUERY_KEY = 'notes';
 
 export function useGetAllNotes(query?: GetAllNotesRequest) {
+  const tenantId = useTenantParam();
+
   return useQuery({
     queryKey: [NOTES_QUERY_KEY, query],
-    queryFn: () => notesApi.getAllNotes(query),
+    queryFn: () => notesApi(tenantId).getAllNotes(query),
   });
 }
 
 export function useGetNote(id: number | string) {
+  const tenantId = useTenantParam();
+
   return useQuery({
     queryKey: [NOTES_QUERY_KEY, id],
-    queryFn: () => notesApi.getNote(id),
+    queryFn: () => notesApi(tenantId).getNote(id),
     enabled: !!id,
   });
 }
 
 export function useCreateNote(options?: MutationOptions<CreateNoteResponse, Error, CreateNoteRequest>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: notesApi.createNote,
+    mutationFn: notesApi(tenantId).createNote,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -50,10 +56,11 @@ export function useCreateNote(options?: MutationOptions<CreateNoteResponse, Erro
 export function useUpdateNote(
   options?: MutationOptions<UpdateNoteResponse, Error, { id: number; data: UpdateNoteRequest }>
 ) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateNoteRequest }) => notesApi.updateNote(id, data),
+    mutationFn: ({ id, data }: { id: number; data: UpdateNoteRequest }) => notesApi(tenantId).updateNote(id, data),
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -70,10 +77,11 @@ export function useUpdateNote(
 }
 
 export function useDeleteNote(options?: MutationOptions<DeleteNoteResponse, Error, number>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: notesApi.deleteNote,
+    mutationFn: notesApi(tenantId).deleteNote,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);

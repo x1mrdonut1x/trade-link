@@ -10,29 +10,35 @@ import type {
   UpdateTaskRequest,
   UpdateTaskResponse,
 } from '@tradelink/shared';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 const TODOS_QUERY_KEY = 'tasks';
 
 export function useGetAllTasks(query?: GetAllTasksQueryDto) {
+  const tenantId = useTenantParam();
+
   return useQuery({
     queryKey: [TODOS_QUERY_KEY, query],
-    queryFn: () => tasksApi.getAllTasks(query),
+    queryFn: () => tasksApi(tenantId).getAllTasks(query),
   });
 }
 
 export function useGetTask(id: number | string) {
+  const tenantId = useTenantParam();
+
   return useQuery({
     queryKey: [TODOS_QUERY_KEY, id],
-    queryFn: () => tasksApi.getTask(id),
+    queryFn: () => tasksApi(tenantId).getTask(id),
     enabled: !!id,
   });
 }
 
 export function useCreateTask(options?: MutationOptions<CreateTaskResponse, Error, CreateTaskRequest>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: tasksApi.createTask,
+    mutationFn: tasksApi(tenantId).createTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -50,10 +56,11 @@ export function useCreateTask(options?: MutationOptions<CreateTaskResponse, Erro
 export function useUpdateTask(
   options?: MutationOptions<UpdateTaskResponse, Error, { id: number; data: UpdateTaskRequest }>
 ) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateTaskRequest }) => tasksApi.updateTask(id, data),
+    mutationFn: ({ id, data }: { id: number; data: UpdateTaskRequest }) => tasksApi(tenantId).updateTask(id, data),
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -70,10 +77,11 @@ export function useUpdateTask(
 }
 
 export function useResolveTask(options?: MutationOptions<UpdateTaskResponse, Error, number>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: tasksApi.resolveTask,
+    mutationFn: tasksApi(tenantId).resolveTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -84,10 +92,11 @@ export function useResolveTask(options?: MutationOptions<UpdateTaskResponse, Err
 }
 
 export function useUnresolveTask(options?: MutationOptions<UpdateTaskResponse, Error, number>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: tasksApi.unresolveTask,
+    mutationFn: tasksApi(tenantId).unresolveTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -98,10 +107,11 @@ export function useUnresolveTask(options?: MutationOptions<UpdateTaskResponse, E
 }
 
 export function useDeleteTask(options?: MutationOptions<DeleteTaskResponse, Error, number>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: tasksApi.deleteTask,
+    mutationFn: tasksApi(tenantId).deleteTask,
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);

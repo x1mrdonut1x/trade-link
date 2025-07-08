@@ -10,10 +10,10 @@ import {
 } from '@tradelink/ui/components/sidebar';
 import { Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
 import * as React from 'react';
-import { TeamSwitcher } from './TeamSwitcher';
+import { TenantSwitcher } from './TenantSwitcher';
 import { NavUser } from './User';
 
-import logo from '../../../assets/logo.svg?react';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 // This is sample data.
 const data = {
@@ -22,64 +22,58 @@ const data = {
     email: 'alex@niznik.info',
     avatar: '/avatars/shadcn.jpg',
   },
-  teams: [
-    {
-      name: 'Trade Link CRM',
-      logo: logo,
-      plan: '',
-    },
-  ],
   projects: [
     {
       name: 'Dashboard',
-      url: '/',
+      url: '/$tenantId/',
       icon: LayoutDashboard,
     },
     {
       name: 'Companies',
-      url: '/companies',
+      url: '/$tenantId/companies',
       icon: Building2,
     },
     {
       name: 'Contacts',
-      url: '/contacts',
+      url: '/$tenantId/contacts',
       icon: Contact,
     },
     {
       name: 'Events',
-      url: '/events',
+      url: '/$tenantId/events',
       icon: Calendar,
     },
     {
       name: 'Tasks',
-      url: '/tasks',
+      url: '/$tenantId/tasks',
       icon: CheckSquare,
     },
     {
       name: 'Import Data',
-      url: '/import',
+      url: '/$tenantId/import',
       icon: FileUp,
     },
     {
       name: 'Settings',
-      url: '/settings',
+      url: '/$tenantId/settings',
       icon: Settings,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const tenantId = useTenantParam();
   const matchRoute = useMatchRoute();
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TenantSwitcher />
         <SidebarMenu>
           {data.projects.map(item => (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild isActive={Boolean(matchRoute({ to: item.url, fuzzy: true }))}>
-                <Link to={item.url} activeProps={{ style: { fontWeight: '600' } }}>
+                <Link to={item.url} params={{ tenantId }} activeProps={{ style: { fontWeight: '600' } }}>
                   <item.icon />
                   <span>{item.name}</span>
                 </Link>

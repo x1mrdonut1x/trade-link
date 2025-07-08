@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import path from 'node:path';
 
-export default function globalSetup() {
+export default async function globalSetup() {
   // Set NODE_ENV to test
   process.env.NODE_ENV = 'test';
 

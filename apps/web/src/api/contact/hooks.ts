@@ -9,30 +9,34 @@ import type {
   UpdateContactRequest,
   UpdateContactResponse,
 } from '@tradelink/shared/contact';
-
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 const CONTACTS_QUERY_KEY = 'contacts';
 
 export function useGetAllContacts(query: Partial<GetAllContactsQuery>) {
+  const tenantId = useTenantParam();
+
   return useQuery({
     queryKey: [CONTACTS_QUERY_KEY, query],
-    queryFn: () => contactApi.getAllContacts(query),
+    queryFn: () => contactApi(tenantId).getAllContacts(query),
   });
 }
 
 export function useGetContact(id: number | string) {
+  const tenantId = useTenantParam();
   return useQuery({
     queryKey: [CONTACTS_QUERY_KEY, id],
-    queryFn: () => contactApi.getContact(id),
+    queryFn: () => contactApi(tenantId).getContact(id),
     enabled: !!id,
   });
 }
 
 export function useCreateContact(options?: MutationOptions<CreateContactResponse, Error, CreateContactRequest>) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: contactApi.createContact,
+    mutationFn: contactApi(tenantId).createContact,
     ...options,
     onSuccess: (...args) => {
       options?.onSuccess?.(...args);
@@ -41,11 +45,15 @@ export function useCreateContact(options?: MutationOptions<CreateContactResponse
   });
 }
 
-export function useUpdateContact(options?: MutationOptions<UpdateContactResponse, Error, { id: number; data: UpdateContactRequest }>) {
+export function useUpdateContact(
+  options?: MutationOptions<UpdateContactResponse, Error, { id: number; data: UpdateContactRequest }>
+) {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateContactRequest }) => contactApi.updateContact(id, data),
+    mutationFn: ({ id, data }: { id: number; data: UpdateContactRequest }) =>
+      contactApi(tenantId).updateContact(id, data),
     ...options,
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context);
@@ -56,10 +64,11 @@ export function useUpdateContact(options?: MutationOptions<UpdateContactResponse
 }
 
 export function useDeleteContact() {
+  const tenantId = useTenantParam();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: contactApi.deleteContact,
+    mutationFn: contactApi(tenantId).deleteContact,
     onSuccess: () => {
       queryClient.resetQueries({ queryKey: [CONTACTS_QUERY_KEY] });
     },

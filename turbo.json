@@ -50,7 +50,7 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/api#db:migrate", "@tradelink/shared#build"],
+      "dependsOn": ["@tradelink/api#db:generate", "@tradelink/api#db:deploy", "@tradelink/shared#build"],
       "cache": false,
       "inputs": ["$TURBO_DEFAULT$", ".env.test"],
       "env": ["DATABASE_URL", "NODE_ENV"]

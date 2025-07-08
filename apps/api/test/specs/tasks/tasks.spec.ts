@@ -1,8 +1,8 @@
-import { createAuthenticatedUser, getProfile } from '../../helpers/auth/auth.helper';
+import { getProfile, initClient } from '../../helpers/auth/auth.helper';
 import { createCompany } from '../../helpers/company/company.helper';
 import { createContact } from '../../helpers/contact/contact.helper';
 import { tasksHelper } from '../../helpers/tasks/tasks.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Tasks Module', () => {
   let authToken: string;
@@ -10,11 +10,10 @@ describe('Tasks Module', () => {
 
   beforeEach(async () => {
     await resetDatabase();
-    authToken = await createAuthenticatedUser();
-    setTestAuthToken(authToken);
+    await initClient();
 
     // Get user profile to get the userId
-    const profile = await getProfile(authToken);
+    const profile = await getProfile();
     userId = profile.id;
   });
 

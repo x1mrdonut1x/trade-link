@@ -1,16 +1,9 @@
-import {
-  Controller,
-  Request,
-  Post,
-  UseGuards,
-  Body,
-  Get,
-} from '@nestjs/common';
-import { RegisterRequest } from '@tradelink/shared';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { RefreshTokenRequest, RegisterRequest } from '@tradelink/shared';
 
-import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
@@ -31,5 +24,17 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Post('refresh')
+  async refresh(@Body() refreshTokenData: RefreshTokenRequest) {
+    return this.authService.refreshToken(refreshTokenData);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Request() req) {
+    await this.authService.logout(req.user.id);
+    return { message: 'Logged out successfully' };
   }
 }

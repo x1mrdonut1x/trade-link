@@ -1,4 +1,4 @@
-import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
+import { initClient } from '../../helpers/auth/auth.helper';
 import { createCompany } from '../../helpers/company/company.helper';
 import {
   contactFixtures,
@@ -8,15 +8,14 @@ import {
   getContact,
   updateContact,
 } from '../../helpers/contact/contact.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Contact Controller (e2e)', () => {
   let authToken: string;
 
   beforeEach(async () => {
     await resetDatabase();
-    authToken = await createAuthenticatedUser();
-    setTestAuthToken(authToken);
+    await initClient();
   });
 
   describe('POST /contacts', () => {

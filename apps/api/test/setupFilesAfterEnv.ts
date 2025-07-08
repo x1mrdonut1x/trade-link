@@ -2,12 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bodyParser from 'body-parser';
 import { ZodValidationPipe } from 'nestjs-zod';
-import { spawn } from 'node:child_process';
 
 import { AppModule } from '../src/app.module';
 import { CustomLogger } from '../src/filters/custom-logger';
 import { PrismaService } from '../src/modules/prisma/prisma.service';
-import { clearAuthToken, setAuthToken } from './helpers/request.helper';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -34,9 +32,6 @@ beforeAll(async () => {
 
   await app.init();
 
-  // Run migrations before running tests
-  await runMigrations();
-
   // Clean the database before running tests
   await cleanDatabase();
 });
@@ -44,30 +39,6 @@ beforeAll(async () => {
 afterAll(async () => {
   await app.close();
 });
-
-async function runMigrations() {
-  // Run Prisma migrations using spawn
-  const migrationProcess = spawn('pnpm', ['prisma', 'migrate', 'deploy'], {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-    env: { ...process.env, PATH: process.env.PATH },
-    shell: true,
-  });
-
-  await new Promise<void>((resolve, reject) => {
-    migrationProcess.on('close', code => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Migration process exited with code ${code}`));
-      }
-    });
-
-    migrationProcess.on('error', error => {
-      reject(error);
-    });
-  });
-}
 
 async function cleanDatabase() {
   // Delete all records in the correct order (respecting foreign keys)
@@ -94,12 +65,4 @@ async function cleanDatabase() {
 // Helper function to clean database between tests if needed
 export const resetDatabase = async () => {
   await cleanDatabase();
-};
-
-export const setTestAuthToken = (token: string) => {
-  setAuthToken(token);
-};
-
-export const clearTestAuthToken = () => {
-  clearAuthToken();
 };

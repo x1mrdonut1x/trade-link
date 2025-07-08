@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar } from '@tradelink/ui/icons';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface Event {
   id: number;
@@ -15,6 +16,8 @@ interface UpcomingEventsProps {
 }
 
 export const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
+  const tenantId = useTenantParam();
+
   return (
     <Card>
       <CardHeader>
@@ -36,7 +39,9 @@ export const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
         </div>
         <div className="mt-4">
           <Button asChild className="w-full" variant="outline">
-            <Link to="/events">View All Events</Link>
+            <Link to="/$tenantId/events" params={{ tenantId }}>
+              View All Events
+            </Link>
           </Button>
         </div>
       </CardContent>

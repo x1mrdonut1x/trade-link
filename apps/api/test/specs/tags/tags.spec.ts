@@ -1,4 +1,4 @@
-import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
+import { initClient } from '../../helpers/auth/auth.helper';
 import { companyFixtures, createCompany, getAllCompanies } from '../../helpers/company/company.helper';
 import { contactFixtures, createContact } from '../../helpers/contact/contact.helper';
 import {
@@ -13,7 +13,7 @@ import {
   unassignTagsFromContact,
   updateTag,
 } from '../../helpers/tags/tags.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Tags', () => {
   let createdTagId: number;
@@ -22,10 +22,7 @@ describe('Tags', () => {
 
   beforeEach(async () => {
     await resetDatabase();
-
-    // Create authenticated user and set token
-    const accessToken = await createAuthenticatedUser();
-    setTestAuthToken(accessToken);
+    await initClient();
 
     // Create a company and contact for testing tag assignments
     const company = await createCompany(companyFixtures.validCompany);

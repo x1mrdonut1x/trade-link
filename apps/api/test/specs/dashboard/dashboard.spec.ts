@@ -1,16 +1,15 @@
-import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
+import { initClient } from '../../helpers/auth/auth.helper';
 import { companyFixtures, createCompany } from '../../helpers/company/company.helper';
 import { contactFixtures, createContact } from '../../helpers/contact/contact.helper';
 import { getDashboardStats } from '../../helpers/dashboard/dashboard.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Dashboard Controller (e2e)', () => {
   let authToken: string;
 
   beforeEach(async () => {
     await resetDatabase();
-    authToken = await createAuthenticatedUser();
-    setTestAuthToken(authToken);
+    await initClient();
   });
 
   describe('GET /dashboard/stats', () => {

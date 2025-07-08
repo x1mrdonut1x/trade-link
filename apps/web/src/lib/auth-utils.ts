@@ -1,8 +1,6 @@
-import type { AuthenticatedUser } from '@tradelink/shared/auth';
-
 export const AUTH_STORAGE_KEYS = {
   TOKEN: 'tanstack.auth.token',
-  USER: 'tanstack.auth.user',
+  REFRESH_TOKEN: 'tanstack.auth.refresh_token',
 } as const;
 
 export const authStorage = {
@@ -18,31 +16,24 @@ export const authStorage = {
     localStorage.removeItem(AUTH_STORAGE_KEYS.TOKEN);
   },
 
-  getUser(): AuthenticatedUser | undefined {
-    const userData = localStorage.getItem(AUTH_STORAGE_KEYS.USER);
-    if (!userData) return;
-
-    try {
-      return JSON.parse(userData);
-    } catch {
-      return;
-    }
+  getRefreshToken(): string | null {
+    return localStorage.getItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
   },
 
-  setUser(user: AuthenticatedUser): void {
-    localStorage.setItem(AUTH_STORAGE_KEYS.USER, JSON.stringify(user));
+  setRefreshToken(refreshToken: string): void {
+    localStorage.setItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
   },
 
-  removeUser(): void {
-    localStorage.removeItem(AUTH_STORAGE_KEYS.USER);
+  removeRefreshToken(): void {
+    localStorage.removeItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
   },
 
   clearAll(): void {
     this.removeToken();
-    this.removeUser();
+    this.removeRefreshToken();
   },
 
   hasValidSession(): boolean {
-    return !!(this.getToken() && this.getUser());
+    return !!(this.getToken() && this.getRefreshToken());
   },
 };

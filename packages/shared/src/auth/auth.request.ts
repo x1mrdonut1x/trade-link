@@ -16,3 +16,9 @@ const registerRequestSchema = z.object({
 });
 
 export class RegisterRequest extends createZodDto(registerRequestSchema) {}
+
+const refreshTokenRequestSchema = z.object({
+  refresh_token: z.string().min(1, 'Refresh token is required'),
+});
+
+export class RefreshTokenRequest extends createZodDto(refreshTokenRequestSchema) {}

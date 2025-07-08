@@ -11,40 +11,40 @@ import type {
   UpdateTaskResponse,
 } from '@tradelink/shared';
 
-export const tasksApi = {
+export const tasksApi = (tenantId: string) => ({
   getAllTasks: (query?: GetAllTasksQueryDto) => {
-    return myFetch<GetAllTasksResponse>('tasks', { query });
+    return myFetch<GetAllTasksResponse>(tenantId, 'tasks', { query });
   },
 
   getTask: (id: number | string) => {
-    return myFetch<GetTaskResponse>(`tasks/${id}`);
+    return myFetch<GetTaskResponse>(tenantId, `tasks/${id}`);
   },
 
   createTask: (data: CreateTaskRequest) => {
-    return myFetch<CreateTaskResponse>('tasks', { method: 'POST', body: data });
+    return myFetch<CreateTaskResponse>(tenantId, 'tasks', { method: 'POST', body: data });
   },
 
   updateTask: (id: number | string, data: UpdateTaskRequest) => {
-    return myFetch<UpdateTaskResponse>(`tasks/${id}`, { method: 'PATCH', body: data });
+    return myFetch<UpdateTaskResponse>(tenantId, `tasks/${id}`, { method: 'PATCH', body: data });
   },
 
   deleteTask: (id: number | string) => {
-    return myFetch<DeleteTaskResponse>(`tasks/${id}`, { method: 'DELETE' });
+    return myFetch<DeleteTaskResponse>(tenantId, `tasks/${id}`, { method: 'DELETE' });
   },
 
   resolveTask: (id: number | string) => {
-    return myFetch<UpdateTaskResponse>(`tasks/${id}/resolve`, { method: 'PATCH' });
+    return myFetch<UpdateTaskResponse>(tenantId, `tasks/${id}/resolve`, { method: 'PATCH' });
   },
 
   unresolveTask: (id: number | string) => {
-    return myFetch<UpdateTaskResponse>(`tasks/${id}/unresolve`, { method: 'PATCH' });
+    return myFetch<UpdateTaskResponse>(tenantId, `tasks/${id}/unresolve`, { method: 'PATCH' });
   },
 
   getTasksByContactId: (contactId: number | string) => {
-    return myFetch<GetAllTasksResponse>(`tasks/contact/${contactId}`);
+    return myFetch<GetAllTasksResponse>(tenantId, `tasks/contact/${contactId}`);
   },
 
   getTasksByCompanyId: (companyId: number | string) => {
-    return myFetch<GetAllTasksResponse>(`tasks/company/${companyId}`);
+    return myFetch<GetAllTasksResponse>(tenantId, `tasks/company/${companyId}`);
   },
-};
+});

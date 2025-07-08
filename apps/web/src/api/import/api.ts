@@ -6,14 +6,14 @@ import type {
 } from '@tradelink/shared';
 import { myFetch } from 'api/client';
 
-export const importAPI = {
+export const importAPI = (tenantId: string) => ({
   async processImport(body: ImportProcessRequest & { csvFile: Blob }) {
     const formData = new FormData();
     formData.append('csvFile', body.csvFile);
     formData.append('fieldMappings', JSON.stringify(body.fieldMappings));
     formData.append('importType', body.importType);
 
-    return myFetch<ImportPreviewResponse>('import/process', {
+    return myFetch<ImportPreviewResponse>(tenantId, 'import/process', {
       method: 'POST',
       body: formData,
     });
@@ -40,9 +40,9 @@ export const importAPI = {
       formData.append('contactCsvFile', body.contactCsvFile);
     }
 
-    return myFetch<ImportExecuteResponse>('import/execute', {
+    return myFetch<ImportExecuteResponse>(tenantId, 'import/execute', {
       method: 'POST',
       body: formData,
     });
   },
-};
+});

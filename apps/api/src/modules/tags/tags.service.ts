@@ -31,37 +31,38 @@ export class TagsService {
     return tags;
   }
 
-  async getTag(id: number): Promise<GetTagResponse> {
+  async getTag(tenantId: number, id: number): Promise<GetTagResponse> {
     const tag = await this.prisma.tag.findUniqueOrThrow({
-      where: { id },
+      where: { tenantId, id },
     });
 
     return tag;
   }
 
-  async createTag(data: CreateTagRequest, createdBy: number): Promise<CreateTagResponse> {
+  async createTag(data: CreateTagRequest, createdBy: number, tenantId: number): Promise<CreateTagResponse> {
     const tag = await this.prisma.tag.create({
       data: {
         ...data,
         createdBy,
+        tenantId,
       },
     });
 
     return tag;
   }
 
-  async updateTag(id: number, data: UpdateTagRequest): Promise<UpdateTagResponse> {
+  async updateTag(tenantId: number, id: number, data: UpdateTagRequest): Promise<UpdateTagResponse> {
     const tag = await this.prisma.tag.update({
-      where: { id },
+      where: { tenantId, id },
       data,
     });
 
     return tag;
   }
 
-  async deleteTag(id: number): Promise<DeleteTagResponse> {
+  async deleteTag(tenantId: number, id: number): Promise<DeleteTagResponse> {
     await this.prisma.tag.delete({
-      where: { id },
+      where: { tenantId, id },
     });
 
     return {

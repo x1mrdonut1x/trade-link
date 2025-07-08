@@ -1,4 +1,4 @@
-import { createAuthenticatedUser, getProfile } from '../../helpers/auth/auth.helper';
+import { getProfile, initClient } from '../../helpers/auth/auth.helper';
 import { createCompany } from '../../helpers/company/company.helper';
 import { createContact } from '../../helpers/contact/contact.helper';
 import {
@@ -9,7 +9,7 @@ import {
   noteFixtures,
   updateNote,
 } from '../../helpers/notes/notes.helper';
-import { resetDatabase, setTestAuthToken } from '../../setupFilesAfterEnv';
+import { resetDatabase } from '../../setupFilesAfterEnv';
 
 describe('Notes Controller (e2e)', () => {
   let authToken: string;
@@ -17,11 +17,10 @@ describe('Notes Controller (e2e)', () => {
 
   beforeEach(async () => {
     await resetDatabase();
-    authToken = await createAuthenticatedUser();
-    setTestAuthToken(authToken);
+    await initClient();
 
     // Get user profile to get the userId
-    const profile = await getProfile(authToken);
+    const profile = await getProfile();
     userId = profile.id;
   });
 

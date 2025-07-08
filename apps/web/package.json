@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "countries-list": "^3.1.1",
+    "jwt-decode": "^4.0.0",
     "papaparse": "^5.5.3",
     "query-string": "^9.2.2",
     "react": "^19.1.0",

@@ -19,9 +19,9 @@ import type { Prisma } from 'generated/prisma';
 export class ContactService {
   constructor(private prisma: PrismaService) {}
 
-  async getContact(id: number): Promise<GetContactResponse> {
+  async getContact(tenantId: number, id: number): Promise<GetContactResponse> {
     const contact = await this.prisma.contact.findUniqueOrThrow({
-      where: { id },
+      where: { tenantId, id },
       include: {
         company: true,
         tags: true,
@@ -31,9 +31,12 @@ export class ContactService {
     return contact;
   }
 
-  async createContact(data: CreateContactRequest): Promise<CreateContactResponse> {
+  async createContact(data: CreateContactRequest, tenantId: number): Promise<CreateContactResponse> {
     const contact = await this.prisma.contact.create({
-      data,
+      data: {
+        ...data,
+        tenantId,
+      },
       include: {
         company: true,
         tags: true,
@@ -43,9 +46,9 @@ export class ContactService {
     return contact;
   }
 
-  async updateContact(id: number, data: UpdateContactRequest): Promise<UpdateContactResponse> {
+  async updateContact(tenantId: number, id: number, data: UpdateContactRequest): Promise<UpdateContactResponse> {
     const contact = await this.prisma.contact.update({
-      where: { id },
+      where: { tenantId, id },
       data,
       include: {
         company: true,
@@ -56,18 +59,19 @@ export class ContactService {
     return contact;
   }
 
-  async deleteContact(id: number): Promise<DeleteContactResponse> {
+  async deleteContact(tenantId: number, id: number): Promise<DeleteContactResponse> {
     await this.prisma.contact.delete({
-      where: { id },
+      where: { tenantId, id },
     });
 
     return { success: true, message: 'Contact deleted successfully' };
   }
 
-  async getAllContacts(query: GetAllContactsQuery): Promise<GetAllContactsResponse> {
+  async getAllContacts(tenantId: number, query: GetAllContactsQuery): Promise<GetAllContactsResponse> {
     const { search, page, size, tagIds } = query;
 
     const whereClause: Prisma.contactWhereInput = {
+      tenantId,
       AND: [
         search
           ? {
@@ -119,19 +123,35 @@ export class ContactService {
     return contacts;
   }
 
-  async findContactByEmail(email: string): Promise<GetContactResponse | null> {
+  async findContactByEmail(email: string, tenantId?: number): Promise<GetContactResponse | null> {
     if (!email) {
       return null;
     }
+
+    if (!tenantId) {
+      // For backwards compatibility, but this should generally not be used
+      return this.prisma.contact.findFirst({
+        where: { email },
+        include: {
+          company: true,
+        },
+      });
+    }
+
     return this.prisma.contact.findUnique({
-      where: { email },
+      where: {
+        email_tenantId: {
+          email,
+          tenantId,
+        },
+      },
       include: {
         company: true,
       },
     });
   }
 
-  async findContactsByEmails(emails: string[]): Promise<Map<string, GetContactResponse>> {
+  async findContactsByEmails(tenantId: number, emails: string[]): Promise<Map<string, GetContactResponse>> {
     if (emails.length === 0) {
       return new Map();
     }
@@ -156,10 +176,15 @@ export class ContactService {
     return contactMap;
   }
 
-  async createManyContacts(contacts: CreateContactRequest[], tx?: Prisma.TransactionClient) {
+  async createManyContacts(tenantId: number, contacts: CreateContactRequest[], tx?: Prisma.TransactionClient) {
     const prismaClient = tx || this.prisma;
+    const contactsWithTenant = contacts.map(contact => ({
+      ...contact,
+      tenantId,
+    }));
+
     return prismaClient.contact.createManyAndReturn({
-      data: contacts,
+      data: contactsWithTenant,
       select: {
         id: true,
         email: true,
@@ -167,7 +192,11 @@ export class ContactService {
     });
   }
 
-  async bulkUpdateContacts(updates: Array<{ id: number; data: UpdateContactRequest }>, tx?: Prisma.TransactionClient) {
+  async bulkUpdateContacts(
+    tenantId: number,
+    updates: Array<{ id: number; data: UpdateContactRequest }>,
+    tx?: Prisma.TransactionClient
+  ) {
     const prismaClient = tx || this.prisma;
     await Promise.all(
       updates.map(({ id, data }) =>
@@ -179,9 +208,9 @@ export class ContactService {
     );
   }
 
-  async assignTags(id: number, tagIds: number[]): Promise<ContactWithCompanyDto> {
+  async assignTags(tenantId: number, id: number, tagIds: number[]): Promise<ContactWithCompanyDto> {
     const contact = await this.prisma.contact.update({
-      where: { id },
+      where: { tenantId, id },
       data: {
         tags: {
           connect: tagIds.map(tagId => ({ id: tagId })),
@@ -196,9 +225,9 @@ export class ContactService {
     return contact;
   }
 
-  async unassignTags(id: number, tagIds: number[]): Promise<ContactWithCompanyDto> {
+  async unassignTags(tenantId: number, id: number, tagIds: number[]): Promise<ContactWithCompanyDto> {
     const contact = await this.prisma.contact.update({
-      where: { id },
+      where: { tenantId, id },
       data: {
         tags: {
           disconnect: tagIds.map(tagId => ({ id: tagId })),

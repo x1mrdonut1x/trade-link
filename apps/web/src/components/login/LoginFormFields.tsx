@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../../context/auth-context';
 
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import type React from 'react';
 
 export type LoginFormData = {
@@ -18,6 +19,8 @@ interface LoginFormProps extends React.ComponentProps<'form'> {
 
 export function LoginFormFields({ className, onShowRegister, ...props }: LoginFormProps) {
   const auth = useAuth();
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate();
 
   const {
     register,
@@ -29,6 +32,9 @@ export function LoginFormFields({ className, onShowRegister, ...props }: LoginFo
   const onSubmitForm = async (data: LoginFormData) => {
     try {
       await auth.login(data);
+      if (search.redirect) {
+        navigate({ to: search.redirect });
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.log('Login error:', error.message);

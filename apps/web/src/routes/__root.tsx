@@ -1,32 +1,29 @@
-import { createRootRouteWithContext, redirect } from '@tanstack/react-router';
-import { z } from 'zod';
+import { createRootRouteWithContext, Outlet, redirect } from '@tanstack/react-router';
 
-import { Content } from '../components/layout/content/Content';
-import { Login } from '../components/login/Login';
-import { useAuth } from '../context/auth-context';
-
+import z from 'zod';
 import type { RouterContext } from '../lib/router';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: () => <AuthGuard />,
+  component: () => <RootRoute />,
   validateSearch: z.object({
     redirect: z.string().optional().catch(''),
   }),
   beforeLoad: ({ context, search, location }) => {
     if (context.auth.isAuthenticated) {
-      if (search.redirect) throw redirect({ to: search.redirect });
-    } else if (location.pathname !== '/') {
+      if (search.redirect) throw redirect({ to: search.redirect, search: {} });
+
+      if (context.auth.user?.membership?.length && location.pathname === '/') {
+        throw redirect({
+          to: '/$tenantId',
+          params: { tenantId: context.auth.user.membership[0].id.toString() },
+        });
+      }
+    } else if (!context.auth.user?.membership?.length && location.pathname !== '/' && !search.redirect) {
       throw redirect({ to: '/', search: { redirect: location.href } });
     }
   },
 });
 
-const AuthGuard = () => {
-  const auth = useAuth();
-
-  if (!auth.isAuthenticated) {
-    return <Login />;
-  }
-
-  return <Content />;
+const RootRoute = () => {
+  return <Outlet />;
 };
