@@ -21,6 +21,7 @@ export class UnauthorizedError extends ApiError {
 }
 
 export async function myFetch<T = unknown>(
+  tenantId: string | undefined,
   url: string,
   data?: Omit<globalThis.RequestInit, 'body'> & { body?: unknown; query?: Record<string, unknown> }
 ): Promise<T> {
@@ -28,8 +29,10 @@ export async function myFetch<T = unknown>(
 
   // Get token from localStorage
   const token = localStorage.getItem(AUTH_STORAGE_KEYS.TOKEN);
+
   if (token) {
     headers.append('Authorization', `Bearer ${token}`);
+    if (tenantId) headers.append('Tenant-ID', tenantId);
   }
 
   let parsedBody = data?.body as any;

@@ -4,10 +4,10 @@ import type { LoginRequest, LoginResponse, RegisterRequest } from '@tradelink/sh
 
 export const authApi = {
   login: (body: LoginRequest) => {
-    return myFetch<LoginResponse>('auth/login', { body, method: 'POST' });
+    return myFetch<LoginResponse>(undefined, 'auth/login', { body, method: 'POST' });
   },
 
   register: (body: RegisterRequest) => {
-    return myFetch<LoginResponse>('auth/register', { body, method: 'POST' });
+    return myFetch<LoginResponse>(undefined, 'auth/register', { body, method: 'POST' });
   },
 };

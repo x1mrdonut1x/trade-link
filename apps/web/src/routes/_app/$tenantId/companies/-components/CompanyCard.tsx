@@ -10,19 +10,22 @@ import {
 import { Building2, Edit, Mail, MapPin, MoreHorizontal, Phone, Trash2, Users } from '@tradelink/ui/icons';
 
 import type { CompanyDto } from '@tradelink/shared';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface CompanyCardProps {
   company: CompanyDto & { contactsCount: number };
 }
 
 export function CompanyCard({ company }: CompanyCardProps) {
+  const tenantId = useTenantParam();
+
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
   return (
-    <Link to="/companies/$companyId" params={{ companyId: company.id.toString() }}>
+    <Link to="/$tenantId/companies/$companyId" params={{ tenantId, companyId: company.id.toString() }}>
       <Card className="cursor-pointer hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div className="flex-1">

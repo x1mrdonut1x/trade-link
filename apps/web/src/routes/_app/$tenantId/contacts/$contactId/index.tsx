@@ -17,8 +17,7 @@ export const Route = createFileRoute('/_app/$tenantId/contacts/$contactId/')({
 });
 
 function ContactDetail() {
-  const params = Route.useParams();
-  const contactId = params.contactId;
+  const { tenantId, contactId } = Route.useParams();
   const { data: contact, isLoading, error } = useGetContact(contactId);
 
   // Set up breadcrumbs
@@ -54,7 +53,7 @@ function ContactDetail() {
           {error ? 'There was an error loading the contact.' : "The contact you're looking for doesn't exist."}
         </p>
         <Button asChild>
-          <Link to="/contacts">
+          <Link to="/$tenantId/contacts" params={{ tenantId }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Contacts
           </Link>
@@ -73,7 +72,7 @@ function ContactDetail() {
             label: 'Edit Contact',
             icon: Edit,
             link: {
-              to: '/contacts/$contactId/edit',
+              to: '/$tenantId/contacts/$contactId/edit',
               params: { contactId },
             },
           },

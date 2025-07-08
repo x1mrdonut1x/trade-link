@@ -135,7 +135,7 @@ export function DuplicateWarning({ duplicateEmailErrors = [], duplicateNameError
               existingEntity={error.existingEntity}
               onRemove={rows => removeDuplicateNameEntries(error.name, error.type, rows)}
               getEntityLink={() => ({
-                to: '/companies/$companyId',
+                to: '/$tenantId/companies/$companyId',
                 params: {
                   companyId: error.existingEntity!.id.toString(),
                 },

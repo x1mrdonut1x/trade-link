@@ -4,12 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/componen
 import { Building2, Mail, MapPin, Phone, User } from '@tradelink/ui/icons';
 
 import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface ContactInfoCardProps {
   contact: ContactWithCompanyDto;
 }
 
 export function ContactInfoCard({ contact }: ContactInfoCardProps) {
+  const tenantId = useTenantParam();
+
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
@@ -41,8 +44,8 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
             {contact.jobTitle && <p className="text-muted-foreground">{contact.jobTitle}</p>}
             {contact.company?.name ? (
               <Link
-                to="/companies/$companyId"
-                params={{ companyId: contact.company.id.toString() }}
+                to="/$tenantId/companies/$companyId"
+                params={{ tenantId, companyId: contact.company.id.toString() }}
                 className="text-sm text-blue-600 hover:underline mt-1 inline-block"
               >
                 {contact.company.name}
@@ -78,8 +81,8 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
               <span className="font-medium">Company:</span>
               {contact.company?.name ? (
                 <Link
-                  to="/companies/$companyId"
-                  params={{ companyId: contact.company.id.toString() }}
+                  to="/$tenantId/companies/$companyId"
+                  params={{ tenantId, companyId: contact.company.id.toString() }}
                   className="text-blue-600 hover:underline"
                 >
                   {contact.company.name}

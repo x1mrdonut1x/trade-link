@@ -26,6 +26,7 @@ export const Route = createFileRoute('/_app/$tenantId/contacts/')({
 });
 
 export function Contacts() {
+  const { tenantId } = Route.useParams();
   const { search, page, size, tagIds } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
@@ -53,7 +54,7 @@ export function Contacts() {
   const deleteContact = useDeleteContact();
 
   const handleRowClick = (contact: ContactWithCompanyDto) => {
-    navigate({ to: '/contacts/$contactId', params: { contactId: contact.id.toString() } });
+    navigate({ to: '/$tenantId/contacts/$contactId', params: { tenantId, contactId: contact.id.toString() } });
   };
 
   const handleDelete = async (id: number) => {
@@ -101,7 +102,7 @@ export function Contacts() {
       title: 'Email',
       render: contact =>
         contact.email ? (
-          <a href={`mailto:${contact.email}`} className=`text-blue-600 hover:underline`>
+          <a href={`mailto:${contact.email}`} className="text-blue-600 hover:underline">
             {contact.email}
           </a>
         ) : (
@@ -113,8 +114,8 @@ export function Contacts() {
       render: contact =>
         contact.company?.name ? (
           <Link
-            to="/companies/$companyId"
-            params={{ companyId: contact.company.id.toString() }}
+            to="/$tenantId/companies/$companyId"
+            params={{ tenantId, companyId: contact.company.id.toString() }}
             onClick={e => e.stopPropagation()}
             className="hover:underline"
           >
@@ -128,7 +129,7 @@ export function Contacts() {
       title: 'Phone',
       render: contact => {
         return contact?.phoneNumber ? (
-          <a href={`tel:${contact?.phonePrefix}${contact?.phoneNumber}`} className=`text-blue-600 hover:underline`>
+          <a href={`tel:${contact?.phonePrefix}${contact?.phoneNumber}`} className="text-blue-600 hover:underline">
             {contact?.phonePrefix} {contact?.phoneNumber}
           </a>
         ) : (
@@ -180,8 +181,8 @@ export function Contacts() {
             <DropdownMenuItem asChild>
               <Link
                 onClick={e => e.stopPropagation()}
-                to="/contacts/$contactId/edit"
-                params={{ contactId: contact.id.toString() }}
+                to="/$tenantId/contacts/$contactId/edit"
+                params={{ tenantId, contactId: contact.id.toString() }}
               >
                 Edit Contact
               </Link>
@@ -214,7 +215,7 @@ export function Contacts() {
           {
             label: 'Add New Contact',
             icon: PlusCircle,
-            link: { to: '/contacts/add' },
+            link: { to: '/$tenantId/contacts/add', params: { tenantId } },
           },
         ]}
       />
@@ -233,11 +234,11 @@ export function Contacts() {
             onRowClick={handleRowClick}
             emptyMessage={search ? 'No contacts found' : 'No contacts yet'}
             emptyDescription={
-              search ? `No contacts match your search for `${search}`.` : `Get started by adding your first contact.`
+              search ? `No contacts match your search for "${search}".` : `Get started by adding your first contact.`
             }
             emptyAction={
               search ? (
-                <Button variant="outline" onClick={() => setSearchQuery("")}>
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
                   Clear Search
                 </Button>
               ) : undefined

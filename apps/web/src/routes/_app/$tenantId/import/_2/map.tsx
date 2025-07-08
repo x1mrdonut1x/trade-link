@@ -19,6 +19,8 @@ export const Route = createFileRoute('/_app/$tenantId/import/_2/map')({
 function ImportDataPage() {
   const navigate = useNavigate();
 
+  const { tenantId } = Route.useParams();
+
   const importContext = useImportContext();
   const { csvColumns, importType, fieldMappings, setFieldMappings } = importContext;
 
@@ -27,9 +29,9 @@ function ImportDataPage() {
 
   useEffect(() => {
     if (!csvColumns?.length) {
-      navigate({ to: '/import/upload' });
+      navigate({ to: '/$tenantId/import/upload', params: { tenantId } });
     }
-  }, [navigate, csvColumns]);
+  }, [navigate, csvColumns, tenantId]);
 
   // Helper function to generate filtered CSV with only mapped columns
   const generateFilteredCsv = async (originalCsvFile: Blob, fieldMappings: typeof importContext.fieldMappings) => {
@@ -98,14 +100,14 @@ function ImportDataPage() {
         fieldMappings
       );
 
-      const processResponse = await importAPI.processImport({
+      const processResponse = await importAPI(tenantId).processImport({
         csvFile: filteredCsvFile,
         fieldMappings: updatedFieldMappings,
         importType,
       });
 
       importContext.setPreviewData(processResponse);
-      navigate({ to: '/import/review' });
+      navigate({ to: '/$tenantId/import/review', params: { tenantId } });
     } catch (error_) {
       setError(error_ instanceof Error ? error_.message : 'Failed to process data');
     } finally {
@@ -214,14 +216,14 @@ function ImportDataPage() {
         <Alert
           variant="warning"
           title="Required fields missing in Contacts"
-          description={`Please map the following required fields: ${requiredFieldsNotMapped.contacts.map(f => f.label).join(`, `)}`}
+          description={`Please map the following required fields: ${requiredFieldsNotMapped.contacts.map(f => f.label).join(', ')}`}
         />
       )}
       {requiredFieldsNotMapped.companies.length > 0 && (
         <Alert
           variant="warning"
           title="Required fields missing in Companies"
-          description={`Please map the following required fields: ${requiredFieldsNotMapped.companies.map(f => f.label).join(`, `)}`}
+          description={`Please map the following required fields: ${requiredFieldsNotMapped.companies.map(f => f.label).join(', ')}`}
         />
       )}
       {error && <Alert variant="error" title="Error" description={error} />}
@@ -356,7 +358,11 @@ function ImportDataPage() {
       </div>
 
       <div className="flex gap-2 pt-4 flex-shrink-0 border-t justify-center">
-        <Button variant="outline" onClick={() => navigate({ to: "/import/upload" })} disabled={isLoading}>
+        <Button
+          variant="outline"
+          onClick={() => navigate({ to: '/$tenantId/import/upload', params: { tenantId } })}
+          disabled={isLoading}
+        >
           Back
         </Button>
         <Button

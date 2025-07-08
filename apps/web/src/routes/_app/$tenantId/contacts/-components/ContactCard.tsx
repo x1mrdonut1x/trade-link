@@ -3,8 +3,24 @@ import { Avatar, AvatarFallback, AvatarImage } from '@tradelink/ui/components/av
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@tradelink/ui/components/dropdown-menu';
-import { Building2, Calendar, Edit, Mail, MapPin, MessageSquare, MoreHorizontal, Phone, Trash2 } from '@tradelink/ui/icons';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@tradelink/ui/components/dropdown-menu';
+import {
+  Building2,
+  Calendar,
+  Edit,
+  Mail,
+  MapPin,
+  MessageSquare,
+  MoreHorizontal,
+  Phone,
+  Trash2,
+} from '@tradelink/ui/icons';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface Contact {
   id: number;
@@ -28,12 +44,14 @@ interface ContactCardProps {
 }
 
 export function ContactCard({ contact }: ContactCardProps) {
+  const tenantId = useTenantParam();
+
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
 
   return (
-    <Link to="/contacts/$contactId" params={{ contactId: contact.id.toString() }}>
+    <Link to="/$tenantId/contacts/$contactId" params={{ tenantId, contactId: contact.id.toString() }}>
       <Card className="cursor-pointer hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div className="flex items-start gap-3 flex-1">

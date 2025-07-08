@@ -11,24 +11,24 @@ import type {
   UpdateCompanyResponse,
 } from '@tradelink/shared';
 
-export const companyApi = {
+export const companyApi = (tenantId: string) => ({
   getAll: (query: Partial<GetAllCompaniesQuery>) => {
-    return myFetch<GetAllCompaniesResponse>('companies', { query });
+    return myFetch<GetAllCompaniesResponse>(tenantId, 'companies', { query });
   },
 
   getById: (id: number) => {
-    return myFetch<GetCompanyResponse>(`companies/${id}`);
+    return myFetch<GetCompanyResponse>(tenantId, `companies/${id}`);
   },
 
   create: (data: CreateCompanyRequest) => {
-    return myFetch<CreateCompanyResponse>('companies', { method: 'POST', body: data });
+    return myFetch<CreateCompanyResponse>(tenantId, 'companies', { method: 'POST', body: data });
   },
 
   update: (id: number, data: UpdateCompanyRequest) => {
-    return myFetch<UpdateCompanyResponse>(`companies/${id}`, { method: 'PUT', body: data });
+    return myFetch<UpdateCompanyResponse>(tenantId, `companies/${id}`, { method: 'PUT', body: data });
   },
 
   delete: (id: number) => {
-    return myFetch<DeleteCompanyResponse>(`companies/${id}`, { method: 'DELETE' });
+    return myFetch<DeleteCompanyResponse>(tenantId, `companies/${id}`, { method: 'DELETE' });
   },
-};
+});

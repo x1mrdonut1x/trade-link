@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_app/$tenantId/contacts/add/')({
 
 export function AddContact() {
   const router = useRouter();
+  const { tenantId } = Route.useParams();
   const { companyId } = Route.useSearch();
 
   useBreadcrumbSetup([
@@ -25,7 +26,7 @@ export function AddContact() {
   ]);
 
   const handleSuccess = (contactId: number) => {
-    router.navigate({ to: '/contacts/$contactId', params: { contactId: contactId.toString() } });
+    router.navigate({ to: '/$tenantId/contacts/$contactId', params: { tenantId, contactId: contactId.toString() } });
   };
 
   const handleCancel = () => {
@@ -41,7 +42,7 @@ export function AddContact() {
             label: 'Back to Contacts',
             icon: ArrowLeft,
             variant: 'outline',
-            link: { to: '/contacts' },
+            link: { to: '/$tenantId/contacts' },
           },
         ]}
       />

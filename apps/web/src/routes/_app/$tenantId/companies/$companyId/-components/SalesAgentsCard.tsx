@@ -6,6 +6,7 @@ import { AssignContactDialog } from 'components/contact/AssignContactDialog';
 import { useState } from 'react';
 
 import type { GetCompanyResponse } from '@tradelink/shared';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface SalesAgentsCardProps {
   companyId: string | number;
@@ -13,6 +14,7 @@ interface SalesAgentsCardProps {
 }
 
 export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardProps) {
+  const tenantId = useTenantParam();
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
   return (
@@ -41,7 +43,11 @@ export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardPro
         <CardContent>
           <div className="gap-3 flex flex-col">
             {contacts.map(contact => (
-              <Link key={contact.id} to="/contacts/$contactId" params={{ contactId: contact.id.toString() }}>
+              <Link
+                key={contact.id}
+                to="/$tenantId/contacts/$contactId"
+                params={{ tenantId, contactId: contact.id.toString() }}
+              >
                 <Card className="cursor-pointer hover:shadow-md transition-shadow shadow-none">
                   <CardContent>
                     <p className="font-medium">

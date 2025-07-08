@@ -17,6 +17,8 @@ function UploadDataPage() {
   const navigate = useNavigate();
   const importContext = useImportContext();
 
+  const { tenantId } = Route.useParams();
+
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -163,7 +165,7 @@ function UploadDataPage() {
 
       <div className="flex gap-2 pt-4 flex-shrink-0 border-t justify-end">
         <Button
-          onClick={() => navigate({ to: '/import/map' })}
+          onClick={() => navigate({ to: '/$tenantId/import/map', params: { tenantId } })}
           disabled={!importContext.selectedRawFile}
           loading={isLoading}
         >

@@ -20,6 +20,8 @@ export function DataPreviewPage() {
   const navigate = useNavigate();
   const importContext = useImportContext();
 
+  const { tenantId } = Route.useParams();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [importErrorDetails, setImportErrorDetails] = useState<ImportExecuteResponse['errors']>([]);
@@ -28,9 +30,9 @@ export function DataPreviewPage() {
 
   useEffect(() => {
     if (!previewData) {
-      navigate({ to: '/import/map' });
+      navigate({ to: '/$tenantId/import/map', params: { tenantId } });
     }
-  }, [navigate, previewData]);
+  }, [navigate, previewData, tenantId]);
 
   const generateCSV = <T extends { data: Record<string, unknown>; existingId?: number; companyId?: number }>(
     selectedEntries: T[],
@@ -120,7 +122,7 @@ export function DataPreviewPage() {
         .filter(({ entry }) => !entry.selected)
         .map(({ index }) => index);
 
-      const executeResponse = await importAPI.executeImport({
+      const executeResponse = await importAPI(tenantId).executeImport({
         fieldMappings: updatedFieldMappings,
         importType: importContext.importType,
         skippedCompanyRows,
@@ -131,7 +133,7 @@ export function DataPreviewPage() {
 
       if (executeResponse.success) {
         importContext.setImportStats(executeResponse.stats);
-        navigate({ to: '/import/success' });
+        navigate({ to: '/$tenantId/import/success', params: { tenantId } });
       } else {
         setError('Import failed with errors. Please review the details below.');
         setImportErrorDetails(executeResponse.errors || []);
@@ -162,7 +164,7 @@ export function DataPreviewPage() {
           description={error}
           action={{
             label: 'Go Back',
-            onClick: () => navigate({ to: '/import/map' }),
+            onClick: () => navigate({ to: '/$tenantId/import/map', params: { tenantId } }),
             variant: 'outline',
           }}
         />
@@ -231,7 +233,7 @@ export function DataPreviewPage() {
 
       {/* Actions */}
       <div className="flex gap-2 flex-shrink-0 pt-4 border-t">
-        <Button variant="outline" onClick={() => navigate({ to: "/import/map" })}>
+        <Button variant="outline" onClick={() => navigate({ to: '/$tenantId/import/map', params: { tenantId } })}>
           Back
         </Button>
         <Button onClick={() => handleImport()} disabled={!canImport} className="flex-1">

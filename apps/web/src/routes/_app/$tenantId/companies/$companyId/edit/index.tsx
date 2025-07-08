@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_app/$tenantId/companies/$companyId/edit/
 });
 
 function EditCompany() {
-  const { companyId } = Route.useParams();
+  const { tenantId, companyId } = Route.useParams();
   const router = useRouter();
 
   const { data: company, isLoading } = useGetCompany(companyId);
@@ -33,7 +33,7 @@ function EditCompany() {
   );
 
   const handleSuccess = (companyId: number) => {
-    router.navigate({ to: '/companies/$companyId', params: { companyId: companyId.toString() } }); // Will navigate to company detail once route is available
+    router.navigate({ to: '/$tenantId/companies/$companyId', params: { tenantId, companyId: companyId.toString() } }); // Will navigate to company detail once route is available
   };
 
   const handleCancel = () => {
@@ -51,7 +51,7 @@ function EditCompany() {
         <h3 className="text-lg font-semibold mb-2">Company not found</h3>
         <p className="text-muted-foreground mb-4">The company you"re looking for doesn"t exist.</p>
         <Button>
-          <Link to="/companies">
+          <Link to="/$tenantId/companies">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Companies
           </Link>

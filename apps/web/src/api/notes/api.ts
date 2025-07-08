@@ -11,32 +11,32 @@ import type {
   UpdateNoteResponse,
 } from '@tradelink/shared';
 
-export const notesApi = {
+export const notesApi = (tenantId: string) => ({
   getAllNotes: (query?: GetAllNotesRequest) => {
-    return myFetch<GetAllNotesResponse>('notes', { query });
+    return myFetch<GetAllNotesResponse>(tenantId, 'notes', { query });
   },
 
   getNote: (id: number | string) => {
-    return myFetch<GetNoteResponse>(`notes/${id}`);
+    return myFetch<GetNoteResponse>(tenantId, `notes/${id}`);
   },
 
   createNote: (data: CreateNoteRequest) => {
-    return myFetch<CreateNoteResponse>('notes', { method: 'POST', body: data });
+    return myFetch<CreateNoteResponse>(tenantId, 'notes', { method: 'POST', body: data });
   },
 
   updateNote: (id: number | string, data: UpdateNoteRequest) => {
-    return myFetch<UpdateNoteResponse>(`notes/${id}`, { method: 'PATCH', body: data });
+    return myFetch<UpdateNoteResponse>(tenantId, `notes/${id}`, { method: 'PATCH', body: data });
   },
 
   deleteNote: (id: number | string) => {
-    return myFetch<DeleteNoteResponse>(`notes/${id}`, { method: 'DELETE' });
+    return myFetch<DeleteNoteResponse>(tenantId, `notes/${id}`, { method: 'DELETE' });
   },
 
   getNotesByContactId: (contactId: number | string) => {
-    return myFetch<GetAllNotesResponse>(`notes/contact/${contactId}`);
+    return myFetch<GetAllNotesResponse>(tenantId, `notes/contact/${contactId}`);
   },
 
   getNotesByCompanyId: (companyId: number | string) => {
-    return myFetch<GetAllNotesResponse>(`notes/company/${companyId}`);
+    return myFetch<GetAllNotesResponse>(tenantId, `notes/company/${companyId}`);
   },
-};
+});

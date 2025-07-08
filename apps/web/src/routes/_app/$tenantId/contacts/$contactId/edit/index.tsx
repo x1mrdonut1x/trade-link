@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_app/$tenantId/contacts/$contactId/edit/'
 });
 
 export function EditContact() {
-  const { contactId } = Route.useParams();
+  const { tenantId, contactId } = Route.useParams();
   const router = useRouter();
 
   const contactQuery = useGetContact(contactId);
@@ -34,7 +34,7 @@ export function EditContact() {
   );
 
   const handleSuccess = () => {
-    router.navigate({ to: '/contacts/$contactId', params: { contactId } });
+    router.navigate({ to: '/$tenantId/contacts/$contactId', params: { tenantId, contactId } });
   };
 
   const handleCancel = () => {
@@ -58,7 +58,7 @@ export function EditContact() {
         <h3 className="text-lg font-semibold mb-2">Contact not found</h3>
         <p className="text-muted-foreground mb-4">The contact you"re looking for doesn"t exist.</p>
         <Button>
-          <Link to="/contacts">
+          <Link to="/$tenantId/contacts" params={{ tenantId }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Contacts
           </Link>

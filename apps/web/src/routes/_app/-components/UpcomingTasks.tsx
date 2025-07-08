@@ -3,8 +3,11 @@ import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar, CheckSquare, ExternalLink } from '@tradelink/ui/icons';
 import { useGetAllTasks } from 'api/tasks';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 export const UpcomingTasks = () => {
+  const tenantId = useTenantParam();
+
   const { data: tasks = [], isLoading } = useGetAllTasks({ status: 'upcoming' });
 
   const formatDate = (date?: string | Date | null) => {
@@ -76,8 +79,8 @@ export const UpcomingTasks = () => {
                       </span>
                       {task.contact && (
                         <Link
-                          to="/contacts/$contactId"
-                          params={{ contactId: task.contact.id.toString() }}
+                          to="/$tenantId/contacts/$contactId"
+                          params={{ tenantId, contactId: task.contact.id.toString() }}
                           className="text-xs text-muted-foreground"
                         >
                           • {task.contact.firstName} {task.contact.lastName}
@@ -85,8 +88,8 @@ export const UpcomingTasks = () => {
                       )}
                       {task.company && (
                         <Link
-                          to="/companies/$companyId"
-                          params={{ companyId: task.company.id.toString() }}
+                          to="/$tenantId/companies/$companyId"
+                          params={{ tenantId, companyId: task.company.id.toString() }}
                           className="text-xs text-muted-foreground"
                         >
                           • {task.company.name}
@@ -100,7 +103,7 @@ export const UpcomingTasks = () => {
             </div>
             <div className="mt-4">
               <Button asChild className="w-full" variant="outline">
-                <Link to="/tasks">
+                <Link to="/$tenantId/tasks" params={{ tenantId }}>
                   View All Tasks
                   <ExternalLink className="h-4 w-4 ml-2" />
                 </Link>

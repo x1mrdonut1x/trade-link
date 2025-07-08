@@ -1,4 +1,4 @@
-import { Outlet, redirect, useLocation, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect, useMatchRoute } from '@tanstack/react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { Stepper } from 'components/stepper/Stepper';
@@ -16,25 +16,25 @@ export const Route = createFileRoute('/_app/$tenantId/import')({
 const importSteps: ImportStep[] = [
   {
     index: 0,
-    url: '/import/upload',
+    url: '/$tenantId/import/upload',
     title: 'Upload File',
     description: 'Select your CSV file',
   },
   {
     index: 1,
-    url: '/import/map',
+    url: '/$tenantId/import/map',
     title: 'Map Fields',
     description: 'Match your columns to our fields',
   },
   {
     index: 2,
-    url: '/import/review',
+    url: '/$tenantId/import/review',
     title: 'Review Data',
     description: 'Preview and validate your data',
   },
   {
     index: 3,
-    url: '/import/success',
+    url: '/$tenantId/import/success',
     title: 'Submit',
     header: 'Submit data',
     description: 'Submit your data into the system',
@@ -42,9 +42,9 @@ const importSteps: ImportStep[] = [
 ];
 
 function ImportDataPage() {
-  const location = useLocation();
+  const matchRoute = useMatchRoute();
 
-  const currentStepData = importSteps.find(step => step.url === location.pathname) || importSteps[0];
+  const currentStepData = importSteps.find(step => matchRoute({ to: step.url }) != null) || importSteps[0];
   const currentStepIndex = currentStepData.index;
 
   return (

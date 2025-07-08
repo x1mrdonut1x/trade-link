@@ -10,6 +10,7 @@ export const Route = createFileRoute('/_app/$tenantId/companies/add/')({
 
 function AddCompany() {
   const router = useRouter();
+  const { tenantId } = Route.useParams();
 
   // Set up breadcrumbs
   useBreadcrumbSetup([
@@ -18,7 +19,7 @@ function AddCompany() {
   ]);
 
   const handleSuccess = (companyId: number) => {
-    router.navigate({ to: '/companies/$companyId', params: { companyId: companyId.toString() } });
+    router.navigate({ to: '/$tenantId/companies/$companyId', params: { tenantId, companyId: companyId.toString() } });
   };
 
   const handleCancel = () => {

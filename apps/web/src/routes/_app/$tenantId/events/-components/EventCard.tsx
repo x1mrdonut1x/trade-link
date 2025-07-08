@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
 import { Building2, Calendar, Download, Edit, MapPin, MoreHorizontal, Trash2, Users } from '@tradelink/ui/icons';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface Event {
   id: number;
@@ -33,6 +34,8 @@ interface EventCardProps {
 }
 
 export function EventCard({ event }: EventCardProps) {
+  const tenantId = useTenantParam();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Upcoming': {
@@ -62,7 +65,7 @@ export function EventCard({ event }: EventCardProps) {
   };
 
   return (
-    <Link to="/events/$eventId" params={{ eventId: event.id.toString() }}>
+    <Link to="/$tenantId/events/$eventId" params={{ tenantId, eventId: event.id.toString() }}>
       <Card className="cursor-pointer hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div className="flex-1">

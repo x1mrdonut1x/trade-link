@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
 import { Building2, Calendar, CheckSquare, Edit, MoreHorizontal, Trash2, User } from '@tradelink/ui/icons';
+import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface TaskCardProps {
   task: TaskWithRelationsDto;
@@ -19,6 +20,7 @@ interface TaskCardProps {
 }
 
 export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardProps) => {
+  const tenantId = useTenantParam();
   const getPriorityColor = (isOverdue: boolean, resolved: boolean) => {
     if (resolved) return 'bg-green-100 text-green-800';
     if (isOverdue) return 'bg-red-100 text-red-800';
@@ -89,8 +91,8 @@ export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardP
                   <RelatedIcon className="h-4 w-4" />
                   <Link
                     className="hover:underline"
-                    to="/contacts/$contactId"
-                    params={{ contactId: task.contact?.id?.toString() }}
+                    to="/$tenantId/contacts/$contactId"
+                    params={{ tenantId, contactId: task.contact?.id?.toString() }}
                   >
                     {`${task.contact.firstName} ${task.contact.lastName}`}
                   </Link>
@@ -101,8 +103,8 @@ export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardP
                   <Building2 className="h-4 w-4" />
                   <Link
                     className="hover:underline"
-                    to="/companies/$companyId"
-                    params={{ companyId: task.company?.id?.toString() }}
+                    to="/$tenantId/companies/$companyId"
+                    params={{ tenantId, companyId: task.company?.id?.toString() }}
                   >
                     {task.company.name}
                   </Link>

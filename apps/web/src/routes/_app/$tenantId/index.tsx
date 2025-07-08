@@ -2,14 +2,21 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Building2, Calendar, CheckSquare, PlusCircle, Users } from '@tradelink/ui/icons';
 import { PageHeader } from 'components/page-header/PageHeader';
-import { dashboardApi } from '../../../api/dashboard';
+import { dashboardApi } from '../../../api/dashboard/api';
 
 import { TasksCard } from 'components/tasks';
+import { useTenantParam } from 'hooks/use-tenant-param';
 import { StatCard } from '../-components/StatCard';
 import { UpcomingEvents } from '../-components/UpcomingEvents';
 import { UpcomingTasks } from '../-components/UpcomingTasks';
 
+export const Route = createFileRoute('/_app/$tenantId/')({
+  component: Dashboard,
+});
+
 function Dashboard() {
+  const tenantId = useTenantParam();
+
   // Fetch real dashboard data
   const {
     data: dashboardStats,
@@ -17,7 +24,7 @@ function Dashboard() {
     error,
   } = useQuery({
     queryKey: ['dashboard-stats'],
-    queryFn: dashboardApi.getStats,
+    queryFn: dashboardApi(tenantId).getStats,
   });
 
   // Mock data for events (can be replaced with real API later)
@@ -94,7 +101,3 @@ function Dashboard() {
     </>
   );
 }
-
-export const Route = createFileRoute('/_app/$tenantId/')({
-  component: Dashboard,
-});

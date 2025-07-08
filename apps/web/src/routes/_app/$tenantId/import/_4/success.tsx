@@ -8,6 +8,7 @@ export const Route = createFileRoute('/_app/$tenantId/import/_4/success')({
 });
 
 export function SubmitStepPage() {
+  const { tenantId } = Route.useParams();
   const importContext = useImportContext();
 
   const { importStats } = importContext;
@@ -62,10 +63,14 @@ export function SubmitStepPage() {
 
       <div className="flex gap-3 mt-auto pt-4 border-t">
         <Button asChild>
-          <Link to="/companies">View Companies</Link>
+          <Link to="/$tenantId/companies" params={{ tenantId }}>
+            View Companies
+          </Link>
         </Button>
         <Button asChild>
-          <Link to="/contacts">View Contacts</Link>
+          <Link to="/$tenantId/contacts" params={{ tenantId }}>
+            View Contacts
+          </Link>
         </Button>
       </div>
     </>

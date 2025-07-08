@@ -13,6 +13,7 @@ import * as React from 'react';
 import { TeamSwitcher } from './TeamSwitcher';
 import { NavUser } from './User';
 
+import { useTenantParam } from 'hooks/use-tenant-param';
 import logo from '../../../assets/logo.svg?react';
 
 // This is sample data.
@@ -32,43 +33,44 @@ const data = {
   projects: [
     {
       name: 'Dashboard',
-      url: '/',
+      url: '/$tenantId/',
       icon: LayoutDashboard,
     },
     {
       name: 'Companies',
-      url: '/companies',
+      url: '/$tenantId/companies',
       icon: Building2,
     },
     {
       name: 'Contacts',
-      url: '/contacts',
+      url: '/$tenantId/contacts',
       icon: Contact,
     },
     {
       name: 'Events',
-      url: '/events',
+      url: '/$tenantId/events',
       icon: Calendar,
     },
     {
       name: 'Tasks',
-      url: '/tasks',
+      url: '/$tenantId/tasks',
       icon: CheckSquare,
     },
     {
       name: 'Import Data',
-      url: '/import',
+      url: '/$tenantId/import',
       icon: FileUp,
     },
     {
       name: 'Settings',
-      url: '/settings',
+      url: '/$tenantId/settings',
       icon: Settings,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const tenantId = useTenantParam();
   const matchRoute = useMatchRoute();
 
   return (
@@ -79,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {data.projects.map(item => (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild isActive={Boolean(matchRoute({ to: item.url, fuzzy: true }))}>
-                <Link to={item.url} activeProps={{ style: { fontWeight: '600' } }}>
+                <Link to={item.url} params={{ tenantId }} activeProps={{ style: { fontWeight: '600' } }}>
                   <item.icon />
                   <span>{item.name}</span>
                 </Link>

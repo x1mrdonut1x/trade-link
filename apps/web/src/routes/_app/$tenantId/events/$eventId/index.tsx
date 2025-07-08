@@ -15,8 +15,7 @@ export const Route = createFileRoute('/_app/$tenantId/events/$eventId/')({
 });
 
 function EventDetail() {
-  const params = Route.useParams();
-  const eventId = params.eventId;
+  const { tenantId, eventId } = Route.useParams();
   const event = mockEvents.find(e => e.id === Number.parseInt(eventId));
 
   if (!event) {
@@ -26,7 +25,7 @@ function EventDetail() {
         <h3 className="text-lg font-medium mb-2">Event not found</h3>
         <p className="text-muted-foreground mb-4">The event you"re looking for doesn"t exist.</p>
         <Button asChild>
-          <Link to="/events">
+          <Link to="/$tenantId/events" params={{ tenantId }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Events
           </Link>
@@ -64,7 +63,11 @@ function EventDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <EventQuickStatsCard companiesCount={event.companiesCount} agentsCount={event.agentsCount} status={event.status} />
+          <EventQuickStatsCard
+            companiesCount={event.companiesCount}
+            agentsCount={event.agentsCount}
+            status={event.status}
+          />
           <EventAdditionalDetailsCard customFields={event.customFields} />
         </div>
       </div>

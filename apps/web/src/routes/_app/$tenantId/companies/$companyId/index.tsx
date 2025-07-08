@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_app/$tenantId/companies/$companyId/')({
 });
 
 function CompanyDetail() {
-  const { companyId } = Route.useParams();
+  const { tenantId, companyId } = Route.useParams();
 
   const { data: company, isLoading } = useGetCompany(companyId);
 
@@ -45,7 +45,7 @@ function CompanyDetail() {
         <h3 className="text-lg font-medium mb-2">Company not found</h3>
         <p className="text-muted-foreground mb-4">The company you"re looking for doesn"t exist.</p>
         <Button asChild>
-          <Link to="/companies">
+          <Link to="/$tenantId/companies" params={{ tenantId }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Companies
           </Link>
@@ -73,7 +73,7 @@ function CompanyDetail() {
           {
             label: 'Edit Company',
             icon: Edit,
-            link: { to: '/companies/$companyId/edit', params: { companyId } },
+            link: { to: '/$tenantId/companies/$companyId/edit', params: { companyId } },
             variant: 'default',
           },
         ]}

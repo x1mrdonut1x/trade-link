@@ -26,6 +26,7 @@ export const Route = createFileRoute('/_app/$tenantId/companies/')({
 });
 
 function Companies() {
+  const { tenantId } = Route.useParams();
   const { search, page, size, sortBy, sortOrder, tagIds } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [searchQuery, setSearchQuery] = useState(search);
@@ -63,7 +64,7 @@ function Companies() {
   const deleteCompany = useDeleteCompany();
 
   const handleRowClick = (company: GetAllCompaniesResponse[0]) => {
-    navigate({ to: '/companies/$companyId', params: { companyId: company.id.toString() } });
+    navigate({ to: '/$tenantId/companies/$companyId', params: { companyId: company.id.toString() } });
   };
 
   const handleDelete = async (id: number) => {
@@ -133,7 +134,7 @@ function Companies() {
       onSort: () => handleSort('email'),
       render: company =>
         company.email ? (
-          <a href={`mailto:${company.email}`} className=`text-blue-600 hover:underline`>
+          <a href={`mailto:${company.email}`} className={`text-blue-600 hover:underline`}>
             {company.email}
           </a>
         ) : (
@@ -147,7 +148,7 @@ function Companies() {
       onSort: () => handleSort('phoneNumber'),
       render: company => {
         return company?.phoneNumber ? (
-          <a href={`tel:${company?.phonePrefix}${company?.phoneNumber}`} className=`text-blue-600 hover:underline`>
+          <a href={`tel:${company?.phonePrefix}${company?.phoneNumber}`} className={`text-blue-600 hover:underline`}>
             {company?.phonePrefix} {company?.phoneNumber}
           </a>
         ) : (
@@ -228,8 +229,8 @@ function Companies() {
             <DropdownMenuItem asChild>
               <Link
                 onClick={e => e.stopPropagation()}
-                to="/companies/$companyId/edit"
-                params={{ companyId: company.id.toString() }}
+                to="/$tenantId/companies/$companyId/edit"
+                params={{ tenantId, companyId: company.id.toString() }}
               >
                 Edit Company
               </Link>
@@ -262,7 +263,7 @@ function Companies() {
           {
             label: 'Add Company',
             icon: PlusCircle,
-            link: { to: '/companies/add' },
+            link: { to: '/$tenantId/companies/add', params: { tenantId } },
           },
         ]}
       />
@@ -281,11 +282,11 @@ function Companies() {
             onRowClick={handleRowClick}
             emptyMessage={search ? 'No companies found' : 'No companies yet'}
             emptyDescription={
-              search ? `No companies match your search for `${search}`.` : `Get started by adding your first company.`
+              search ? `No companies match your search for "${search}".` : `Get started by adding your first company.`
             }
             emptyAction={
               search ? (
-                <Button variant="outline" onClick={() => setSearchQuery("")}>
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
                   Clear Search
                 </Button>
               ) : undefined
