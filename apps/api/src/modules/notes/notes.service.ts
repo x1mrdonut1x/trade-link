@@ -31,9 +31,10 @@ export class NotesService {
     return note;
   }
 
-  async getAllNotes(data?: GetAllNotesRequest): Promise<PrismaRawResponse<GetAllNotesResponse>> {
+  async getAllNotes(tenantId, data?: GetAllNotesRequest): Promise<PrismaRawResponse<GetAllNotesResponse>> {
     const notes = await this.prisma.note.findMany({
       where: {
+        tenantId,
         companyId: data?.companyId,
         contactId: data?.contactId,
       },
@@ -50,9 +51,9 @@ export class NotesService {
     return notes;
   }
 
-  async getNoteById(id: number): Promise<PrismaRawResponse<GetNoteResponse>> {
+  async getNoteById(tenantId: number, id: number): Promise<PrismaRawResponse<GetNoteResponse>> {
     const note = await this.prisma.note.findUniqueOrThrow({
-      where: { id },
+      where: { tenantId, id },
       include: {
         contact: true,
         company: true,
@@ -63,9 +64,13 @@ export class NotesService {
     return note;
   }
 
-  async updateNote(id: number, data: UpdateNoteRequest): Promise<PrismaRawResponse<UpdateNoteResponse>> {
+  async updateNote(
+    tenantId: number,
+    id: number,
+    data: UpdateNoteRequest
+  ): Promise<PrismaRawResponse<UpdateNoteResponse>> {
     const note = await this.prisma.note.update({
-      where: { id },
+      where: { tenantId, id },
       data,
       include: {
         contact: true,
@@ -77,9 +82,9 @@ export class NotesService {
     return note;
   }
 
-  async deleteNote(id: number): Promise<PrismaRawResponse<DeleteNoteResponse>> {
+  async deleteNote(tenantId: number, id: number): Promise<PrismaRawResponse<DeleteNoteResponse>> {
     const note = await this.prisma.note.delete({
-      where: { id },
+      where: { tenantId, id },
     });
 
     return { id: note.id };

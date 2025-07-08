@@ -9,6 +9,7 @@ import type {
   UpdateTaskRequest,
   UpdateTaskResponse,
 } from '@tradelink/shared';
+import type { Prisma } from 'generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -35,12 +36,15 @@ export class TasksService {
     return task;
   }
 
-  async getAllTasks(filters?: {
-    status?: 'pending' | 'resolved' | 'upcoming';
-    contactId?: number;
-    companyId?: number;
-  }): Promise<PrismaRawResponse<GetAllTasksResponse>> {
-    const where: any = {};
+  async getAllTasks(
+    tenantId: number,
+    filters?: {
+      status?: 'pending' | 'resolved' | 'upcoming';
+      contactId?: number;
+      companyId?: number;
+    }
+  ): Promise<PrismaRawResponse<GetAllTasksResponse>> {
+    const where: Prisma.taskWhereInput = {};
 
     switch (filters?.status) {
       case 'resolved': {
@@ -63,6 +67,7 @@ export class TasksService {
     const tasks = await this.prisma.task.findMany({
       where: {
         ...where,
+        tenantId,
         companyId: filters?.companyId,
         contactId: filters?.contactId,
       },
@@ -86,9 +91,9 @@ export class TasksService {
     return tasks;
   }
 
-  async getTaskById(id: number): Promise<PrismaRawResponse<GetTaskResponse>> {
+  async getTaskById(tenantId: number, id: number): Promise<PrismaRawResponse<GetTaskResponse>> {
     const task = await this.prisma.task.findUniqueOrThrow({
-      where: { id },
+      where: { tenantId, id },
       include: {
         contact: true,
         company: true,
@@ -101,9 +106,13 @@ export class TasksService {
     return task;
   }
 
-  async updateTask(id: number, data: UpdateTaskRequest): Promise<PrismaRawResponse<UpdateTaskResponse>> {
+  async updateTask(
+    tenantId: number,
+    id: number,
+    data: UpdateTaskRequest
+  ): Promise<PrismaRawResponse<UpdateTaskResponse>> {
     const task = await this.prisma.task.update({
-      where: { id },
+      where: { tenantId, id },
       data: {
         ...data,
         reminderDate: data.reminderDate ? new Date(data.reminderDate).toISOString() : data.reminderDate,
@@ -120,7 +129,7 @@ export class TasksService {
     return task;
   }
 
-  async deleteTask(id: number): Promise<PrismaRawResponse<DeleteTaskResponse>> {
+  async deleteTask(tenantId: number, id: number): Promise<PrismaRawResponse<DeleteTaskResponse>> {
     const task = await this.prisma.task.delete({
       where: { id },
     });
@@ -128,11 +137,11 @@ export class TasksService {
     return { id: task.id };
   }
 
-  async resolveTask(id: number): Promise<PrismaRawResponse<UpdateTaskResponse>> {
-    return this.updateTask(id, { resolved: true });
+  async resolveTask(tenantId: number, id: number): Promise<PrismaRawResponse<UpdateTaskResponse>> {
+    return this.updateTask(tenantId, id, { resolved: true });
   }
 
-  async unresolveTask(id: number): Promise<PrismaRawResponse<UpdateTaskResponse>> {
-    return this.updateTask(id, { resolved: false });
+  async unresolveTask(tenantId: number, id: number): Promise<PrismaRawResponse<UpdateTaskResponse>> {
+    return this.updateTask(tenantId, id, { resolved: false });
   }
 }

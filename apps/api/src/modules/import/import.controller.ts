@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
@@ -34,6 +35,7 @@ export class ImportController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('csvFile'))
   async processImport(
+    @Headers('tenant-id') tenantId: string,
     @UploadedFile() csvFile: Express.Multer.File,
     @Body() body: { fieldMappings: string; importType: string }
   ): Promise<ImportPreviewResponse> {
@@ -41,13 +43,14 @@ export class ImportController {
     const fieldMappings = JSON.parse(body.fieldMappings);
     const importType = body.importType as ImportType;
 
-    return this.importService.processImport({ fieldMappings, importType }, csvFile);
+    return this.importService.processImport(Number.parseInt(tenantId), { fieldMappings, importType }, csvFile);
   }
 
   @Post('execute')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(AnyFilesInterceptor())
   async executeImport(
+    @Headers('tenant-id') tenantId: string,
     @UploadedFiles() files: Express.Multer.File[],
     @Body() body: FromFormData<ImportExecuteRequest>
   ): Promise<ImportExecuteResponse> {
@@ -62,6 +65,7 @@ export class ImportController {
     const contactCsvFile = files.find(file => file.fieldname === 'contactCsvFile');
 
     return this.importService.executeImportWithCsv(
+      Number.parseInt(tenantId),
       {
         fieldMappings,
         importType,

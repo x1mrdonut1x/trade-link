@@ -175,12 +175,13 @@ export class CompanyService {
     }));
   }
 
-  async findCompaniesByNames(names: string[], tenantId?: number) {
+  async findCompaniesByNames(tenantId: number, names: string[]) {
     if (names.length === 0) {
       return [];
     }
     return this.prisma.company.findMany({
       where: {
+        tenantId,
         name: {
           in: names,
           mode: 'insensitive',
@@ -194,7 +195,7 @@ export class CompanyService {
     });
   }
 
-  async createManyCompanies(companies: CreateCompanyRequest[], tenantId: number, tx?: Prisma.TransactionClient) {
+  async createManyCompanies(tenantId: number, companies: CreateCompanyRequest[], tx?: Prisma.TransactionClient) {
     const prismaClient = tx || this.prisma;
     const companiesWithTenant = companies.map(company => ({
       ...company,
@@ -248,8 +249,8 @@ export class CompanyService {
   }
 
   async findCompaniesByEmails(
-    emails: string[],
-    tenantId?: number
+    tenantId: number,
+    emails: string[]
   ): Promise<Map<string, { id: number; name: string; email: string }>> {
     if (emails.length === 0) {
       return new Map();

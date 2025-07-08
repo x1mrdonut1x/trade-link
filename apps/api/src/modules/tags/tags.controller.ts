@@ -38,12 +38,12 @@ export class TagsController {
     @Headers('tenant-id') tenantId: string,
     @Query() query: GetAllTagsQuery
   ): Promise<GetAllTagsResponse> {
-    return this.tagsService.getAllTags(query); // TODO: Add tenant filtering
+    return this.tagsService.getAllTags(query);
   }
 
   @Get(':id')
   async getTag(@Headers('tenant-id') tenantId: string, @Param('id', ParseIntPipe) id: number): Promise<GetTagResponse> {
-    return this.tagsService.getTag(id); // TODO: Add tenant filtering
+    return this.tagsService.getTag(Number.parseInt(tenantId), id);
   }
 
   @Post()
@@ -58,14 +58,18 @@ export class TagsController {
 
   @Put(':id')
   async updateTag(
+    @Headers('tenant-id') tenantId: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTagDto: UpdateTagRequest
   ): Promise<UpdateTagResponse> {
-    return this.tagsService.updateTag(id, updateTagDto);
+    return this.tagsService.updateTag(Number.parseInt(tenantId), id, updateTagDto);
   }
 
   @Delete(':id')
-  async deleteTag(@Param('id', ParseIntPipe) id: number): Promise<DeleteTagResponse> {
-    return this.tagsService.deleteTag(id);
+  async deleteTag(
+    @Headers('tenant-id') tenantId: string,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<DeleteTagResponse> {
+    return this.tagsService.deleteTag(Number.parseInt(tenantId), id);
   }
 }

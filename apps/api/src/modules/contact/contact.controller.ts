@@ -37,7 +37,7 @@ export class ContactController {
     @Headers('tenant-id') tenantId: string,
     @Query() query: GetAllContactsQuery
   ): Promise<ContactWithCompanyDto[]> {
-    return this.contactService.getAllContacts(query); // TODO: Add tenant filtering
+    return this.contactService.getAllContacts(Number.parseInt(tenantId), query);
   }
 
   @Get(':id')
@@ -45,7 +45,7 @@ export class ContactController {
     @Headers('tenant-id') tenantId: string,
     @Param('id', ParseIntPipe) id: number
   ): Promise<ContactWithCompanyDto> {
-    return this.contactService.getContact(id); // TODO: Add tenant filtering
+    return this.contactService.getContact(Number.parseInt(tenantId), id);
   }
 
   @Post()
@@ -58,30 +58,36 @@ export class ContactController {
 
   @Put(':id')
   async updateContact(
+    @Headers('tenant-id') tenantId: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateContactDto: UpdateContactRequest
   ): Promise<ContactWithCompanyDto> {
-    return this.contactService.updateContact(id, updateContactDto);
+    return this.contactService.updateContact(Number.parseInt(tenantId), id, updateContactDto);
   }
 
   @Delete(':id')
-  async deleteContact(@Param('id', ParseIntPipe) id: number): Promise<DeleteContactResponse> {
-    return this.contactService.deleteContact(id);
+  async deleteContact(
+    @Headers('tenant-id') tenantId: string,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<DeleteContactResponse> {
+    return this.contactService.deleteContact(Number.parseInt(tenantId), id);
   }
 
   @Patch(':id/tags/assign')
   async assignTags(
+    @Headers('tenant-id') tenantId: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() assignTagsDto: AssignTagsRequest
   ): Promise<ContactWithCompanyDto> {
-    return this.contactService.assignTags(id, assignTagsDto.tagIds);
+    return this.contactService.assignTags(Number.parseInt(tenantId), id, assignTagsDto.tagIds);
   }
 
   @Patch(':id/tags/unassign')
   async unassignTags(
+    @Headers('tenant-id') tenantId: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() unassignTagsDto: UnassignTagsRequest
   ): Promise<ContactWithCompanyDto> {
-    return this.contactService.unassignTags(id, unassignTagsDto.tagIds);
+    return this.contactService.unassignTags(Number.parseInt(tenantId), id, unassignTagsDto.tagIds);
   }
 }

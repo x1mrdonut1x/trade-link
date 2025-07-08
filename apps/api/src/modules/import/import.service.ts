@@ -35,7 +35,11 @@ export class ImportService {
     private contactService: ContactService
   ) {}
 
-  async processImport(request: ImportProcessRequest, csvFile: Express.Multer.File): Promise<ImportPreviewResponse> {
+  async processImport(
+    tenantId: number,
+    request: ImportProcessRequest,
+    csvFile: Express.Multer.File
+  ): Promise<ImportPreviewResponse> {
     if (!csvFile) {
       throw new BadRequestException('CSV file is required');
     }
@@ -47,13 +51,13 @@ export class ImportService {
     }
 
     // Initialize lookup maps
-    const existingCompanies = await this.initializeCompanyMaps(dataRows, request.fieldMappings);
+    const existingCompanies = await this.initializeCompanyMaps(tenantId, dataRows, request.fieldMappings);
 
     // Process all rows and collect import entries
-    const { companies, contacts } = await this.processAllRows(dataRows, request, existingCompanies);
+    const { companies, contacts } = await this.processAllRows(tenantId, dataRows, request, existingCompanies);
 
-    const duplicateEmailErrors = await this.validateUniqueEmails(companies, contacts);
-    const duplicateNameErrors = await this.validateUniqueNames(companies);
+    const duplicateEmailErrors = await this.validateUniqueEmails(tenantId, companies, contacts);
+    const duplicateNameErrors = await this.validateUniqueNames(tenantId, companies);
 
     return {
       companies,
@@ -66,6 +70,7 @@ export class ImportService {
   }
 
   private async validateUniqueEmails(
+    tenantId: number,
     companies: ImportEntry<CompanyImportData>[],
     contacts: ImportEntry<ContactImportData>[]
   ): Promise<DuplicateEmailError[]> {
@@ -73,8 +78,8 @@ export class ImportService {
     const contactEmailMap = this.collectEmailsFromEntries(contacts);
 
     // Fetch existing entities with these emails
-    const existingCompanies = await this.companyService.findCompaniesByEmails([...companyEmailMap.keys()]);
-    const existingContacts = await this.contactService.findContactsByEmails([...contactEmailMap.keys()]);
+    const existingCompanies = await this.companyService.findCompaniesByEmails(tenantId, [...companyEmailMap.keys()]);
+    const existingContacts = await this.contactService.findContactsByEmails(tenantId, [...contactEmailMap.keys()]);
 
     return [
       ...this.findDuplicatesInEmailMap(companyEmailMap, 'company', existingCompanies),
@@ -138,20 +143,21 @@ export class ImportService {
   }
 
   private async initializeCompanyMaps(
+    tenantId: number,
     dataRows: string[][],
     fieldMappings: any
   ): Promise<Map<string, { id: number; name: string }>> {
-    const companyNamesToLookup = this.collectCompanyNames(dataRows, fieldMappings);
-    const existingCompaniesByName = await this.fetchCompaniesByName(companyNamesToLookup);
+    const companyNamesToLookup = this.collectCompanyNames(tenantId, dataRows, fieldMappings);
+    const existingCompaniesByName = await this.fetchCompaniesByName(tenantId, companyNamesToLookup);
 
     return existingCompaniesByName;
   }
 
-  private collectCompanyNames(dataRows: string[][], fieldMappings: any): Set<string> {
+  private collectCompanyNames(tenantId: number, dataRows: string[][], fieldMappings: any): Set<string> {
     const companyNames = new Set<string>();
 
     for (const row of dataRows) {
-      const { companyData, contactData } = this.mapRowToData(row, fieldMappings);
+      const { companyData, contactData } = this.mapRowToData(tenantId, row, fieldMappings);
 
       if (companyData?.name) {
         companyNames.add(companyData.name);
@@ -164,11 +170,11 @@ export class ImportService {
     return companyNames;
   }
 
-  private collectContactEmails(dataRows: string[][], fieldMappings: any): Set<string> {
+  private collectContactEmails(tenantId: number, dataRows: string[][], fieldMappings: any): Set<string> {
     const contactEmails = new Set<string>();
 
     for (const row of dataRows) {
-      const { contactData } = this.mapRowToData(row, fieldMappings);
+      const { contactData } = this.mapRowToData(tenantId, row, fieldMappings);
 
       if (contactData?.email) {
         contactEmails.add(contactData.email);
@@ -179,6 +185,7 @@ export class ImportService {
   }
 
   private async processAllRows(
+    tenantId: number,
     dataRows: string[][],
     request: ImportProcessRequest,
     existingCompanies: Map<string, { id: number; name: string }>
@@ -187,11 +194,13 @@ export class ImportService {
     const contacts: ImportEntry<ContactImportData>[] = [];
 
     // Pre-fetch all contacts by emails to avoid N+1 queries
-    const contactEmailsToLookup = this.collectContactEmails(dataRows, request.fieldMappings);
-    const existingContactsByEmail = await this.contactService.findContactsByEmails([...contactEmailsToLookup]);
+    const contactEmailsToLookup = this.collectContactEmails(tenantId, dataRows, request.fieldMappings);
+    const existingContactsByEmail = await this.contactService.findContactsByEmails(tenantId, [
+      ...contactEmailsToLookup,
+    ]);
 
     for (const row of dataRows) {
-      const { companyData, contactData } = this.mapRowToData(row, request.fieldMappings);
+      const { companyData, contactData } = this.mapRowToData(tenantId, row, request.fieldMappings);
 
       let currentRowCompanyData: CompanyImportData | undefined;
 
@@ -318,7 +327,7 @@ export class ImportService {
    * Executes the import process using Prisma transactions and batch operations for optimal performance.
    * All database operations are wrapped in a single transaction to ensure data consistency.
    */
-  async executeImport(request: ImportExecutionData): Promise<ImportExecuteResponse> {
+  async executeImport(tenantId: number, request: ImportExecutionData): Promise<ImportExecuteResponse> {
     const { companies, contacts } = request;
 
     const stats: ImportExecuteResponse['stats'] = {
@@ -336,8 +345,8 @@ export class ImportService {
           // Keep track of created companies for contact processing
           const createdCompanies = new Map<string, { id: number; name: string }>();
 
-          await this.processCompaniesImportBatch(companies, stats, errors, createdCompanies, tx);
-          await this.processContactsImportBatch(contacts, stats, errors, createdCompanies, tx);
+          await this.processCompaniesImportBatch(tenantId, companies, stats, errors, createdCompanies, tx);
+          await this.processContactsImportBatch(tenantId, contacts, stats, errors, createdCompanies, tx);
         },
         {
           maxWait: 20 * 1000,
@@ -361,6 +370,7 @@ export class ImportService {
   }
 
   async executeImportWithCsv(
+    tenantId: number,
     request: ImportExecuteRequest,
     companyCsvFile?: Express.Multer.File,
     contactCsvFile?: Express.Multer.File
@@ -392,10 +402,11 @@ export class ImportService {
     );
 
     // Use the existing executeImport method with the converted data
-    return this.executeImport({ companies, contacts });
+    return this.executeImport(tenantId, { companies, contacts });
   }
 
   private mapRowToData(
+    tenantId: number,
     row: string[],
     fieldMappings: any
   ): {
@@ -445,11 +456,11 @@ export class ImportService {
     };
   }
 
-  private async fetchCompaniesByName(companyNamesToLookup: Set<string>) {
+  private async fetchCompaniesByName(tenantId: number, companyNamesToLookup: Set<string>) {
     const companiesByName = new Map<string, { id: number; name: string }>();
 
     if (companyNamesToLookup.size > 0) {
-      const companies = await this.companyService.findCompaniesByNames([...companyNamesToLookup]);
+      const companies = await this.companyService.findCompaniesByNames(tenantId, [...companyNamesToLookup]);
 
       // Create a case-insensitive lookup map
       for (const company of companies) {
@@ -461,6 +472,7 @@ export class ImportService {
   }
 
   private async processCompaniesImportBatch(
+    tenantId: number,
     companies: ImportEntry<CompanyImportData>[],
     stats: ImportExecuteResponse['stats'],
     errors: ImportExecuteResponse['errors'],
@@ -472,8 +484,8 @@ export class ImportService {
     const { companiesToCreate, companiesToUpdate } = importUtils.separateCompaniesForBatch(companies);
 
     try {
-      await this.batchCreateCompanies(companiesToCreate, stats, createdCompanies, 1, tx); // TODO: Pass actual tenantId
-      await this.batchUpdateCompanies(companiesToUpdate, stats, createdCompanies, 1, tx); // TODO: Pass actual tenantId
+      await this.batchCreateCompanies(tenantId, companiesToCreate, stats, createdCompanies, tx);
+      await this.batchUpdateCompanies(tenantId, companiesToUpdate, stats, createdCompanies, tx);
     } catch (error) {
       stats.errors++;
       errors?.push({
@@ -485,16 +497,16 @@ export class ImportService {
   }
 
   private async batchCreateCompanies(
+    tenantId: number,
     companiesToCreate: ImportEntry<CompanyImportData>[],
     stats: ImportExecuteResponse['stats'],
     createdCompanies: Map<string, { id: number; name: string }>,
-    tenantId: number, // TODO: Pass from main import execution
     tx: Prisma.TransactionClient
   ) {
     if (companiesToCreate.length === 0) return;
 
     const createData = companiesToCreate.map(entry => entry.data);
-    const createdCompanyList = await this.companyService.createManyCompanies(createData, tenantId, tx);
+    const createdCompanyList = await this.companyService.createManyCompanies(tenantId, createData, tx);
 
     // Map created companies by name for later lookup
     for (const [index, createdCompany] of createdCompanyList.entries()) {
@@ -510,10 +522,10 @@ export class ImportService {
   }
 
   private async batchUpdateCompanies(
+    tenantId: number,
     companiesToUpdate: ImportEntry<CompanyImportData>[],
     stats: ImportExecuteResponse['stats'],
     createdCompanies: Map<string, { id: number; name: string }>,
-    tenantId: number, // TODO: Pass from main import execution
     tx: Prisma.TransactionClient
   ) {
     if (companiesToUpdate.length === 0) return;
@@ -543,6 +555,7 @@ export class ImportService {
   }
 
   private async processContactsImportBatch(
+    tenantId: number,
     contacts: ImportEntry<ContactImportData>[],
     stats: ImportExecuteResponse['stats'],
     errors: ImportExecuteResponse['errors'],
@@ -552,7 +565,7 @@ export class ImportService {
     if (contacts.length === 0) return;
 
     // Pre-fetch all companies to avoid N+1 queries
-    const companiesByName = await this.fetchCompaniesByName(this.collectCompanyNamesFromContacts(contacts));
+    const companiesByName = await this.fetchCompaniesByName(tenantId, this.collectCompanyNamesFromContacts(contacts));
 
     // Merge the newly created/updated companies with the existing ones
     for (const [name, company] of createdCompanies.entries()) {
@@ -562,8 +575,8 @@ export class ImportService {
     const { contactsToCreate, contactsToUpdate } = importUtils.separateContactsForBatch(contacts);
 
     try {
-      await this.batchCreateContacts(contactsToCreate, stats, companiesByName, tx);
-      await this.batchUpdateContacts(contactsToUpdate, stats, companiesByName, tx);
+      await this.batchCreateContacts(tenantId, contactsToCreate, stats, companiesByName, tx);
+      await this.batchUpdateContacts(tenantId, contactsToUpdate, stats, companiesByName, tx);
     } catch (error) {
       stats.errors++;
       errors?.push({
@@ -588,6 +601,7 @@ export class ImportService {
   }
 
   private async batchCreateContacts(
+    tenantId: number,
     contactsToCreate: ImportEntry<ContactImportData>[],
     stats: ImportExecuteResponse['stats'],
     companiesByName: Map<string, { id: number; name: string }>,
@@ -605,12 +619,13 @@ export class ImportService {
       };
     });
 
-    await this.contactService.createManyContacts(createData, 1, tx); // TODO: Pass actual tenantId
+    await this.contactService.createManyContacts(tenantId, createData, tx);
 
     stats.contacts += contactsToCreate.length;
   }
 
   private async batchUpdateContacts(
+    tenantId: number,
     contactsToUpdate: ImportEntry<ContactImportData>[],
     stats: ImportExecuteResponse['stats'],
     companiesByName: Map<string, { id: number; name: string }>,
@@ -634,7 +649,7 @@ export class ImportService {
         };
       });
 
-    await this.contactService.bulkUpdateContacts(updates, tx);
+    await this.contactService.bulkUpdateContacts(tenantId, updates, tx);
 
     stats.contacts += updates.length;
   }
@@ -666,11 +681,14 @@ export class ImportService {
     return undefined;
   }
 
-  private async validateUniqueNames(companies: ImportEntry<CompanyImportData>[]): Promise<DuplicateNameError[]> {
+  private async validateUniqueNames(
+    tenantId: number,
+    companies: ImportEntry<CompanyImportData>[]
+  ): Promise<DuplicateNameError[]> {
     const companyNameMap = this.collectNamesFromEntries(companies);
 
     // Fetch existing companies with these names
-    const existingCompaniesArray = await this.companyService.findCompaniesByNames([...companyNameMap.keys()]);
+    const existingCompaniesArray = await this.companyService.findCompaniesByNames(tenantId, [...companyNameMap.keys()]);
 
     // Convert to map for efficient lookup
     const existingCompanies = new Map<string, any>();
