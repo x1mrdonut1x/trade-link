@@ -1,4 +1,4 @@
-import { initClient } from 'test/helpers/auth/auth.helper';
+import { initClient } from '../../helpers/auth/auth.helper';
 import { createCompany } from '../../helpers/company/company.helper';
 import {
   contactFixtures,

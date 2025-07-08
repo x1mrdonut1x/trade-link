@@ -1,9 +1,9 @@
 import { ImportFieldMappings } from '@tradelink/shared';
-import { setTestAuthToken, setTestTenantId } from 'test/helpers/request.helper';
 import { createAuthenticatedUser } from '../../helpers/auth/auth.helper';
 import { createCompany, getAllCompanies, getCompany } from '../../helpers/company/company.helper';
 import { createContact, getAllContacts, getContact } from '../../helpers/contact/contact.helper';
 import { executeImport, importFixtures, processImport } from '../../helpers/import/import.helper';
+import { setTestAuthToken, setTestTenantId } from '../../helpers/request.helper';
 import { tenantsHelper } from '../../helpers/tenant/tenant.helper';
 import { resetDatabase } from '../../setupFilesAfterEnv';
 
