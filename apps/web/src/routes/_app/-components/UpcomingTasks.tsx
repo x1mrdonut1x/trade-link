@@ -1,8 +1,10 @@
 import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Calendar, CheckSquare, ExternalLink } from '@tradelink/ui/icons';
+import { Calendar, ExternalLink } from '@tradelink/ui/icons';
 import { useGetAllTasks } from 'api/tasks';
+import { Empty } from 'components/empty/Empty';
+import { TaskIcon } from 'components/icons/TaskIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 export const UpcomingTasks = () => {
@@ -61,10 +63,12 @@ export const UpcomingTasks = () => {
             ))}
           </div>
         ) : tasks.length === 0 ? (
-          <div className="text-center py-6">
-            <CheckSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No upcoming Tasks</p>
-          </div>
+          <Empty
+            size="sm"
+            icon={TaskIcon}
+            title="No Upcoming Tasks"
+            description="You have no tasks scheduled for the next 7 days."
+          />
         ) : (
           <>
             <div className="space-y-3">
@@ -97,7 +101,7 @@ export const UpcomingTasks = () => {
                       )}
                     </div>
                   </div>
-                  <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                  <TaskIcon className="h-4 w-4 text-muted-foreground" />
                 </div>
               ))}
             </div>

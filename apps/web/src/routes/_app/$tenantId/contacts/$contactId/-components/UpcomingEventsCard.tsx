@@ -2,6 +2,8 @@ import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar, CalendarPlus, MapPin } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
+import { EventIcon } from 'components/icons/EventIcon';
 
 interface UpcomingEventsCardProps {
   events: any[]; // TODO replace;
@@ -29,7 +31,7 @@ export function UpcomingEventsCard({ events }: UpcomingEventsCardProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
+          <EventIcon className="h-5 w-5" />
           Upcoming Events ({events.length})
         </CardTitle>
         <Button size="sm" variant="outline">
@@ -55,7 +57,9 @@ export function UpcomingEventsCard({ events }: UpcomingEventsCardProps) {
               </Badge>
             </div>
           ))}
-          {events.length === 0 && <p className="text-muted-foreground text-center py-6">No upcoming events scheduled.</p>}
+          {events.length === 0 && (
+            <Empty icon={EventIcon} title="No upcoming events" description="No upcoming events scheduled." />
+          )}
         </div>
       </CardContent>
     </Card>

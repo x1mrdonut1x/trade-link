@@ -158,6 +158,7 @@ export class ContactService {
 
     const contacts = await this.prisma.contact.findMany({
       where: {
+        tenantId,
         email: {
           in: emails,
         },
@@ -201,7 +202,7 @@ export class ContactService {
     await Promise.all(
       updates.map(({ id, data }) =>
         prismaClient.contact.update({
-          where: { id },
+          where: { tenantId, id },
           data,
         })
       )

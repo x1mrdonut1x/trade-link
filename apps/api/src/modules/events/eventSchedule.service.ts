@@ -17,6 +17,7 @@ export class EventScheduleService {
       data: {
         ...scheduleData,
         eventId,
+        tenantId,
         ...(contactIds && contactIds.length > 0
           ? {
               contacts: {
@@ -106,13 +107,13 @@ export class EventScheduleService {
       },
       data: {
         ...scheduleData,
-        ...(contactIds !== undefined
-          ? {
+        ...(contactIds === undefined
+          ? {}
+          : {
               contacts: {
                 set: contactIds.map(id => ({ id })),
               },
-            }
-          : {}),
+            }),
       },
       include: {
         contacts: {

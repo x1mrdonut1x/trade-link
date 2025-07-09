@@ -1,11 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { TaskWithRelationsDto } from '@tradelink/shared';
-import { PlusCircle } from '@tradelink/ui/icons';
+import { CheckSquare, PlusCircle } from '@tradelink/ui/icons';
 import { useDeleteTask, useGetAllTasks, useResolveTask, useUnresolveTask } from 'api/tasks';
+import { Empty } from 'components/empty/Empty';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { TaskDialog } from 'components/tasks';
 import { useState } from 'react';
 
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { TaskCard } from './-components/TaskCard';
 import { TaskFilters } from './-components/TaskFilters';
 import { TaskStats } from './-components/TaskStats';
@@ -19,6 +21,8 @@ function TasksPage() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskWithRelationsDto>();
+
+  useBreadcrumbSetup([{ title: 'Tasks', href: `/tasks`, isActive: true }]);
 
   const { data: tasks = [], isLoading } = useGetAllTasks({});
 
@@ -104,12 +108,11 @@ function TasksPage() {
       </div>
 
       {!isLoading && tasks.length === 0 && (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-medium mb-2">No tasks found</h3>
-          <p className="text-muted-foreground mb-4">
-            {searchTerm ? 'Try adjusting your search criteria.' : 'Get started by adding your first task.'}
-          </p>
-        </div>
+        <Empty
+          icon={CheckSquare}
+          title="No tasks found"
+          description={searchTerm ? 'Try adjusting your search criteria.' : 'Get started by adding your first task.'}
+        />
       )}
 
       <TaskDialog open={isDialogOpen} onClose={handleCloseDialog} task={editingTask} />

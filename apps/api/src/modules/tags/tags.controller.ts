@@ -38,7 +38,7 @@ export class TagsController {
     @Headers('tenant-id') tenantId: string,
     @Query() query: GetAllTagsQuery
   ): Promise<GetAllTagsResponse> {
-    return this.tagsService.getAllTags(query);
+    return this.tagsService.getAllTags(Number.parseFloat(tenantId), query);
   }
 
   @Get(':id')

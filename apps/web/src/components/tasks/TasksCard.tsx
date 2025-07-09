@@ -3,10 +3,12 @@ import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card } from '@tradelink/ui/components/card';
 import { Separator } from '@tradelink/ui/components/separator';
-import { Calendar, CheckCircle, Circle, Edit, Plus, Trash2 } from '@tradelink/ui/icons';
+import { CheckCircle, Circle, Edit, Plus, Trash2 } from '@tradelink/ui/icons';
 import { useDeleteTask, useGetAllTasks, useResolveTask, useUnresolveTask } from 'api/tasks';
+import { Empty } from 'components/empty/Empty';
 import { useState } from 'react';
 
+import { TaskIcon } from 'components/icons/TaskIcon';
 import { TaskDialog } from './TaskDialog';
 
 interface TasksCardProps {
@@ -97,7 +99,7 @@ export function TasksCard({ contactId, companyId, title = 'Tasks', showTag = fal
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold flex items-center">
-            <Calendar className="h-5 w-5 mr-2" />
+            <TaskIcon className="h-5 w-5 mr-2" />
             {title}
           </h3>
         </div>
@@ -118,7 +120,7 @@ export function TasksCard({ contactId, companyId, title = 'Tasks', showTag = fal
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold flex items-center">
-            <Calendar className="h-5 w-5 mr-2" />
+            <TaskIcon className="h-5 w-5 mr-2" />
             {title}
           </h3>
         </div>
@@ -134,7 +136,7 @@ export function TasksCard({ contactId, companyId, title = 'Tasks', showTag = fal
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold flex items-center">
-            <Calendar className="h-5 w-5 mr-2" />
+            <TaskIcon className="h-5 w-5 mr-2" />
             {title}
           </h3>
           <Button size="sm" variant="outline" onClick={handleCreateTask}>
@@ -144,11 +146,7 @@ export function TasksCard({ contactId, companyId, title = 'Tasks', showTag = fal
         </div>
 
         {tasks.length === 0 ? (
-          <div className="text-center py-8">
-            <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h4 className="text-lg font-medium mb-2">No Tasks yet</h4>
-            <p className="text-muted-foreground mb-4">Start by adding your first Task.</p>
-          </div>
+          <Empty description="No tasks assigned." />
         ) : (
           <div className="space-y-4">
             {tasks.map((task, index) => (
@@ -206,7 +204,7 @@ export function TasksCard({ contactId, companyId, title = 'Tasks', showTag = fal
                       <div className="flex items-center gap-2 text-xs">
                         {task.reminderDate && (
                           <span className={getDateColor(task.reminderDate, task.resolved)}>
-                            <Calendar className="h-3 w-3 inline mr-1" />
+                            <TaskIcon className="h-3 w-3 inline mr-1" />
                             {formatDate(task.reminderDate)}
                           </span>
                         )}

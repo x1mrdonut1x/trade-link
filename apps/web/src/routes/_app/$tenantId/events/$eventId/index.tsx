@@ -1,12 +1,15 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { ArrowLeft, Calendar, Edit, UserPlus } from '@tradelink/ui/icons';
+import { ArrowLeft, Edit, UserPlus } from '@tradelink/ui/icons';
 import { useGetEvent } from 'api/events/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 
+import { Empty } from 'components/empty/Empty';
 import { AddParticipantsDialog } from 'components/events/AddParticipantsDialog';
 import { EventDialog } from 'components/events/EventDialog';
 import { EventTagsCard } from 'components/events/EventTagsCard';
+import { EventIcon } from 'components/icons/EventIcon';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useState } from 'react';
 import { EventInfoCard } from './-components/EventInfoCard';
 import { EventQuickStatsCard } from './-components/EventQuickStatsCard';
@@ -23,10 +26,15 @@ function EventDetail() {
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [showAddParticipantsDialog, setShowAddParticipantsDialog] = useState(false);
 
+  useBreadcrumbSetup([
+    { title: 'Events', href: '/events', isActive: false },
+    { title: event?.name || '', href: `/events/${eventId}`, isActive: true, isLoading: isLoading && !event },
+  ]);
+
   if (isLoading) {
     return (
       <div className="text-center py-12">
-        <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <EventIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-medium mb-2">Loading event...</h3>
       </div>
     );
@@ -34,17 +42,14 @@ function EventDetail() {
 
   if (error || !event) {
     return (
-      <div className="text-center py-12">
-        <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-medium mb-2">Event not found</h3>
-        <p className="text-muted-foreground mb-4">The event you're looking for doesn't exist.</p>
+      <Empty icon={EventIcon} title="Event not found" description="The event you're looking for doesn't exist.">
         <Button asChild>
           <Link to="/$tenantId/events" params={{ tenantId }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Events
           </Link>
         </Button>
-      </div>
+      </Empty>
     );
   }
 

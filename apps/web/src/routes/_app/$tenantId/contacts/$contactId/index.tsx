@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { ArrowLeft, Edit, Loader2, User } from '@tradelink/ui/icons';
+import { ArrowLeft, Edit, Loader2 } from '@tradelink/ui/icons';
 import { useGetContact } from 'api/contact/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { EntityTagsCard } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
+import { ContactIcon } from 'components/icons/ContactIcon';
 import { NotesCard } from 'components/notes';
 import { TasksCard } from 'components/tasks';
 import { ContactDetailsCard } from './-components/ContactDetailsCard';
@@ -47,7 +48,7 @@ function ContactDetail() {
   if (error || !contact) {
     return (
       <div className="text-center py-12">
-        <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <ContactIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-medium mb-2">Contact not found</h3>
         <p className="text-muted-foreground mb-4">
           {error ? 'There was an error loading the contact.' : "The contact you're looking for doesn't exist."}

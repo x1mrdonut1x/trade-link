@@ -28,6 +28,7 @@ function ImportDataPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log(' csvColumns:', csvColumns);
     if (!csvColumns?.length) {
       navigate({ to: '/$tenantId/import/upload', params: { tenantId } });
     }

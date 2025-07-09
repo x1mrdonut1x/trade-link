@@ -3,6 +3,7 @@ import type { ContactImportData, ImportEntry } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Filter, Users } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
 import { useImportContext } from 'context';
 import { useRef, useState } from 'react';
 import { ContactEntryRow } from './ContactEntryRow';
@@ -145,11 +146,11 @@ export function ContactsList() {
                 </div>
               );
             })}
+            {filteredContacts.length === 0 && (
+              <Empty icon={Users} title="No contacts found" description="No contacts match the selected filter." />
+            )}
           </div>
         </div>
-        {filteredContacts.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">No contacts match the selected filter.</div>
-        )}
       </CardContent>
     </Card>
   );

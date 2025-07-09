@@ -131,7 +131,7 @@ export class TasksService {
 
   async deleteTask(tenantId: number, id: number): Promise<PrismaRawResponse<DeleteTaskResponse>> {
     const task = await this.prisma.task.delete({
-      where: { id },
+      where: { tenantId, id },
     });
 
     return { id: task.id };

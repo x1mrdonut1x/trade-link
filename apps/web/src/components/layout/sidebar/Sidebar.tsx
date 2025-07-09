@@ -8,11 +8,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@tradelink/ui/components/sidebar';
-import { Building2, Calendar, CheckSquare, Contact, FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
+import { FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
 import * as React from 'react';
 import { TenantSwitcher } from './TenantSwitcher';
 import { NavUser } from './User';
 
+import { CompanyIcon } from 'components/icons/CompanyIcon';
+import { ContactIcon } from 'components/icons/ContactIcon';
+import { EventIcon } from 'components/icons/EventIcon';
+import { TaskIcon } from 'components/icons/TaskIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 // This is sample data.
@@ -31,22 +35,22 @@ const data = {
     {
       name: 'Companies',
       url: '/$tenantId/companies',
-      icon: Building2,
+      icon: CompanyIcon,
     },
     {
       name: 'Contacts',
       url: '/$tenantId/contacts',
-      icon: Contact,
+      icon: ContactIcon,
     },
     {
       name: 'Events',
       url: '/$tenantId/events',
-      icon: Calendar,
+      icon: EventIcon,
     },
     {
       name: 'Tasks',
       url: '/$tenantId/tasks',
-      icon: CheckSquare,
+      icon: TaskIcon,
     },
     {
       name: 'Import Data',
@@ -92,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           })}
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent></SidebarContent>
+      <SidebarContent />
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>

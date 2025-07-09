@@ -2,7 +2,9 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import type { CompanyImportData, ImportEntry } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
-import { Building2, Filter } from '@tradelink/ui/icons';
+import { Filter } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { useImportContext } from 'context';
 import { useRef, useState } from 'react';
 import { CompanyEntryRow } from './CompanyEntryRow';
@@ -70,7 +72,7 @@ export function CompaniesList() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
+            <CompanyIcon className="h-5 w-5" />
             Companies ({filteredCompanies.length} of {previewData.companies.length})
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -124,11 +126,15 @@ export function CompaniesList() {
                 </div>
               );
             })}
+            {filteredCompanies.length === 0 && (
+              <Empty
+                icon={CompanyIcon}
+                title="No companies found"
+                description="No companies match the selected filter."
+              />
+            )}
           </div>
         </div>
-        {filteredCompanies.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">No companies match the selected filter.</div>
-        )}
       </CardContent>
     </Card>
   );

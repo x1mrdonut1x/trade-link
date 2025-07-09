@@ -12,7 +12,6 @@ function AddCompany() {
   const router = useRouter();
   const { tenantId } = Route.useParams();
 
-  // Set up breadcrumbs
   useBreadcrumbSetup([
     { title: 'Companies', href: '/companies', isActive: false },
     { title: 'Add Company', href: '/companies/add', isActive: true },

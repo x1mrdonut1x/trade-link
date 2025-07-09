@@ -1,11 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { Calendar, Filter, PlusCircle, Upload } from '@tradelink/ui/icons';
+import { Filter, PlusCircle, Upload } from '@tradelink/ui/icons';
 import { useGetAllEvents } from 'api/events';
+import { Empty } from 'components/empty/Empty';
 import { EventDialog } from 'components/events/EventDialog';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useState } from 'react';
 
+import { EventIcon } from 'components/icons/EventIcon';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { EventCard } from './-components/EventCard';
 
 export const Route = createFileRoute('/_app/$tenantId/events/')({
@@ -16,6 +19,8 @@ function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [showEventDialog, setShowEventDialog] = useState(false);
+
+  useBreadcrumbSetup([{ title: 'Events', href: `/events`, isActive: true }]);
 
   const {
     data: events = [],
@@ -101,17 +106,16 @@ function EventsPage() {
       </div>
 
       {filteredEvents.length === 0 && (
-        <div className="text-center py-12">
-          <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">No events found</h3>
-          <p className="text-muted-foreground mb-4">
-            {searchTerm ? 'Try adjusting your search criteria.' : 'Get started by adding your first event.'}
-          </p>
+        <Empty
+          icon={EventIcon}
+          title="No events found"
+          description={searchTerm ? 'Try adjusting your search criteria.' : 'Get started by adding your first event.'}
+        >
           <Button onClick={() => setShowEventDialog(true)}>
             <PlusCircle className="h-4 w-4 mr-2" />
             Add Event
           </Button>
-        </div>
+        </Empty>
       )}
 
       <EventDialog open={showEventDialog} onOpenChange={setShowEventDialog} />

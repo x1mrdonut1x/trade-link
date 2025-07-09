@@ -7,10 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
-import { Building2, Edit, Mail, MapPin, MoreHorizontal, Phone, Trash2, Users } from '@tradelink/ui/icons';
+import { Edit, Mail, MapPin, MoreHorizontal, Phone, Trash2, Users } from '@tradelink/ui/icons';
 
 import type { CompanyDto } from '@tradelink/shared';
 import { useTenantParam } from 'hooks/use-tenant-param';
+import { CompanyIcon } from '../../../../../components/icons/CompanyIcon';
 
 interface CompanyCardProps {
   company: CompanyDto & { contactsCount: number };
@@ -63,7 +64,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
 
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CompanyIcon className="h-4 w-4 text-muted-foreground" />
               <span>{company.size}</span>
             </div>
             <div className="flex items-center gap-2">
