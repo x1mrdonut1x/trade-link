@@ -126,11 +126,15 @@ export function CompaniesList() {
                 </div>
               );
             })}
+            {filteredCompanies.length === 0 && (
+              <Empty
+                icon={CompanyIcon}
+                title="No companies found"
+                description="No companies match the selected filter."
+              />
+            )}
           </div>
         </div>
-        {filteredCompanies.length === 0 && (
-          <Empty icon={CompanyIcon} title="No companies found" description="No companies match the selected filter." />
-        )}
       </CardContent>
     </Card>
   );

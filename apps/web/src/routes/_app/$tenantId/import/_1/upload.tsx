@@ -120,6 +120,7 @@ function UploadDataPage() {
     try {
       setIsLoading(true);
       const { columns, slicedFile } = await parseCSV(file, 100);
+      console.log(' columns:', columns);
 
       // Store the file in context
       importContext.setCsvFile(slicedFile);

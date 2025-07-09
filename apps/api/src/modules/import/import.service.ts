@@ -147,17 +147,17 @@ export class ImportService {
     dataRows: string[][],
     fieldMappings: any
   ): Promise<Map<string, { id: number; name: string }>> {
-    const companyNamesToLookup = this.collectCompanyNames(tenantId, dataRows, fieldMappings);
+    const companyNamesToLookup = this.collectCompanyNames(dataRows, fieldMappings);
     const existingCompaniesByName = await this.fetchCompaniesByName(tenantId, companyNamesToLookup);
 
     return existingCompaniesByName;
   }
 
-  private collectCompanyNames(tenantId: number, dataRows: string[][], fieldMappings: any): Set<string> {
+  private collectCompanyNames(dataRows: string[][], fieldMappings: any): Set<string> {
     const companyNames = new Set<string>();
 
     for (const row of dataRows) {
-      const { companyData, contactData } = this.mapRowToData(tenantId, row, fieldMappings);
+      const { companyData, contactData } = this.mapRowToData(row, fieldMappings);
 
       if (companyData?.name) {
         companyNames.add(companyData.name);
@@ -170,11 +170,11 @@ export class ImportService {
     return companyNames;
   }
 
-  private collectContactEmails(tenantId: number, dataRows: string[][], fieldMappings: any): Set<string> {
+  private collectContactEmails(dataRows: string[][], fieldMappings: any): Set<string> {
     const contactEmails = new Set<string>();
 
     for (const row of dataRows) {
-      const { contactData } = this.mapRowToData(tenantId, row, fieldMappings);
+      const { contactData } = this.mapRowToData(row, fieldMappings);
 
       if (contactData?.email) {
         contactEmails.add(contactData.email);
@@ -194,13 +194,13 @@ export class ImportService {
     const contacts: ImportEntry<ContactImportData>[] = [];
 
     // Pre-fetch all contacts by emails to avoid N+1 queries
-    const contactEmailsToLookup = this.collectContactEmails(tenantId, dataRows, request.fieldMappings);
+    const contactEmailsToLookup = this.collectContactEmails(dataRows, request.fieldMappings);
     const existingContactsByEmail = await this.contactService.findContactsByEmails(tenantId, [
       ...contactEmailsToLookup,
     ]);
 
     for (const row of dataRows) {
-      const { companyData, contactData } = this.mapRowToData(tenantId, row, request.fieldMappings);
+      const { companyData, contactData } = this.mapRowToData(row, request.fieldMappings);
 
       let currentRowCompanyData: CompanyImportData | undefined;
 
@@ -406,7 +406,6 @@ export class ImportService {
   }
 
   private mapRowToData(
-    tenantId: number,
     row: string[],
     fieldMappings: any
   ): {

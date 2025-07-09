@@ -146,11 +146,11 @@ export function ContactsList() {
                 </div>
               );
             })}
+            {filteredContacts.length === 0 && (
+              <Empty icon={Users} title="No contacts found" description="No contacts match the selected filter." />
+            )}
           </div>
         </div>
-        {filteredContacts.length === 0 && (
-          <Empty icon={Users} title="No contacts found" description="No contacts match the selected filter." />
-        )}
       </CardContent>
     </Card>
   );

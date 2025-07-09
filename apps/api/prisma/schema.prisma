@@ -185,6 +185,7 @@ model event {
 
 model eventSchedule {
   id          Int       @id @unique @default(autoincrement())
+  tenantId    Int
   time        String
   title       String
   description String?

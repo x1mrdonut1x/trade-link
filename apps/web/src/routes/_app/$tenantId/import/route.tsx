@@ -9,6 +9,7 @@ export const Route = createFileRoute('/_app/$tenantId/import')({
   component: ImportDataPage,
   beforeLoad: ({ location }) => {
     if (location.pathname.endsWith('/import') || location.pathname.endsWith('/import/')) {
+      console.log('redirecting to first import step');
       throw redirect({ to: importSteps[0].url });
     }
   },

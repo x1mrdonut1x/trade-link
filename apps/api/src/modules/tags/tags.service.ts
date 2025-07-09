@@ -16,10 +16,11 @@ import type {
 export class TagsService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllTags(query: GetAllTagsQuery): Promise<GetAllTagsResponse> {
+  async getAllTags(tenantId: number, query: GetAllTagsQuery): Promise<GetAllTagsResponse> {
     const { page, size, sortBy, sortOrder } = query;
 
     const tags = await this.prisma.tag.findMany({
+      where: { tenantId },
       orderBy: {
         [sortBy]: sortOrder,
       },
