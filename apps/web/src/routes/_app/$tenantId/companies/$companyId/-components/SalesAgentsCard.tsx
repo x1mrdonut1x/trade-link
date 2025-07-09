@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { UserPlus, Users } from '@tradelink/ui/icons';
+import { UserPlus } from '@tradelink/ui/icons';
 import { AssignContactDialog } from 'components/contact/AssignContactDialog';
 import { useState } from 'react';
 
 import type { GetCompanyResponse } from '@tradelink/shared';
+import { ContactIcon } from 'components/icons/ContactIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface SalesAgentsCardProps {
@@ -32,7 +33,7 @@ export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardPro
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <ContactIcon className="h-5 w-5" />
             Contacts ({contacts.length})
           </CardTitle>
           <Button variant="outline" onClick={() => setIsAssignDialogOpen(true)}>

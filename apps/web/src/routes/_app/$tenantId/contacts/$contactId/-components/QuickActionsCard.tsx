@@ -1,6 +1,7 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Calendar, Edit, FileText, Mail, MessageSquare, Phone } from '@tradelink/ui/icons';
+import { Calendar, Edit, FileText, Mail, Phone } from '@tradelink/ui/icons';
+import { NoteIcon } from 'components/icons/NoteIcon';
 
 export function QuickActionsCard() {
   return (
@@ -10,7 +11,7 @@ export function QuickActionsCard() {
       </CardHeader>
       <CardContent className="space-y-2">
         <Button className="w-full justify-start" variant="outline">
-          <MessageSquare className="h-4 w-4 mr-2" />
+          <NoteIcon className="h-4 w-4 mr-2" />
           Send Message
         </Button>
         <Button className="w-full justify-start" variant="outline">

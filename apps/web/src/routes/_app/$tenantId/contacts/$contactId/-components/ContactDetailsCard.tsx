@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Mail, MapPin, Phone } from '@tradelink/ui/icons';
 
 import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { Mail, MapPin, Phone } from '@tradelink/ui/icons';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 
 interface ContactDetailsCardProps {
   contact: ContactWithCompanyDto;
@@ -18,7 +19,7 @@ export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Building2 className="h-5 w-5" />
+          <CompanyIcon className="h-5 w-5" />
           Additional Details
         </CardTitle>
       </CardHeader>
@@ -40,7 +41,7 @@ export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
         {contact.company && (
           <div>
             <h4 className="font-medium mb-3 flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
+              <CompanyIcon className="h-4 w-4" />
               Company Information
             </h4>
             <div className="space-y-2">
@@ -56,7 +57,8 @@ export function ContactDetailsCard({ contact }: ContactDetailsCardProps) {
               {contact.company.phoneNumber && (
                 <div className="text-sm flex items-center gap-2">
                   <Phone className="h-3 w-3" />
-                  <span className="font-medium">Phone:</span> {contact.company.phonePrefix}&nbsp;{contact.company.phoneNumber}
+                  <span className="font-medium">Phone:</span> {contact.company.phonePrefix}&nbsp;
+                  {contact.company.phoneNumber}
                 </div>
               )}
             </div>

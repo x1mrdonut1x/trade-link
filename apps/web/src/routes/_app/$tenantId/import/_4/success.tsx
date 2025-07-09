@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { AlertTriangle, Building2, FileText, Users } from '@tradelink/ui/icons';
+import { AlertTriangle, FileText, Users } from '@tradelink/ui/icons';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { useImportContext } from 'context';
 
 export const Route = createFileRoute('/_app/$tenantId/import/_4/success')({
@@ -24,7 +25,7 @@ export function SubmitStepPage() {
           <div className="text-sm text-muted-foreground">Total Records</div>
         </div>
         <div className="text-center p-4 bg-green-50 rounded-lg">
-          <Building2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
+          <CompanyIcon className="h-8 w-8 text-green-500 mx-auto mb-2" />
           <div className="text-2xl font-bold">{importStats.companies}</div>
           <div className="text-sm text-muted-foreground">Companies</div>
         </div>

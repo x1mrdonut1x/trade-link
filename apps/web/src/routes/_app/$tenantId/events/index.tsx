@@ -6,6 +6,7 @@ import { EventDialog } from 'components/events/EventDialog';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useState } from 'react';
 
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { EventCard } from './-components/EventCard';
 
 export const Route = createFileRoute('/_app/$tenantId/events/')({
@@ -16,6 +17,8 @@ function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [showEventDialog, setShowEventDialog] = useState(false);
+
+  useBreadcrumbSetup([{ title: 'Events', href: `/events`, isActive: true }]);
 
   const {
     data: events = [],

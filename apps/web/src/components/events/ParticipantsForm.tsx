@@ -1,9 +1,10 @@
 import type { GetEventResponse } from '@tradelink/shared/events';
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
-import { Building2, UserPlus, X } from '@tradelink/ui/icons';
+import { UserPlus, X } from '@tradelink/ui/icons';
 import { CompanySelector } from 'components/company-selector/CompanySelector';
 import { ContactSelector } from 'components/contact-selector/ContactSelector';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { useState } from 'react';
 
 interface ParticipantsFormProps {
@@ -158,7 +159,7 @@ export function ParticipantsForm({
           onClick={() => setActiveTab('companies')}
           className="flex-1"
         >
-          <Building2 className="h-4 w-4 mr-2" />
+          <CompanyIcon className="h-4 w-4 mr-2" />
           Companies ({selectedCompanyIds.length})
         </Button>
         <Button

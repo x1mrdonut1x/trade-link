@@ -2,8 +2,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import type { ImportExecuteResponse } from '@tradelink/shared';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Loader2, Users } from '@tradelink/ui/icons';
+import { Loader2, Users } from '@tradelink/ui/icons';
 import { importAPI } from 'api/import/api';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { Alert } from 'components/ui/alert';
 import { useImportContext } from 'context';
 import Papa from 'papaparse';
@@ -197,7 +198,7 @@ export function DataPreviewPage() {
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-500" />
+              <CompanyIcon className="h-5 w-5 text-blue-500" />
               <span className="font-medium">
                 {selectedCompanies} of {previewData.companies.length} companies
               </span>

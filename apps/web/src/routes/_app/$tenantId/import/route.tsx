@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, useMatchRoute } from '@tanstack/reac
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { Stepper } from 'components/stepper/Stepper';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { ImportProvider, type ImportStep } from 'context/import-context';
 
 export const Route = createFileRoute('/_app/$tenantId/import')({
@@ -43,6 +44,8 @@ const importSteps: ImportStep[] = [
 
 function ImportDataPage() {
   const matchRoute = useMatchRoute();
+
+  useBreadcrumbSetup([{ title: 'Import Data', href: '/import', isActive: true }]);
 
   const currentStepData = importSteps.find(step => matchRoute({ to: step.url }) != null) || importSteps[0];
   const currentStepIndex = currentStepData.index;

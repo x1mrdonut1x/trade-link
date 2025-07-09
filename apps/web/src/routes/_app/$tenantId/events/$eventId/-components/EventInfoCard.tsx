@@ -1,6 +1,7 @@
 import type { GetEventResponse } from '@tradelink/shared';
 import { Rating } from '@tradelink/ui/components/rating';
-import { Building2, Calendar, MapPin } from '@tradelink/ui/icons';
+import { Calendar, MapPin } from '@tradelink/ui/icons';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
@@ -31,7 +32,7 @@ export const EventInfoCard = ({ event }: EventInfoCardProps) => {
           </div>
           {event.venue && (
             <div className="flex items-center gap-2 text-sm">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CompanyIcon className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Venue:</span>
               <span>{event.venue}</span>
             </div>

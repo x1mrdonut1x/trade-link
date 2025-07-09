@@ -9,7 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
-import { Building2, Calendar, CheckSquare, Edit, MoreHorizontal, Trash2, User } from '@tradelink/ui/icons';
+import { Calendar, Edit, MoreHorizontal, Trash2, User } from '@tradelink/ui/icons';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
+import { TaskIcon } from 'components/icons/TaskIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface TaskCardProps {
@@ -28,9 +30,9 @@ export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardP
   };
 
   const getRelatedIcon = (task: TaskWithRelationsDto) => {
-    if (task.company) return Building2;
+    if (task.company) return CompanyIcon;
     if (task.contact) return User;
-    return CheckSquare;
+    return TaskIcon;
   };
 
   const formatDate = (date?: string | Date | null) => {
@@ -100,7 +102,7 @@ export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardP
               )}
               {task.company && (
                 <div className="flex items-center gap-1">
-                  <Building2 className="h-4 w-4" />
+                  <CompanyIcon className="h-4 w-4" />
                   <Link
                     className="hover:underline"
                     to="/$tenantId/companies/$companyId"
@@ -135,7 +137,7 @@ export const TaskCard = ({ task, onToggleResolved, onEdit, onDelete }: TaskCardP
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onToggleResolved(task)}>
-              <CheckSquare className="h-4 w-4 mr-2" />
+              <TaskIcon className="h-4 w-4 mr-2" />
               {task.resolved ? 'Mark as Pending' : 'Mark as Completed'}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDelete(task)} className="text-red-600">

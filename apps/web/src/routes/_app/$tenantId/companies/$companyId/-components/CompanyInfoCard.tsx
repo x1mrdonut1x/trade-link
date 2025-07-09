@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Globe, Mail, MapPin, Phone, Users } from '@tradelink/ui/icons';
+import { Globe, Mail, MapPin, Phone, Users } from '@tradelink/ui/icons';
 
 import type { GetCompanyResponse } from '@tradelink/shared';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 
 interface CompanyInfoCardProps {
   company: GetCompanyResponse;
@@ -12,7 +13,7 @@ export function CompanyInfoCard({ company }: CompanyInfoCardProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Building2 className="h-5 w-5" />
+          <CompanyIcon className="h-5 w-5" />
           Company Information
         </CardTitle>
       </CardHeader>

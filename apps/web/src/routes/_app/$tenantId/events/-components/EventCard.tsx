@@ -9,7 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
-import { Building2, Calendar, Download, Edit, MapPin, MoreHorizontal, Trash2 } from '@tradelink/ui/icons';
+import { Calendar, Download, Edit, MapPin, MoreHorizontal, Trash2 } from '@tradelink/ui/icons';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface EventCardProps {
@@ -104,7 +105,7 @@ export function EventCard({ event }: EventCardProps) {
               </div>
               {event.venue && (
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <CompanyIcon className="h-4 w-4 text-muted-foreground" />
                   <span>{event.venue}</span>
                 </div>
               )}

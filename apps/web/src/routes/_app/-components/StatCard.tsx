@@ -1,12 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-
-import type { LucideIcon } from '@tradelink/ui/icons';
+import type React from 'react';
 
 interface StatCardProps {
   title: string;
   value: number | string;
   subtitle: string;
-  icon: LucideIcon;
+  icon: React.ElementType;
 }
 
 export const StatCard = ({ title, value, subtitle, icon: Icon }: StatCardProps) => {

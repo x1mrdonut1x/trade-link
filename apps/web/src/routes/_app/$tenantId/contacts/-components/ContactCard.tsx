@@ -9,17 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@tradelink/ui/components/dropdown-menu';
-import {
-  Building2,
-  Calendar,
-  Edit,
-  Mail,
-  MapPin,
-  MessageSquare,
-  MoreHorizontal,
-  Phone,
-  Trash2,
-} from '@tradelink/ui/icons';
+import { Calendar, Edit, Mail, MapPin, MoreHorizontal, Phone, Trash2 } from '@tradelink/ui/icons';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
+import { NoteIcon } from 'components/icons/NoteIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface Contact {
@@ -75,7 +67,7 @@ export function ContactCard({ contact }: ContactCardProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <MessageSquare className="h-4 w-4 mr-2" />
+                <NoteIcon className="h-4 w-4 mr-2" />
                 Send Message
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -113,7 +105,7 @@ export function ContactCard({ contact }: ContactCardProps) {
               <span>{contact.location}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CompanyIcon className="h-4 w-4 text-muted-foreground" />
               <span>{contact.company}</span>
             </div>
           </div>

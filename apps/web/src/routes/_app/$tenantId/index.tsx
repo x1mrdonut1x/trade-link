@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { Building2, Calendar, CheckSquare, PlusCircle, Users } from '@tradelink/ui/icons';
+import { Calendar, PlusCircle, Users } from '@tradelink/ui/icons';
 import { TokenDebugPanel } from 'components/debug/TokenDebugPanel';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { dashboardApi } from '../../../api/dashboard/api';
 
+import { CompanyIcon } from 'components/icons/CompanyIcon';
+import { TaskIcon } from 'components/icons/TaskIcon';
 import { TasksCard } from 'components/tasks';
 import { useTenantParam } from 'hooks/use-tenant-param';
 import { StatCard } from '../-components/StatCard';
@@ -39,10 +41,10 @@ function Dashboard() {
           actions={[{ label: 'Add Company', variant: 'default', icon: PlusCircle }]}
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard title="Companies" value={0} subtitle="Loading..." icon={Building2} />
+          <StatCard title="Companies" value={0} subtitle="Loading..." icon={CompanyIcon} />
           <StatCard title="Total Contacts" value={0} subtitle="Loading..." icon={Users} />
           <StatCard title="Total Events" value={0} subtitle="Loading..." icon={Calendar} />
-          <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
+          <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={TaskIcon} />
         </div>
       </>
     );
@@ -57,10 +59,10 @@ function Dashboard() {
           actions={[{ label: 'Add Company', variant: 'default', icon: PlusCircle }]}
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard title="Companies" value={0} subtitle="Error loading data" icon={Building2} />
+          <StatCard title="Companies" value={0} subtitle="Error loading data" icon={CompanyIcon} />
           <StatCard title="Total Contacts" value={0} subtitle="Error loading data" icon={Users} />
           <StatCard title="Total Events" value={0} subtitle="Error loading data" icon={Calendar} />
-          <StatCard title="Pending Tasks" value={0} subtitle="Error loading data" icon={CheckSquare} />
+          <StatCard title="Pending Tasks" value={0} subtitle="Error loading data" icon={TaskIcon} />
         </div>
       </>
     );
@@ -78,7 +80,7 @@ function Dashboard() {
           title="Companies"
           value={dashboardStats?.totalCompanies ?? 0}
           subtitle={`+${dashboardStats?.recentCompanies ?? 0} in last 7 days`}
-          icon={Building2}
+          icon={CompanyIcon}
         />
         <StatCard
           title="Total Contacts"
@@ -92,7 +94,7 @@ function Dashboard() {
           subtitle={`+${dashboardStats?.recentEvents ?? 0} in last 7 days`}
           icon={Calendar}
         />
-        <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
+        <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={TaskIcon} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">

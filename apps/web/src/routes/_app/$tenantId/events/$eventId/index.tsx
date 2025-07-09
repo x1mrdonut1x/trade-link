@@ -7,6 +7,7 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { AddParticipantsDialog } from 'components/events/AddParticipantsDialog';
 import { EventDialog } from 'components/events/EventDialog';
 import { EventTagsCard } from 'components/events/EventTagsCard';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { useState } from 'react';
 import { EventInfoCard } from './-components/EventInfoCard';
 import { EventQuickStatsCard } from './-components/EventQuickStatsCard';
@@ -22,6 +23,11 @@ function EventDetail() {
   const { data: event, isLoading, error } = useGetEvent(eventId);
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [showAddParticipantsDialog, setShowAddParticipantsDialog] = useState(false);
+
+  useBreadcrumbSetup([
+    { title: 'Events', href: '/events', isActive: false },
+    { title: event?.name || '', href: `/events/${eventId}`, isActive: true, isLoading: isLoading && !event },
+  ]);
 
   if (isLoading) {
     return (

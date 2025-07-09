@@ -3,6 +3,7 @@ import { Separator } from '@tradelink/ui/components/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@tradelink/ui/components/sidebar';
 import { AppBreadcrumb } from 'components/layout/breadcrumb/AppBreadcrumb';
 import { AppSidebar } from 'components/layout/sidebar/Sidebar';
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
 export const Route = createFileRoute('/_app/$tenantId')({
   component: TenantGuard,
@@ -14,6 +15,10 @@ export const Route = createFileRoute('/_app/$tenantId')({
 });
 
 function TenantGuard() {
+  const { tenantId } = Route.useParams();
+
+  useBreadcrumbSetup([{ title: 'Dashboard', href: `/${tenantId}`, isActive: false }]);
+
   return (
     <div className="p-2 sm:p-6 space-y-6 h-screen flex flex-col">
       <SidebarProvider className="flex-1">

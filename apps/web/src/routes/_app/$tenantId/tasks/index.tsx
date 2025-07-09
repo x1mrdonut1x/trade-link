@@ -6,6 +6,7 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { TaskDialog } from 'components/tasks';
 import { useState } from 'react';
 
+import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 import { TaskCard } from './-components/TaskCard';
 import { TaskFilters } from './-components/TaskFilters';
 import { TaskStats } from './-components/TaskStats';
@@ -19,6 +20,8 @@ function TasksPage() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskWithRelationsDto>();
+
+  useBreadcrumbSetup([{ title: 'Tasks', href: `/tasks`, isActive: true }]);
 
   const { data: tasks = [], isLoading } = useGetAllTasks({});
 

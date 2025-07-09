@@ -1,9 +1,10 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent } from '@tradelink/ui/components/card';
-import { ArrowLeft, Building2, Link } from '@tradelink/ui/icons';
+import { ArrowLeft, Link } from '@tradelink/ui/icons';
 import { useGetCompany } from 'api/company';
 import { CompanyForm } from 'components/company/CompanyForm';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
@@ -47,7 +48,7 @@ function EditCompany() {
   if (!company) {
     return (
       <div className="text-center py-12">
-        <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <CompanyIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
         <h3 className="text-lg font-semibold mb-2">Company not found</h3>
         <p className="text-muted-foreground mb-4">The company you"re looking for doesn"t exist.</p>
         <Button>

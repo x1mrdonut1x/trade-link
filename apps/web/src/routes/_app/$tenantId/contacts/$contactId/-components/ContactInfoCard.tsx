@@ -1,9 +1,10 @@
 import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback } from '@tradelink/ui/components/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Building2, Mail, MapPin, Phone, User } from '@tradelink/ui/icons';
+import { Mail, MapPin, Phone, User } from '@tradelink/ui/icons';
 
 import type { ContactWithCompanyDto } from '@tradelink/shared/contact';
+import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
 interface ContactInfoCardProps {
@@ -77,7 +78,7 @@ export function ContactInfoCard({ contact }: ContactInfoCardProps) {
               <span>{location}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CompanyIcon className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">Company:</span>
               {contact.company?.name ? (
                 <Link

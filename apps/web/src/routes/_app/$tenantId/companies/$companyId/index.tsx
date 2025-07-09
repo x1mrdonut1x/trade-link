@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
-import { ArrowLeft, Building2, CalendarPlus, Edit, MessageSquare } from '@tradelink/ui/icons';
+import { ArrowLeft, CalendarPlus, Edit } from '@tradelink/ui/icons';
 import { useGetCompany } from 'api/company/hooks';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { EntityTagsCard } from 'components/tags';
 import { useBreadcrumbSetup } from 'context/breadcrumb-context';
 
+import { CompanyIcon } from 'components/icons/CompanyIcon';
+import { NoteIcon } from 'components/icons/NoteIcon';
 import { NotesCard } from 'components/notes';
 import { TasksCard } from 'components/tasks';
 import { CompanyInfoCard } from './-components/CompanyInfoCard';
@@ -41,7 +43,7 @@ function CompanyDetail() {
   if (!company) {
     return (
       <div className="text-center py-12">
-        <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <CompanyIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-medium mb-2">Company not found</h3>
         <p className="text-muted-foreground mb-4">The company you"re looking for doesn"t exist.</p>
         <Button asChild>
@@ -67,7 +69,7 @@ function CompanyDetail() {
           },
           {
             label: 'Send Message',
-            icon: MessageSquare,
+            icon: NoteIcon,
             variant: 'outline',
           },
           {
