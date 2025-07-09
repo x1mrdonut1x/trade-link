@@ -60,7 +60,6 @@ export const authRequest = (token?: string): RequestHelper => {
 
     // Check if the response indicates an error
     if (response.status >= 400) {
-      console.error(response.body);
       throw new Error(response.body.message || 'Request failed');
     }
 
