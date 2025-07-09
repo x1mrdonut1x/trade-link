@@ -6,6 +6,7 @@ import { PageHeader } from 'components/page-header/PageHeader';
 
 import { AddParticipantsDialog } from 'components/events/AddParticipantsDialog';
 import { EventDialog } from 'components/events/EventDialog';
+import { EventTagsCard } from 'components/events/EventTagsCard';
 import { useState } from 'react';
 import { EventInfoCard } from './-components/EventInfoCard';
 import { EventQuickStatsCard } from './-components/EventQuickStatsCard';
@@ -86,6 +87,7 @@ function EventDetail() {
             agentsCount={event.contacts.length}
             status={event.status}
           />
+          <EventTagsCard event={event} />
         </div>
       </div>
       <EventDialog open={showEventDialog} event={event} onOpenChange={setShowEventDialog} />

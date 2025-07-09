@@ -2,6 +2,8 @@ import type { GetEventResponse } from '@tradelink/shared';
 import { Rating } from '@tradelink/ui/components/rating';
 import { Building2, Calendar, MapPin } from '@tradelink/ui/icons';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 interface EventInfoCardProps {
   event: GetEventResponse;

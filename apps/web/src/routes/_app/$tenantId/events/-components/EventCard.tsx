@@ -86,7 +86,7 @@ export function EventCard({ event }: EventCardProps) {
 
           <div className="flex flex-wrap gap-1">
             {event.tags?.map(tag => (
-              <Badge key={tag.id} variant="secondary" className="text-xs">
+              <Badge key={tag.id} style={{ backgroundColor: tag.color }}>
                 {tag.name}
               </Badge>
             ))}
