@@ -1,19 +1,12 @@
+import type { GetEventResponse } from '@tradelink/shared';
+import { Rating } from '@tradelink/ui/components/rating';
 import { Building2, Calendar, MapPin } from '@tradelink/ui/icons';
-
-interface Event {
-  name: string;
-  description: string;
-  date: string;
-  endDate: string;
-  location: string;
-  venue: string;
-  type: string;
-  status: string;
-  companiesCount: number;
-}
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 interface EventInfoCardProps {
-  event: Event;
+  event: GetEventResponse;
 }
 
 export const EventInfoCard = ({ event }: EventInfoCardProps) => {
@@ -28,7 +21,7 @@ export const EventInfoCard = ({ event }: EventInfoCardProps) => {
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">Date:</span>
             <span>
-              {event.date} - {event.endDate}
+              {dayjs.utc(event.startDate).format('YYYY-MM-DD')} - {dayjs.utc(event.endDate).format('YYYY-MM-DD')}
             </span>
           </div>
           <div className="flex items-center gap-2 text-sm">
@@ -36,11 +29,13 @@ export const EventInfoCard = ({ event }: EventInfoCardProps) => {
             <span className="font-medium">Location:</span>
             <span>{event.location}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">Venue:</span>
-            <span>{event.venue}</span>
-          </div>
+          {event.venue && (
+            <div className="flex items-center gap-2 text-sm">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">Venue:</span>
+              <span>{event.venue}</span>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -54,8 +49,14 @@ export const EventInfoCard = ({ event }: EventInfoCardProps) => {
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium">Companies:</span>
-            <span>{event.companiesCount}</span>
+            <span>{event.companies.length}</span>
           </div>
+          {event.rating && (
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Rating:</span>
+              <Rating value={event.rating} />
+            </div>
+          )}
         </div>
       </div>
     </div>

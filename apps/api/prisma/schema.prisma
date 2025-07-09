@@ -9,26 +9,28 @@ datasource db {
 }
 
 model contact {
-  id          Int      @id @unique @default(autoincrement())
-  firstName   String
-  lastName    String
-  jobTitle    String?
-  phonePrefix String?
-  phoneNumber String?
-  email       String
-  address     String?
-  city        String?
-  country     String?
-  postCode    String?
-  tenantId    Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  company     company? @relation(fields: [companyId], references: [id])
-  companyId   Int?
-  tenant      tenant   @relation(fields: [tenantId], references: [id])
-  notes       note[]
-  tasks       task[]
-  tags        tag[]    @relation("contactTags")
+  id             Int             @id @unique @default(autoincrement())
+  firstName      String
+  lastName       String
+  jobTitle       String?
+  phonePrefix    String?
+  phoneNumber    String?
+  email          String
+  address        String?
+  city           String?
+  country        String?
+  postCode       String?
+  tenantId       Int
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  company        company?        @relation(fields: [companyId], references: [id])
+  companyId      Int?
+  tenant         tenant          @relation(fields: [tenantId], references: [id])
+  notes          note[]
+  tasks          task[]
+  tags           tag[]           @relation("contactTags")
+  events         event[]         @relation("eventContacts")
+  eventSchedules eventSchedule[] @relation("eventScheduleContacts")
 
   @@unique([email, tenantId])
 }
@@ -55,6 +57,7 @@ model company {
   contact     contact[]
   notes       note[]
   tasks       task[]
+  events      event[]   @relation("eventCompanies")
 
   @@unique([name, tenantId])
   @@unique([email, tenantId])
@@ -72,6 +75,7 @@ model tag {
   tenant    tenant    @relation(fields: [tenantId], references: [id])
   contacts  contact[] @relation("contactTags")
   companies company[] @relation("companyTags")
+  events    event[]   @relation("eventTags")
 
   @@unique([name, tenantId])
 }
@@ -82,12 +86,14 @@ model note {
   description String?
   contactId   Int?
   companyId   Int?
+  eventId     Int?
   createdBy   Int
   tenantId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   contact     contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
   company     company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  event       event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user        user     @relation(fields: [createdBy], references: [id])
   tenant      tenant   @relation(fields: [tenantId], references: [id])
 }
@@ -100,12 +106,14 @@ model task {
   resolved     Boolean   @default(false)
   contactId    Int?
   companyId    Int?
+  eventId      Int?
   createdBy    Int
   tenantId     Int
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   contact      contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
   company      company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  event        event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user         user      @relation(fields: [createdBy], references: [id])
   tenant       tenant    @relation(fields: [tenantId], references: [id])
 }
@@ -123,6 +131,7 @@ model user {
   tasks        task[]
   membership   membership[]
   tag          tag[]
+  events       event[]
 }
 
 model tenant {
@@ -136,6 +145,7 @@ model tenant {
   tags       tag[]
   notes      note[]
   tasks      task[]
+  events     event[]
 }
 
 model membership {
@@ -146,4 +156,43 @@ model membership {
   userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model event {
+  id          Int             @id @unique @default(autoincrement())
+  name        String
+  type        String
+  startDate   DateTime        @db.Date
+  endDate     DateTime        @db.Date
+  location    String
+  venue       String?
+  description String?
+  status      String          @default("Planning")
+  rating      Int?            @db.SmallInt
+  tenantId    Int
+  createdBy   Int
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  tenant      tenant          @relation(fields: [tenantId], references: [id])
+  user        user            @relation(fields: [createdBy], references: [id])
+  tags        tag[]           @relation("eventTags")
+  companies   company[]       @relation("eventCompanies")
+  contacts    contact[]       @relation("eventContacts")
+  schedule    eventSchedule[]
+  notes       note[]
+  tasks       task[]
+}
+
+model eventSchedule {
+  id          Int       @id @unique @default(autoincrement())
+  time        String
+  title       String
+  description String?
+  type        String
+  location    String?
+  eventId     Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  event       event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  contacts    contact[] @relation("eventScheduleContacts")
 }

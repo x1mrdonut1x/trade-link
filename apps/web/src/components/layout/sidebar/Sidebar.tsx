@@ -25,7 +25,7 @@ const data = {
   projects: [
     {
       name: 'Dashboard',
-      url: '/$tenantId/',
+      url: '/$tenantId',
       icon: LayoutDashboard,
     },
     {
@@ -70,16 +70,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TenantSwitcher />
         <SidebarMenu>
-          {data.projects.map(item => (
-            <SidebarMenuItem key={item.name}>
-              <SidebarMenuButton asChild isActive={Boolean(matchRoute({ to: item.url, fuzzy: true }))}>
-                <Link to={item.url} params={{ tenantId }} activeProps={{ style: { fontWeight: '600' } }}>
-                  <item.icon />
-                  <span>{item.name}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {data.projects.map(item => {
+            const shouldFuzzy = item.url !== '/$tenantId';
+            const isActive = Boolean(matchRoute({ to: item.url, fuzzy: shouldFuzzy }));
+
+            return (
+              <SidebarMenuItem key={item.name}>
+                <SidebarMenuButton asChild isActive={isActive}>
+                  <Link
+                    to={item.url}
+                    params={{ tenantId }}
+                    activeOptions={{ exact: !shouldFuzzy }}
+                    activeProps={{ style: { fontWeight: '600' } }}
+                  >
+                    <item.icon />
+                    <span>{item.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent></SidebarContent>

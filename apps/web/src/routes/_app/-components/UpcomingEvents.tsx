@@ -2,21 +2,16 @@ import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Calendar } from '@tradelink/ui/icons';
+import { useGetAllEvents } from 'api/events';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { useTenantParam } from 'hooks/use-tenant-param';
+dayjs.extend(utc);
 
-interface Event {
-  id: number;
-  name: string;
-  date: string;
-  location: string;
-}
-
-interface UpcomingEventsProps {
-  events: Event[];
-}
-
-export const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
+export const UpcomingEvents = () => {
   const tenantId = useTenantParam();
+
+  const eventsQuery = useGetAllEvents();
 
   return (
     <Card>
@@ -25,12 +20,12 @@ export const UpcomingEvents = ({ events }: UpcomingEventsProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {events.map(event => (
+          {eventsQuery.data?.map(event => (
             <div key={event.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div>
                 <p className="font-medium">{event.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {event.date} • {event.location}
+                  {dayjs.utc(event.startDate).format('YYYY-MM-DD')} • {event.location}
                 </p>
               </div>
               <Calendar className="h-4 w-4 text-muted-foreground" />

@@ -21,20 +21,16 @@ function Dashboard() {
   // Fetch real dashboard data
   const {
     data: dashboardStats,
-    isLoading,
-    error,
+    isLoading: isLoadingStats,
+    error: statsError,
   } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: dashboardApi(tenantId).getStats,
   });
 
-  // Mock data for events (can be replaced with real API later)
-  const upcomingEvents = [
-    { id: 1, name: 'Hotel Trade Show 2025', date: '2025-07-15', location: 'Berlin' },
-    { id: 2, name: 'Hospitality Sales Expo', date: '2025-08-22', location: 'Munich' },
-  ];
+  const isLoading = isLoadingStats;
+  const error = statsError;
 
-  // Show loading state
   if (isLoading) {
     return (
       <>
@@ -45,7 +41,7 @@ function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard title="Companies" value={0} subtitle="Loading..." icon={Building2} />
           <StatCard title="Total Contacts" value={0} subtitle="Loading..." icon={Users} />
-          <StatCard title="Upcoming Events" value={3} subtitle="Next: July 15th" icon={Calendar} />
+          <StatCard title="Total Events" value={0} subtitle="Loading..." icon={Calendar} />
           <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
         </div>
       </>
@@ -63,7 +59,7 @@ function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard title="Companies" value={0} subtitle="Error loading data" icon={Building2} />
           <StatCard title="Total Contacts" value={0} subtitle="Error loading data" icon={Users} />
-          <StatCard title="Upcoming Events" value={3} subtitle="Next: July 15th" icon={Calendar} />
+          <StatCard title="Total Events" value={0} subtitle="Error loading data" icon={Calendar} />
           <StatCard title="Pending Tasks" value={0} subtitle="Error loading data" icon={CheckSquare} />
         </div>
       </>
@@ -90,13 +86,18 @@ function Dashboard() {
           subtitle={`+${dashboardStats?.recentContacts ?? 0} in last 7 days`}
           icon={Users}
         />
-        <StatCard title="Upcoming Events" value={upcomingEvents.length} subtitle="Next: July 15th" icon={Calendar} />
+        <StatCard
+          title="Total Events"
+          value={dashboardStats?.totalEvents ?? 0}
+          subtitle={`+${dashboardStats?.recentEvents ?? 0} in last 7 days`}
+          icon={Calendar}
+        />
         <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={CheckSquare} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
         <UpcomingTasks />
-        <UpcomingEvents events={upcomingEvents} />
+        <UpcomingEvents />
         <TasksCard title="Quick Tasks" />
       </div>
 

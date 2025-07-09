@@ -3,6 +3,7 @@ export * from './common';
 export * from './company';
 export * from './contact';
 export * from './dashboard';
+export * from './events';
 export * from './import';
 export * from './notes';
 export * from './tags';
