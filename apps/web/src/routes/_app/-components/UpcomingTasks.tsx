@@ -64,6 +64,7 @@ export const UpcomingTasks = () => {
           </div>
         ) : tasks.length === 0 ? (
           <Empty
+            size="sm"
             icon={TaskIcon}
             title="No Upcoming Tasks"
             description="You have no tasks scheduled for the next 7 days."

@@ -8,13 +8,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@tradelink/ui/components/sidebar';
-import { Calendar, FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
+import { FileUp, LayoutDashboard, Settings } from '@tradelink/ui/icons';
 import * as React from 'react';
 import { TenantSwitcher } from './TenantSwitcher';
 import { NavUser } from './User';
 
 import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { ContactIcon } from 'components/icons/ContactIcon';
+import { EventIcon } from 'components/icons/EventIcon';
 import { TaskIcon } from 'components/icons/TaskIcon';
 import { useTenantParam } from 'hooks/use-tenant-param';
 
@@ -44,7 +45,7 @@ const data = {
     {
       name: 'Events',
       url: '/$tenantId/events',
-      icon: Calendar,
+      icon: EventIcon,
     },
     {
       name: 'Tasks',

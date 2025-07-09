@@ -5,6 +5,7 @@ import { Card } from '@tradelink/ui/components/card';
 import { Separator } from '@tradelink/ui/components/separator';
 import { Edit, Plus, Trash2 } from '@tradelink/ui/icons';
 import { useDeleteNote, useGetAllNotes } from 'api/notes';
+import { Empty } from 'components/empty/Empty';
 import { useState } from 'react';
 
 import { NoteIcon } from 'components/icons/NoteIcon';
@@ -123,11 +124,7 @@ export function NotesCard({ contactId, companyId, title = 'Notes', showTag = fal
         </div>
 
         {notes.length === 0 ? (
-          <div className="text-center py-8">
-            <NoteIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h4 className="text-lg font-medium mb-2">No notes yet</h4>
-            <p className="text-muted-foreground mb-4">Start by adding your first note.</p>
-          </div>
+          <Empty description="Start by adding your first note." />
         ) : (
           <div className="space-y-4">
             {notes.map((note, index) => (

@@ -2,6 +2,7 @@ import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Activity, Calendar, Mail, Phone, Plus, Users } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
 
 interface RecentActivitiesCardProps {
   activities: any[]; // TODO replace
@@ -72,7 +73,9 @@ export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) 
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm">{activity.description}</p>
                   <p className="text-xs text-muted-foreground mt-1">{activity.date}</p>
-                  {activity.outcome && <p className="text-xs text-green-600 mt-1 font-medium">Outcome: {activity.outcome}</p>}
+                  {activity.outcome && (
+                    <p className="text-xs text-green-600 mt-1 font-medium">Outcome: {activity.outcome}</p>
+                  )}
                 </div>
                 <Badge variant="outline" className="text-xs capitalize">
                   {activity.type}
@@ -80,7 +83,9 @@ export function RecentActivitiesCard({ activities }: RecentActivitiesCardProps) 
               </div>
             );
           })}
-          {activities.length === 0 && <p className="text-muted-foreground text-center py-6">No recent activities recorded.</p>}
+          {activities.length === 0 && (
+            <Empty icon={Activity} title="No recent activities" description="No recent activities recorded." />
+          )}
         </div>
       </CardContent>
     </Card>

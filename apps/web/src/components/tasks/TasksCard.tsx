@@ -5,6 +5,7 @@ import { Card } from '@tradelink/ui/components/card';
 import { Separator } from '@tradelink/ui/components/separator';
 import { CheckCircle, Circle, Edit, Plus, Trash2 } from '@tradelink/ui/icons';
 import { useDeleteTask, useGetAllTasks, useResolveTask, useUnresolveTask } from 'api/tasks';
+import { Empty } from 'components/empty/Empty';
 import { useState } from 'react';
 
 import { TaskIcon } from 'components/icons/TaskIcon';
@@ -145,11 +146,7 @@ export function TasksCard({ contactId, companyId, title = 'Tasks', showTag = fal
         </div>
 
         {tasks.length === 0 ? (
-          <div className="text-center py-8">
-            <TaskIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h4 className="text-lg font-medium mb-2">No Tasks yet</h4>
-            <p className="text-muted-foreground mb-4">Start by adding your first Task.</p>
-          </div>
+          <Empty description="No tasks assigned." />
         ) : (
           <div className="space-y-4">
             {tasks.map((task, index) => (

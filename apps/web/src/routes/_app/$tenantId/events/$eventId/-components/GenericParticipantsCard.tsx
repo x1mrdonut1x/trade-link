@@ -1,5 +1,6 @@
 import { Button } from '@tradelink/ui/components/button';
 import { Plus } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
 import { ReactNode } from 'react';
 
 interface GenericParticipantsCardProps<T> {
@@ -41,7 +42,7 @@ export function GenericParticipantsCard<T extends { id: number }>({
             {renderItem(item)}
           </div>
         ))}
-        {items.length === 0 && <p className="text-muted-foreground text-center py-6">{emptyMessage}</p>}
+        {items.length === 0 && <Empty description={emptyMessage} />}
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import { PageHeader } from 'components/page-header/PageHeader';
 import { dashboardApi } from '../../../api/dashboard/api';
 
 import { CompanyIcon } from 'components/icons/CompanyIcon';
+import { ContactIcon } from 'components/icons/ContactIcon';
+import { EventIcon } from 'components/icons/EventIcon';
 import { TaskIcon } from 'components/icons/TaskIcon';
 import { TasksCard } from 'components/tasks';
 import { useTenantParam } from 'hooks/use-tenant-param';
@@ -42,8 +44,8 @@ function Dashboard() {
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard title="Companies" value={0} subtitle="Loading..." icon={CompanyIcon} />
-          <StatCard title="Total Contacts" value={0} subtitle="Loading..." icon={Users} />
-          <StatCard title="Total Events" value={0} subtitle="Loading..." icon={Calendar} />
+          <StatCard title="Total Contacts" value={0} subtitle="Loading..." icon={ContactIcon} />
+          <StatCard title="Total Events" value={0} subtitle="Loading..." icon={EventIcon} />
           <StatCard title="Pending Tasks" value={0} subtitle="Loading..." icon={TaskIcon} />
         </div>
       </>
@@ -60,8 +62,8 @@ function Dashboard() {
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard title="Companies" value={0} subtitle="Error loading data" icon={CompanyIcon} />
-          <StatCard title="Total Contacts" value={0} subtitle="Error loading data" icon={Users} />
-          <StatCard title="Total Events" value={0} subtitle="Error loading data" icon={Calendar} />
+          <StatCard title="Total Contacts" value={0} subtitle="Error loading data" icon={ContactIcon} />
+          <StatCard title="Total Events" value={0} subtitle="Error loading data" icon={EventIcon} />
           <StatCard title="Pending Tasks" value={0} subtitle="Error loading data" icon={TaskIcon} />
         </div>
       </>

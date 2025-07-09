@@ -1,7 +1,9 @@
 import { Badge } from '@tradelink/ui/components/badge';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Calendar, CalendarPlus } from '@tradelink/ui/icons';
+import { CalendarPlus } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
+import { EventIcon } from 'components/icons/EventIcon';
 
 interface RecentEventsCardProps {
   events: any[];
@@ -12,7 +14,7 @@ export function RecentEventsCard({ events }: RecentEventsCardProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
+          <EventIcon className="h-5 w-5" />
           Recent Events ({events.length})
         </CardTitle>
         <Button size="sm" variant="outline">
@@ -31,7 +33,9 @@ export function RecentEventsCard({ events }: RecentEventsCardProps) {
               <Badge variant={event.status === 'Completed' ? 'default' : 'secondary'}>{event.status}</Badge>
             </div>
           ))}
-          {events.length === 0 && <p className="text-muted-foreground text-center py-6">No recent events for this company.</p>}
+          {events.length === 0 && (
+            <Empty icon={EventIcon} title="No recent events" description="No recent events for this company." />
+          )}
         </div>
       </CardContent>
     </Card>

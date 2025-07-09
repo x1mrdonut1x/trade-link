@@ -3,6 +3,7 @@ import type { CompanyImportData, ImportEntry } from '@tradelink/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@tradelink/ui/components/select';
 import { Filter } from '@tradelink/ui/icons';
+import { Empty } from 'components/empty/Empty';
 import { CompanyIcon } from 'components/icons/CompanyIcon';
 import { useImportContext } from 'context';
 import { useRef, useState } from 'react';
@@ -128,7 +129,7 @@ export function CompaniesList() {
           </div>
         </div>
         {filteredCompanies.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">No companies match the selected filter.</div>
+          <Empty icon={CompanyIcon} title="No companies found" description="No companies match the selected filter." />
         )}
       </CardContent>
     </Card>

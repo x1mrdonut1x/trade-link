@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
-import { Calendar } from '@tradelink/ui/icons';
 import { useGetAllEvents } from 'api/events';
+import { EventIcon } from 'components/icons/EventIcon';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useTenantParam } from 'hooks/use-tenant-param';
@@ -28,7 +28,7 @@ export const UpcomingEvents = () => {
                   {dayjs.utc(event.startDate).format('YYYY-MM-DD')} • {event.location}
                 </p>
               </div>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <EventIcon className="h-4 w-4 text-muted-foreground" />
             </div>
           ))}
         </div>

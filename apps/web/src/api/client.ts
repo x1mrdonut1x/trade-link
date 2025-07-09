@@ -52,6 +52,7 @@ export async function myFetch<T = unknown>(
         arrayFormat: 'comma',
       })
     ).toString();
+
     const response = await fetch(parsedUrl, { ...data, headers, body: parsedBody });
 
     if (!response.ok) {

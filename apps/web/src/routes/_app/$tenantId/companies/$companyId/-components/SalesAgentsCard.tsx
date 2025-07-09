@@ -3,6 +3,7 @@ import { Button } from '@tradelink/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@tradelink/ui/components/card';
 import { UserPlus } from '@tradelink/ui/icons';
 import { AssignContactDialog } from 'components/contact/AssignContactDialog';
+import { Empty } from 'components/empty/Empty';
 import { useState } from 'react';
 
 import type { GetCompanyResponse } from '@tradelink/shared';
@@ -60,9 +61,7 @@ export function SalesAgentsCard({ companyId, contacts = [] }: SalesAgentsCardPro
                 </Card>
               </Link>
             ))}
-            {contacts.length === 0 && (
-              <p className="text-muted-foreground text-center py-6">No sales agents assigned to this company.</p>
-            )}
+            {contacts.length === 0 && <Empty description="No sales agents assigned to this company." />}
           </div>
         </CardContent>
       </Card>
