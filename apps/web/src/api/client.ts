@@ -112,9 +112,6 @@ export async function myFetch<T = unknown>(
       } finally {
         isRefreshing = false;
       }
-    } else {
-      authStorage.clearAll();
-      for (const callback of getAuthCallbacks()) callback();
     }
 
     // If it's not a 401 or refresh failed, just throw the original error

@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@tradelink/ui/components/button';
 import { Calendar, Filter, PlusCircle, Upload } from '@tradelink/ui/icons';
+import { useGetAllEvents } from 'api/events';
+import { EventDialog } from 'components/events/EventDialog';
 import { PageHeader } from 'components/page-header/PageHeader';
 import { useState } from 'react';
 
@@ -10,93 +12,35 @@ export const Route = createFileRoute('/_app/$tenantId/events/')({
   component: EventsPage,
 });
 
-// Mock data - would come from API
-const mockEvents = [
-  {
-    id: 1,
-    name: 'International Hotel Investment Summit 2025',
-    type: 'Investment Conference',
-    date: '2025-07-15',
-    endDate: '2025-07-17',
-    location: 'Berlin, Germany',
-    venue: 'InterContinental Berlin',
-    status: 'Upcoming',
-    description: 'Premier global conference for hotel investment, development, and finance professionals.',
-    companiesCount: 45,
-    agentsCount: 28,
-    tags: ['Investment', 'Finance', 'International', 'Luxury'],
-    customFields: [
-      { name: 'Booth Number', value: 'Hall A, Booth 15' },
-      { name: 'Budget Allocated', value: '€35,000' },
-      { name: 'Team Lead', value: 'Sarah Mitchell' },
-      { name: 'Expected Leads', value: '80-120' },
-      { name: 'Registration Fee', value: '€2,500 per person' },
-    ],
-    companies: [
-      { id: 1, name: 'Grand Hotels Corporation', agentsCount: 8 },
-      { id: 2, name: 'Boutique Hospitality Group', agentsCount: 6 },
-    ],
-    agents: [
-      { id: 1, name: 'Sarah Mitchell', company: 'Grand Hotels Corporation' },
-      { id: 2, name: 'Marcus Rodriguez', company: 'Boutique Hospitality Group' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Resort & Spa Trade Show',
-    type: 'Trade Show',
-    date: '2025-08-22',
-    endDate: '2025-08-24',
-    location: 'Las Vegas, NV',
-    venue: 'Las Vegas Convention Center',
-    status: 'Planning',
-    description: 'Leading trade show for resort and spa industry professionals, featuring the latest trends and services.',
-    companiesCount: 32,
-    agentsCount: 18,
-    tags: ['Resort', 'Spa', 'Wellness', 'Networking'],
-    customFields: [
-      { name: 'Focus Area', value: 'Luxury Resorts & Spa Services' },
-      { name: 'Target Attendees', value: '500+' },
-      { name: 'Registration Deadline', value: '2025-07-01' },
-      { name: 'Sponsorship Level', value: 'Gold Sponsor' },
-    ],
-    companies: [{ id: 3, name: 'Resort & Spa International', agentsCount: 12 }],
-    agents: [{ id: 3, name: 'Jennifer Park', company: 'Resort & Spa International' }],
-  },
-  {
-    id: 3,
-    name: 'Boutique Hotel Summit 2025',
-    type: 'Conference',
-    date: '2025-09-10',
-    endDate: '2025-09-11',
-    location: 'San Francisco, CA',
-    venue: 'The St. Regis San Francisco',
-    status: 'Completed',
-    description: 'Exclusive summit for boutique hotel owners, operators, and industry innovators.',
-    companiesCount: 28,
-    agentsCount: 22,
-    tags: ['Boutique', 'Design', 'Innovation', 'Luxury'],
-    customFields: [
-      { name: 'Speaking Slot', value: 'Yes - Panel Discussion' },
-      { name: 'Sponsor Level', value: 'Platinum Sponsor' },
-      { name: 'Leads Generated', value: '67' },
-      { name: 'Follow-up Meetings', value: '24 scheduled' },
-    ],
-    companies: [
-      { id: 1, name: 'Grand Hotels Corporation', agentsCount: 5 },
-      { id: 2, name: 'Boutique Hospitality Group', agentsCount: 8 },
-    ],
-    agents: [
-      { id: 1, name: 'Sarah Mitchell', company: 'Grand Hotels Corporation' },
-      { id: 2, name: 'Marcus Rodriguez', company: 'Boutique Hospitality Group' },
-    ],
-  },
-];
-
 function EventsPage() {
-  const [events] = useState(mockEvents);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [showEventDialog, setShowEventDialog] = useState(false);
+
+  const {
+    data: events = [],
+    isLoading,
+    error,
+  } = useGetAllEvents({
+    search: searchTerm || undefined,
+    status: selectedStatus === 'all' ? undefined : selectedStatus,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Loading events...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-red-500">Error loading events: {error.message}</div>
+      </div>
+    );
+  }
 
   const filteredEvents = events.filter(event => {
     const matchesSearch =
@@ -130,6 +74,7 @@ function EventsPage() {
             label: 'Add Event',
             icon: PlusCircle,
             variant: 'default',
+            onClick: () => setShowEventDialog(true),
           },
         ]}
         showSearch={true}
@@ -162,12 +107,14 @@ function EventsPage() {
           <p className="text-muted-foreground mb-4">
             {searchTerm ? 'Try adjusting your search criteria.' : 'Get started by adding your first event.'}
           </p>
-          <Button>
+          <Button onClick={() => setShowEventDialog(true)}>
             <PlusCircle className="h-4 w-4 mr-2" />
             Add Event
           </Button>
         </div>
       )}
+
+      <EventDialog open={showEventDialog} onOpenChange={setShowEventDialog} />
     </>
   );
 }
